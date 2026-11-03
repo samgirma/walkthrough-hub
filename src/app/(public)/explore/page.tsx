@@ -16,6 +16,8 @@ import { WriteupCard } from "@/components/writeup/writeup-card";
 import { getPublicWriteups } from "@/server/writeup.service";
 import { CategoryType, DifficultyType } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Explore CTF Writeups // Real-time Exploit Directory",
   description:

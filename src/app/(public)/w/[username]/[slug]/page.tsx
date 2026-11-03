@@ -39,6 +39,8 @@ interface WriteupPageProps {
   }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: WriteupPageProps): Promise<Metadata> {
