@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Category {
+  WEB
+  PWN
+  CRYPTO
+  REVERSE
+  FORENSICS
+  MISC
+  OSINT
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+  INSANE
+}
+
+enum Status {
+  DRAFT
+  UNLISTED
+  PUBLIC
+}
+
+model User {
+  id            String     @id @default(cuid())
+  username      String     @unique
+  email         String     @unique
+  passwordHash  String?
+  avatarUrl     String?
+  bio           String?
+  githubUrl     String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  writeups      Writeup[]
+  bookmarks     Bookmark[]
+
+  @@index([username])
+  @@index([email])
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Writeup {
+  id            String      @id @default(cuid())
+  authorId      String
+  title         String
+  slug          String
+  excerpt       String      @db.Text
+  contentMd     String      @db.Text
+  coverImageUrl String?
+  ctfName       String
+  ctfYear       Int
+  category      Category
+  difficulty    Difficulty
+  status        Status      @default(DRAFT)
+  viewCount     Int         @default(0)
+  readTimeMin   Int         @default(1)
+  publishedAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  author        User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  tags          WriteupTag[]
+  bookmarks     Bookmark[]
+
+  @@unique([authorId, slug])
+  @@index([status])
+  @@index([category])
+  @@index([publishedAt])
+  @@index([slug])
+  @@index([authorId])
+  @@index([status, category, publishedAt])
+}
+
+model Tag {
+  id       String       @id @default(cuid())
+  name     String       @unique
+  writeups WriteupTag[]
+
+  @@index([name])
+}
+
+model WriteupTag {
+  writeupId String
+  tagId     String
+  writeup   Writeup @relation(fields: [writeupId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([writeupId, tagId])
+  @@index([writeupId])
+  @@index([tagId])
+}
+
+model Bookmark {
+  userId    String
+  writeupId String
+  createdAt DateTime @default(now())
+
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  writeup   Writeup @relation(fields: [writeupId], references: [id], onDelete: Cascade)
+
+  @@id([userId, writeupId])
+  @@index([userId])
+  @@index([writeupId])
+}

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"tertiary-container":"#c6aeff","secondary-fixed":"#c4e7ff","outline-variant":"#3c4a43","surface-dim":"#10131a","on-primary":"#003828","on-error":"#690005","on-tertiary-container":"#591ec2","secondary-fixed-dim":"#7bd0ff","tertiary":"#dfcfff","on-secondary-container":"#00374d","surface-container":"#1d2027","on-background":"#e0e2ec","outline":"#85948c","surface":"#10131a","tertiary-fixed":"#e9ddff","surface-container-highest":"#32353c","on-surface":"#e0e2ec","surface-variant":"#32353c","surface-container-high":"#272a31","inverse-primary":"#006c4f","primary-fixed-dim":"#38dfab","surface-tint":"#38dfab","on-secondary-fixed":"#001e2c","on-primary-fixed-variant":"#00513b","tertiary-fixed-dim":"#d0bcff","on-tertiary":"#3c0091","primary":"#50f0bb","on-secondary":"#00354a","error-container":"#93000a","on-surface-variant":"#bacac1","background":"#10131a","on-tertiary-fixed":"#23005c","primary-container":"#22d3a0","primary-fixed":"#5ffcc6","on-primary-fixed":"#002116","inverse-on-surface":"#2d3038","on-secondary-fixed-variant":"#004c69","secondary-container":"#00a6e0","surface-bright":"#363941","error":"#ffb4ab","inverse-surface":"#e0e2ec","surface-container-lowest":"#0b0e15","on-primary-container":"#00563e","secondary":"#7bd0ff","surface-container-low":"#191c23","on-error-container":"#ffdad6","on-tertiary-fixed-variant":"#5516be"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{gutter:"1.5rem","space-lg":"1.5rem","space-md":"1rem","gutter-sm":"1rem","margin-sm":"1rem","space-xs":"0.25rem","space-sm":"0.5rem","space-xl":"2.5rem",margin:"2rem"},fontFamily:{"headline-sm":["Inter"],display:["Inter"],"body-sm":["Inter"],"label-mono-xs":["JetBrains Mono"],"label-mono-sm":["JetBrains Mono"],"code-inline":["JetBrains Mono"],"body-lg":["Inter"],"code-block":["JetBrains Mono"],"headline-lg":["Inter"],"headline-lg-mobile":["Inter"],"headline-md":["Inter"],"body-md":["Inter"]},fontSize:{"headline-sm":["1.125rem",{lineHeight:"1.4",letterSpacing:"-0.01em",fontWeight:"600"}],display:["3.5rem",{lineHeight:"1.1",letterSpacing:"-0.035em",fontWeight:"700"}],"body-sm":["0.75rem",{lineHeight:"1.5",letterSpacing:"0.01em",fontWeight:"400"}],"label-mono-xs":["0.625rem",{lineHeight:"1",letterSpacing:"0.06em",fontWeight:"600"}],"label-mono-sm":["0.6875rem",{lineHeight:"1",letterSpacing:"0.04em",fontWeight:"500"}],"code-inline":["0.8125rem",{lineHeight:"1.2",letterSpacing:"-0.01em",fontWeight:"500"}],"body-lg":["1rem",{lineHeight:"1.65",letterSpacing:"-0.005em",fontWeight:"400"}],"code-block":["0.875rem",{lineHeight:"1.7",letterSpacing:"0",fontWeight:"400"}],"headline-lg":["2.25rem",{lineHeight:"1.2",letterSpacing:"-0.025em",fontWeight:"600"}],"headline-lg-mobile":["1.75rem",{lineHeight:"1.25",letterSpacing:"-0.02em",fontWeight:"600"}],"headline-md":["1.5rem",{lineHeight:"1.3",letterSpacing:"-0.02em",fontWeight:"600"}],"body-md":["0.875rem",{lineHeight:"1.6",letterSpacing:"0",fontWeight:"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl border-b border-outline-variant/30"><div class="h-16 max-w-7xl mx-auto px-gutter flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm group" data-path="explore" href="#"><div class="w-8 h-8 rounded-xl bg-primary-container flex items-center justify-center text-on-primary-container shadow-[0_0_16px_-2px_rgba(34,211,160,0.4)]"><span class="material-symbols-outlined text-[18px]">terminal</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm tracking-tight text-on-surface group-hover:text-primary transition-colors">Writeup<span class="text-primary">Hub</span></span></div></a><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-surface-container-high text-on-surface font-semibold rounded-lg"><a class="px-space-sm py-1.5 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="explore" href="#">Explore</a><a class="px-space-sm py-1.5 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="categories" href="#">Categories</a><a class="px-space-sm py-1.5 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="events" href="#">Events</a></nav></div><div class="flex-1 max-w-md hidden lg:block"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-outline text-[18px] pointer-events-none">search</span><input class="w-full h-10 pl-9 pr-10 rounded-xl bg-surface-container-lowest border border-outline-variant/40 text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Search writeups, CVEs, authors, CTFs..." type="text"/><kbd class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-container border border-outline-variant/50 text-on-surface-variant font-label-mono-xs text-label-mono-xs select-none">/</kbd></div></div><div class="flex items-center gap-space-sm"><button aria-label="Toggle color mode" class="w-9 h-9 rounded-xl flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">dark_mode</span></button><a class="hidden sm:inline-flex items-center px-space-md py-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-body-md text-body-md transition-colors" data-path="sign-in" href="#">Sign in</a><a class="inline-flex items-center gap-1.5 px-space-md py-2 rounded-xl bg-gradient-to-r from-primary-container to-secondary-container text-on-primary font-headline-sm text-body-md font-semibold shadow-[0_0_16px_rgba(34,211,160,0.25)] hover:shadow-[0_0_20px_rgba(34,211,160,0.4)] active:scale-[0.98] transition-all" data-path="editor" href="#"><span class="material-symbols-outlined text-[18px]">edit_note</span><span>Write a writeup</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface min-h-[calc(100vh-280px)]"><div class="flex flex-col w-full">
+<!-- Sticky reading indicator line at top of viewport -->
+<div class="fixed top-0 left-0 right-0 z-50 h-[3px] bg-surface-container-lowest">
+<div class="h-full w-[62%] bg-gradient-to-r from-primary to-secondary shadow-[0_0_12px_rgba(80,240,187,0.8)]"></div>
+</div>
+<div class="max-w-7xl mx-auto px-gutter w-full py-space-lg">
+<!-- Main 3-Column Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- LEFT STICKY SIDEBAR: Table of Contents & File Downloads (~240px wide / 3 cols) -->
+<aside class="hidden lg:flex lg:col-span-3 flex-col gap-space-lg sticky top-20 self-start">
+<!-- Table of Contents Container -->
+<nav aria-label="Table of contents" class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<span class="font-label-mono-xs text-label-mono-xs uppercase text-outline tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-primary">format_list_bulleted</span>
+              Contents
+            </span>
+<span class="font-label-mono-xs text-label-mono-xs text-primary px-1.5 py-0.5 rounded bg-primary/10">6 sections</span>
+</div>
+<div class="relative flex flex-col gap-0.5 pl-3">
+<!-- Active indicator track line -->
+<div class="absolute left-0 top-1 bottom-1 w-0.5 bg-surface-container-highest rounded-full"></div>
+<!-- Dynamic position marker on section 4 -->
+<div class="absolute left-0 top-[118px] h-6 w-0.5 bg-primary rounded-full shadow-[0_0_8px_rgba(80,240,187,0.7)]"></div>
+<a class="py-1 text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-colors flex items-center justify-between group" href="#synopsis">
+<span class="truncate">1. Challenge Synopsis &amp; Target</span>
+</a>
+<a class="py-1 text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-colors flex items-center justify-between group" href="#recon">
+<span class="truncate">2. Recon &amp; Surface Analysis</span>
+</a>
+<a class="py-1 text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-colors flex items-center justify-between group" href="#vuln">
+<span class="truncate">3. Double-Free Race Condition</span>
+</a>
+<a class="py-1 text-primary font-body-sm text-body-sm font-semibold transition-colors flex items-center justify-between group bg-surface-container/60 -ml-2 pl-2 pr-1 rounded" href="#kaslr">
+<span class="truncate">4. Bypassing KASLR via Heap Leak</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary shrink-0 animate-pulse"></span>
+</a>
+<a class="py-1 text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-colors flex items-center justify-between group" href="#write-primitive">
+<span class="truncate">5. Arbitrary Write Primitive</span>
+</a>
+<a class="py-1 text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-colors flex items-center justify-between group" href="#escalation">
+<span class="truncate">6. Escalation &amp; Flag Extraction</span>
+</a>
+</div>
+</nav>
+<!-- Challenge Files Widget -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<span class="font-label-mono-xs text-label-mono-xs uppercase text-outline tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-secondary">inventory_2</span>
+              Challenge Files
+            </span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">SHA256</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- File Item 1 -->
+<a class="p-2 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-between group" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-outline text-[18px] group-hover:text-primary transition-colors">code</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface truncate">target.elf</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">vmlinux stripped • 14.2 MB</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary text-[18px] transition-colors shrink-0">download</span>
+</a>
+<!-- File Item 2 -->
+<a class="p-2 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-between group" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-outline text-[18px] group-hover:text-secondary transition-colors">memory</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface truncate">bzImage</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Kernel 6.6.21 • 8.9 MB</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary text-[18px] transition-colors shrink-0">download</span>
+</a>
+<!-- File Item 3 -->
+<a class="p-2 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-between group" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-outline text-[18px] group-hover:text-primary transition-colors">terminal</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface truncate">solve.py</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Full Exploit PoC • 4.8 KB</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary text-[18px] transition-colors shrink-0">download</span>
+</a>
+</div>
+<button class="w-full mt-1 py-1.5 px-space-sm rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface-variant hover:text-on-surface font-label-mono-xs text-label-mono-xs flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">folder_zip</span>
+            Download Archive (.tar.gz)
+          </button>
+</div>
+<!-- System Architecture Metadata Pill -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl flex flex-col gap-2">
+<span class="font-label-mono-xs text-label-mono-xs uppercase text-outline">Environment Telemetry</span>
+<div class="grid grid-cols-2 gap-2 text-label-mono-xs font-label-mono-xs">
+<div class="bg-surface-container-low p-1.5 rounded">
+<span class="text-outline block">Arch</span>
+<span class="text-on-surface font-semibold">x86_64</span>
+</div>
+<div class="bg-surface-container-low p-1.5 rounded">
+<span class="text-outline block">Mitigations</span>
+<span class="text-primary font-semibold">SMEP / SMAP</span>
+</div>
+<div class="bg-surface-container-low p-1.5 rounded">
+<span class="text-outline block">SLUB</span>
+<span class="text-on-surface font-semibold">CONFIG_FREELIST</span>
+</div>
+<div class="bg-surface-container-low p-1.5 rounded">
+<span class="text-outline block">Exploit Window</span>
+<span class="text-secondary font-semibold">~14.2 µs</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- CENTER CONTENT COLUMN: Technical Long-Form Readout (max-w-[720px]) -->
+<article class="col-span-1 lg:col-span-8 flex flex-col gap-space-lg max-w-[740px] mx-auto w-full">
+<!-- Breadcrumbs Navigation -->
+<nav class="flex items-center gap-1.5 font-label-mono-xs text-label-mono-xs text-outline overflow-x-auto whitespace-nowrap pb-1">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[13px]">home</span>
+            Home
+          </a>
+<span>/</span>
+<a class="hover:text-primary transition-colors" href="#">Events</a>
+<span>/</span>
+<a class="hover:text-primary transition-colors" href="#">DEF CON 32 Quals</a>
+<span>/</span>
+<a class="hover:text-primary transition-colors text-on-surface-variant" href="#">Pwn</a>
+<span>/</span>
+<span class="text-primary truncate">Kernel Space Race</span>
+</nav>
+<!-- Article Headline -->
+<div class="flex flex-col gap-space-md">
+<h1 class="font-headline-lg text-headline-lg tracking-tight text-on-surface">
+            DEF CON 32 — “Kernel Space Race”: Bypassing KASLR &amp; Arbitrary Read/Write via <span class="text-primary">io_uring</span> UAF
+          </h1>
+<!-- Meta badges row -->
+<div class="flex flex-wrap items-center gap-2">
+<!-- Event Pill -->
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-label-mono-xs text-label-mono-xs">
+<span class="material-symbols-outlined text-[13px] text-secondary">emoji_events</span>
+              DEF CON 32 Quals • 2024
+            </span>
+<!-- Category Pill -->
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-error-container/40 text-error font-label-mono-xs text-label-mono-xs uppercase tracking-wider font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+              Pwn / Kernel
+            </span>
+<!-- Difficulty Chip -->
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-tertiary-container/30 text-tertiary font-label-mono-xs text-label-mono-xs font-semibold shadow-[0_0_10px_rgba(198,174,255,0.2)]">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-ping"></span>
+              Insane
+            </span>
+<!-- Solves & Points -->
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-mono-xs text-label-mono-xs">
+<span class="material-symbols-outlined text-[13px] text-primary">award_star</span>
+              500 pts / 14 solves
+            </span>
+<!-- Publication Date & Read Time -->
+<span class="inline-flex items-center gap-1.5 text-outline font-label-mono-xs text-label-mono-xs ml-auto">
+<span>Aug 14, 2024</span>
+<span>•</span>
+<span class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">timer</span>
+                14 min read
+              </span>
+</span>
+</div>
+<!-- Monospace Hashtags -->
+<div class="flex flex-wrap items-center gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest text-primary font-label-mono-xs text-label-mono-xs">#kernel-exploitation</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest text-secondary font-label-mono-xs text-label-mono-xs">#io_uring</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest text-on-surface-variant font-label-mono-xs text-label-mono-xs">#kaslr-bypass</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest text-on-surface-variant font-label-mono-xs text-label-mono-xs">#slab-uaf</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest text-outline font-label-mono-xs text-label-mono-xs">#linux-6.6</span>
+</div>
+<!-- Author Bio Card -->
+<div class="mt-space-sm p-space-md rounded-xl bg-surface-container-low flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center shrink-0 shadow-[0_0_16px_rgba(80,240,187,0.3)]">
+<span class="material-symbols-outlined text-primary text-[28px]">shield_person</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-on-surface">@0xret2libc</span>
+<span class="material-symbols-outlined text-primary text-[16px]" title="Verified Security Researcher">verified</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline px-1.5 py-0.2 bg-surface-container rounded">The Shellcoders</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">
+                  Offensive kernel researcher &amp; CTF player. Async I/O bug hunter &amp; hypervisor escapes.
+                </p>
+<div class="flex items-center gap-space-sm mt-0.5 font-label-mono-xs text-label-mono-xs text-outline">
+<span>1.8k followers</span>
+<span>•</span>
+<a class="text-primary hover:underline" href="#">More from this author (12 writeups)</a>
+</div>
+</div>
+</div>
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm text-body-sm font-semibold transition-all active:scale-[0.98] self-stretch sm:self-auto text-center" type="button">
+              Follow
+            </button>
+</div>
+</div>
+<!-- Rendered Technical Markdown Section -->
+<div class="flex flex-col gap-space-lg text-on-surface leading-[1.75]">
+<!-- Section 1 -->
+<section class="flex flex-col gap-space-sm" id="synopsis">
+<div class="flex items-center gap-2 group">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+                1. Challenge Synopsis &amp; Target
+              </h2>
+<a class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary transition-opacity" href="#synopsis">
+<span class="material-symbols-outlined text-[18px]">tag</span>
+</a>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+              During the 48-hour sprint of DEF CON 32 Qualifiers, <strong class="text-on-surface font-semibold">Kernel Space Race</strong> emerged as the premier binary exploitation challenge. Players were provided a custom patched Linux kernel image executing under QEMU with complete hardening defenses: <code class="font-code-inline text-code-inline px-1 py-0.5 rounded bg-surface-container text-primary">CONFIG_SLAB_FREELIST_HARDENED</code>, SMEP, SMAP, KASLR, and page table isolation (KPTI) fully active.
+            </p>
+<!-- Callout: Info -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex items-start gap-space-sm shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[22px] shrink-0 mt-0.5">info</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-headline-sm text-body-md font-semibold text-secondary">Target Environment Specification</span>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                  Tested against Linux Kernel 6.6.21-generic with SMEP, SMAP, and KASLR enabled. No custom modules were loaded; the bug resides directly in the asynchronous submission queue logic.
+                </p>
+</div>
+</div>
+</section>
+<!-- Section 2 -->
+<section class="flex flex-col gap-space-sm" id="recon">
+<div class="flex items-center gap-2 group">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+                2. Reconnaissance &amp; Surface Analysis
+              </h2>
+<a class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary transition-opacity" href="#recon">
+<span class="material-symbols-outlined text-[18px]">tag</span>
+</a>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+              Reversing the provided <code class="font-code-inline text-code-inline px-1 py-0.5 rounded bg-surface-container text-secondary">diff</code> file against upstream kernel tree revealed an intentional race window in <code class="font-code-inline text-code-inline px-1 py-0.5 rounded bg-surface-container text-secondary">io_uring/io_uring.c</code> during request cancellation handling. Specifically, an asynchronous task could be marked for immediate destruction via unregister ring while an inflight vector request still held a stale reference in the submission ring cache.
+            </p>
+<!-- Callout: Warning -->
+<div class="p-space-md rounded-xl bg-error-container/20 flex items-start gap-space-sm shadow-sm">
+<span class="material-symbols-outlined text-error text-[22px] shrink-0 mt-0.5">warning</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-headline-sm text-body-md font-semibold text-error">Volatile Exploit Warning</span>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                  Exploiting this io_uring race condition will panic the host kernel if thread synchronization misses the microsecond scheduling slot. Always execute inside dedicated virtualization boundaries.
+                </p>
+</div>
+</div>
+<!-- Challenge Diagram Visual with Caption -->
+<div class="my-space-sm rounded-xl overflow-hidden bg-surface-container-low shadow-md">
+<div class="relative w-full h-48 bg-surface-container flex items-center justify-center p-space-md">
+<!-- Architectural Vector Graphic Representation -->
+<svg class="w-full max-w-lg h-36" fill="none" viewbox="0 0 600 140" xmlns="http://www.w3.org/2000/svg">
+<!-- Thread 1 Lane -->
+<rect class="fill-surface-container-highest" height="34" rx="4" width="160" x="20" y="20"></rect>
+<text class="fill-primary font-mono text-[11px] font-semibold" x="32" y="42">io_uring_prep_readv()</text>
+<path d="M180 37 H260" stroke="#85948C" stroke-dasharray="4 4" stroke-width="2"></path>
+<!-- Race collision window -->
+<rect class="fill-primary/10 stroke-primary" height="90" rx="6" stroke-dasharray="2 2" stroke-width="1.5" width="130" x="260" y="10"></rect>
+<text class="fill-primary font-mono text-[10px] font-bold" x="274" y="32">RACE WINDOW: 14µs</text>
+<text class="fill-on-surface-variant font-mono text-[9px]" x="274" y="52">kfree(req-&gt;io_vec)</text>
+<text class="fill-error font-mono text-[9px] font-bold" x="274" y="72">Double Free Trigger</text>
+<!-- Thread 2 Lane -->
+<rect class="fill-surface-container-highest" height="34" rx="4" width="160" x="20" y="70"></rect>
+<text class="fill-secondary font-mono text-[11px] font-semibold" x="32" y="92">fastring_unregister()</text>
+<path d="M180 87 H260" stroke="#85948C" stroke-dasharray="4 4" stroke-width="2"></path>
+<!-- Resulting state -->
+<path d="M390 55 H450" marker-end="url(#arrow)" stroke="#50F0BB" stroke-width="2"></path>
+<rect class="fill-surface-container-highest" height="50" rx="4" width="130" x="450" y="30"></rect>
+<text class="fill-primary font-mono text-[10px]" x="460" y="52">kmalloc-128 reuse</text>
+<text class="fill-on-surface-variant font-mono text-[9px]" x="460" y="68">Corrupted Freelist Ptr</text>
+</svg>
+<div class="absolute top-2 right-2 px-2 py-0.5 rounded bg-surface-container-highest/80 backdrop-blur-sm text-outline font-label-mono-xs text-label-mono-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">zoom_in</span>
+                  Interactive Schema
+                </div>
+</div>
+<div class="p-space-sm bg-surface-container-lowest flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>Figure 1: Critical race window diagram between <span class="text-on-surface">io_uring_prep_readv</span> and <span class="text-on-surface">fastring_unregister</span></span>
+<span class="text-primary font-semibold">DIAGRAM_REF // 0x4A</span>
+</div>
+</div>
+</section>
+<!-- Section 3 & 4 (Active in TOC) -->
+<section class="flex flex-col gap-space-sm" id="vuln">
+<div class="flex items-center gap-2 group">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+                3. Vulnerability: Double-Free Race Condition
+              </h2>
+<a class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary transition-opacity" href="#vuln">
+<span class="material-symbols-outlined text-[18px]">tag</span>
+</a>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+              Because lock acquisition order was inverted between the SQPOLL worker thread and user-space ring termination, calling <code class="font-code-inline text-code-inline px-1 py-0.5 rounded bg-surface-container text-primary">close(ring_fd)</code> concurrently with an unbounded read caused the request structure in <code class="font-code-inline text-code-inline px-1 py-0.5 rounded bg-surface-container">kmalloc-128</code> to be placed back onto the CPU slab freelist twice.
+            </p>
+</section>
+<section class="flex flex-col gap-space-sm" id="kaslr">
+<div class="flex items-center gap-2 group">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight text-primary">
+                4. Bypassing KASLR via Leaked Heap Pointer
+              </h2>
+<a class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary transition-opacity" href="#kaslr">
+<span class="material-symbols-outlined text-[18px]">tag</span>
+</a>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+              With a controlled double-free in <code class="font-code-inline text-code-inline px-1 py-0.5 rounded bg-surface-container">kmalloc-128</code>, we allocate a <code class="font-code-inline text-code-inline px-1 py-0.5 rounded bg-surface-container text-secondary">seq_file</code> structure immediately followed by an overlapping socket buffer. Reading from the sequence file gives us an untouched kernel text address (<code class="font-code-inline text-code-inline px-1 py-0.5 rounded bg-surface-container text-primary">single_open</code> symbol), computing the kernel base offset in under 20 milliseconds:
+            </p>
+<!-- Syntax-Highlighted Code Block -->
+<div class="rounded-xl overflow-hidden shadow-lg bg-surface-container-lowest my-space-xs" id="code-container">
+<!-- Code Header Bar -->
+<div class="bg-surface-container-high px-space-md py-2 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">terminal</span>
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">exploit_race.py</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-outline font-label-mono-xs text-label-mono-xs">Python 3 / Pwntools</span>
+</div>
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container hover:bg-surface-bright text-on-surface-variant hover:text-on-surface font-label-mono-xs text-label-mono-xs transition-colors" onclick="navigator.clipboard.writeText('def trigger_uaf_leak():\n    # Spray kmalloc-128 cache with seq_operations\n    for i in range(128):\n        spray_fds.append(os.open(\'/proc/self/stat\', os.O_RDONLY))\n    leak_bytes = os.read(vuln_fd, 8)\n    ktext = struct.unpack(\'&lt;Q\', leak_bytes)[0]\n    kaslr_slide = ktext - 0xffffffff814205a0\n    return kaslr_slide'); this.innerText = 'Copied!'; setTimeout(() =&gt; this.innerText = 'Copy Code', 2000);" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>Copy Code</span>
+</button>
+</div>
+<!-- Code Content with Line Numbers -->
+<div class="p-space-md font-code-block text-code-block overflow-x-auto flex gap-space-md leading-relaxed">
+<!-- Line numbers -->
+<div class="select-none text-outline-variant flex flex-col text-right font-label-mono-xs text-label-mono-xs pt-0.5">
+<span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span>
+</div>
+<!-- Actual Code with dark syntax tokens -->
+<pre class="text-on-surface"><span class="text-secondary font-semibold">from</span> pwn <span class="text-secondary font-semibold">import</span> *
+<span class="text-secondary font-semibold">import</span> os, struct, threading
+
+<span class="text-primary font-semibold">def</span> <span class="text-tertiary">trigger_uaf_leak</span>(vuln_ring):
+    <span class="text-outline italic"># 1. Spray kmalloc-128 cache with seq_operations structures</span>
+    spray_fds = [os.open(<span class="text-primary-fixed-dim">"/proc/self/stat"</span>, os.O_RDONLY) <span class="text-secondary">for</span> _ <span class="text-secondary">in</span> range(<span class="text-secondary-fixed">128</span>)]
+    
+    <span class="text-outline italic"># 2. Overlap double-freed descriptor via async read buffer</span>
+    leak_raw = os.read(vuln_ring, <span class="text-secondary-fixed">8</span>)
+    ktext_single_open = struct.unpack(<span class="text-primary-fixed-dim">"&lt;Q"</span>, leak_raw)[<span class="text-secondary-fixed">0</span>]
+    
+    <span class="text-outline italic"># 3. Calculate kernel text base address</span>
+    kernel_base = ktext_single_open - <span class="text-secondary-fixed">0xffffffff814205a0</span>
+    log.success(<span class="text-primary-fixed-dim">f"Leaked single_open: {hex(ktext_single_open)}"</span>)
+    log.success(<span class="text-primary-fixed-dim">f"KASLR Base Slide : {hex(kernel_base)}"</span>)
+    <span class="text-secondary font-semibold">return</span> kernel_base</pre>
+</div>
+</div>
+</section>
+<!-- Section 5 -->
+<section class="flex flex-col gap-space-sm" id="write-primitive">
+<div class="flex items-center gap-2 group">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+                5. Crafting the Arbitrary Write Primitive
+              </h2>
+<a class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary transition-opacity" href="#write-primitive">
+<span class="material-symbols-outlined text-[18px]">tag</span>
+</a>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+              Once KASLR is defeated, we pivot our freelist corruption primitive to overwrite the <code class="font-code-inline text-code-inline px-1 py-0.5 rounded bg-surface-container text-primary">modprobe_path</code> symbol. By abusing the second free, we insert our target address into the next free pointer slot, causing the subsequent slab allocation to yield a pointer directly inside kernel global variables.
+            </p>
+</section>
+<!-- Section 6: Escalation & Flag -->
+<section class="flex flex-col gap-space-sm" id="escalation">
+<div class="flex items-center gap-2 group">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+                6. Escalation &amp; Flag Extraction
+              </h2>
+<a class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary transition-opacity" href="#escalation">
+<span class="material-symbols-outlined text-[18px]">tag</span>
+</a>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+              We overwrite <code class="font-code-inline text-code-inline px-1 py-0.5 rounded bg-surface-container">modprobe_path</code> with <code class="font-code-inline text-code-inline px-1 py-0.5 rounded bg-surface-container text-secondary">/tmp/x</code>, create our payload binary with suid shell hooks, and trigger execution of a dummy binary with an invalid header magic. The kernel invokes our shell script as UID 0:
+            </p>
+<!-- Flag Acquired Celebration Box -->
+<div class="p-space-md rounded-xl bg-surface-container-high flex items-start gap-space-sm shadow-md">
+<span class="material-symbols-outlined text-primary text-[28px] shrink-0 mt-0.5">flag</span>
+<div class="flex flex-col gap-1 w-full">
+<span class="font-headline-sm text-body-lg font-semibold text-primary">Root Shell Spawned // Challenge Cleared</span>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                  Exploit completed successfully in 1.48 seconds. Root privileges attained with kernel integrity fully preserved (zero slab panic).
+                </p>
+</div>
+</div>
+<!-- Spoiler: Flag Container with Interactive Reveal -->
+<div class="mt-space-sm p-space-md rounded-xl bg-surface-container-lowest shadow-lg flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-[18px]">lock</span>
+<span class="font-label-mono-sm text-label-mono-sm text-tertiary uppercase tracking-wider font-semibold">Flag Protected</span>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Click spoiler to decrypt</span>
+</div>
+<!-- Blur reveal box -->
+<div class="cursor-pointer p-space-md rounded-lg bg-surface-container-low hover:bg-surface-container flex items-center justify-between group transition-all" id="flag-box" onclick="const flagEl = document.getElementById('flag-text'); const lockIcon = document.getElementById('flag-icon'); flagEl.classList.toggle('blur-sm'); flagEl.classList.toggle('select-none');">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" id="flag-icon">key</span>
+<span class="font-label-mono-sm text-body-md text-primary font-bold tracking-wider blur-sm select-none transition-all duration-300" id="flag-text">
+                    WHUB{k4slr_by_p4ss_st4ck_pwn3d_32b0}
+                  </span>
+</div>
+<button class="px-2.5 py-1 rounded bg-surface-container-high group-hover:bg-primary group-hover:text-on-primary text-on-surface-variant font-label-mono-xs text-label-mono-xs transition-colors shrink-0" onclick="event.stopPropagation(); navigator.clipboard.writeText('WHUB{k4slr_by_p4ss_st4ck_pwn3d_32b0}'); this.innerText = 'Copied!'; setTimeout(() =&gt; this.innerText = 'Copy', 1500);" type="button">
+                  Copy
+                </button>
+</div>
+</div>
+</section>
+</div>
+<!-- Article Bottom Actions & Sharing -->
+<div class="mt-space-xl pt-space-lg flex flex-col gap-space-lg">
+<!-- Share URL Widget -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div class="flex flex-col gap-0.5">
+<span class="font-headline-sm text-headline-sm text-on-surface">Share this writeup</span>
+<span class="font-body-sm text-body-sm text-outline">Permanent link for citation, security advisories, and researchers</span>
+</div>
+<div class="flex items-center gap-2 w-full sm:w-auto">
+<div class="relative flex-1 sm:w-80">
+<input class="w-full h-10 px-3 pr-20 rounded-lg bg-surface-container-lowest text-on-surface font-label-mono-xs text-label-mono-xs focus:outline-none" readonly="" type="text" value="https://writeuphub.io/w/defcon32/kernel-space-race-uaf"/>
+<button class="absolute right-1 top-1 bottom-1 px-3 rounded bg-primary text-on-primary font-label-mono-xs text-label-mono-xs font-semibold hover:bg-primary-fixed transition-colors" onclick="navigator.clipboard.writeText('https://writeuphub.io/w/defcon32/kernel-space-race-uaf'); this.innerText = 'Copied!'; setTimeout(() =&gt; this.innerText = 'Copy Link', 2000);" type="button">
+                  Copy Link
+                </button>
+</div>
+</div>
+</div>
+<!-- Kudos & Sponsorship Banner -->
+<div class="flex flex-wrap items-center justify-between gap-space-md p-space-md rounded-xl bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<button class="inline-flex items-center gap-2 px-space-md py-2 rounded-xl bg-primary-container/20 hover:bg-primary-container/30 text-primary font-body-sm text-body-sm font-semibold transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+<span>Send Kudos</span>
+<span class="px-1.5 py-0.2 rounded bg-primary text-on-primary font-label-mono-xs text-label-mono-xs">428</span>
+</button>
+<button class="inline-flex items-center gap-2 px-space-md py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm text-body-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-tertiary">card_giftcard</span>
+<span>Sponsor Author</span>
+</button>
+</div>
+<div class="flex items-center gap-2 font-label-mono-xs text-label-mono-xs text-outline">
+<span>Peer reviewed by 6 CTF Masters</span>
+<span class="material-symbols-outlined text-primary text-[14px]">verified</span>
+</div>
+</div>
+<!-- Previous / Next Writeup Navigation Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<!-- Prev -->
+<a class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-1.5 group shadow-sm" href="#">
+<span class="font-label-mono-xs text-label-mono-xs text-outline flex items-center gap-1 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[14px]">arrow_back</span>
+                Previous Writeup
+              </span>
+<span class="font-headline-sm text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors line-clamp-1">
+                [Crypto] LWE Lattice Reduction via BKZ-30 (Google CTF)
+              </span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Published Aug 10, 2024</span>
+</a>
+<!-- Next -->
+<a class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-1.5 text-right group shadow-sm" href="#">
+<span class="font-label-mono-xs text-label-mono-xs text-outline flex items-center justify-end gap-1 group-hover:text-secondary transition-colors">
+                Next Writeup
+                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</span>
+<span class="font-headline-sm text-body-md text-on-surface font-semibold group-hover:text-secondary transition-colors line-clamp-1">
+                [Web] Prototype Pollution to RCE in Node v20 (HTB Apocalypse)
+              </span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Published Aug 16, 2024</span>
+</a>
+</div>
+<!-- Related Writeups Cards -->
+<div class="flex flex-col gap-space-sm pt-space-md">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Related Kernel Exploits</h3>
+<a class="font-label-mono-xs text-label-mono-xs text-primary hover:underline flex items-center gap-1" href="#">
+                View all in #pwn
+                <span class="material-symbols-outlined text-[13px]">chevron_right</span>
+</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<!-- Related Card 1 -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-sm shadow-sm group">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-xs text-label-mono-xs text-secondary">SECCON CTF 2024</span>
+<span class="font-label-mono-xs text-label-mono-xs text-error font-semibold">HARD</span>
+</div>
+<h4 class="font-headline-sm text-body-lg text-on-surface font-semibold group-hover:text-primary transition-colors">
+                    Kernel eBPF Verifier Bypass via Inverted Range Bounds
+                  </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+                    Abusing arithmetic register truncation in Linux 6.1 to generate out-of-bounds pointer reads in ring buffers.
+                  </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs font-label-mono-xs text-label-mono-xs text-outline">
+<span>@charlie_root</span>
+<span class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[13px]">visibility</span>
+                    2.4k
+                  </span>
+</div>
+</div>
+<!-- Related Card 2 -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col justify-between gap-space-sm shadow-sm group">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-xs text-label-mono-xs text-secondary">PlaidCTF 2024</span>
+<span class="font-label-mono-xs text-label-mono-xs text-tertiary font-semibold">INSANE</span>
+</div>
+<h4 class="font-headline-sm text-body-lg text-on-surface font-semibold group-hover:text-primary transition-colors">
+                    Escape From KVM: Virtual Device MMIO Out-of-Bounds Emulation
+                  </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+                    Crafting hypervisor escapes using malformed DMA queues in custom virtio PCIe devices.
+                  </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs font-label-mono-xs text-label-mono-xs text-outline">
+<span>@0xret2libc</span>
+<span class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[13px]">visibility</span>
+                    4.1k
+                  </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- RIGHT STICKY ACTION RAIL: Reader Controls & Floating Dock (~60px wide / 1 col) -->
+<aside class="hidden lg:flex lg:col-span-1 sticky top-24 self-start flex-col items-center gap-space-md py-space-sm">
+<div class="flex flex-col items-center gap-3 bg-surface-container-low p-2 rounded-2xl shadow-lg">
+<!-- Upvote Button -->
+<button aria-label="Upvote writeup" class="group flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-primary/20 text-on-surface-variant hover:text-primary transition-all" type="button">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">thumb_up</span>
+<span class="font-label-mono-xs text-label-mono-xs font-semibold">428</span>
+</button>
+<div class="w-6 h-px bg-surface-container-highest"></div>
+<!-- Bookmark / Saved Button -->
+<button aria-label="Bookmark writeup" class="group flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-secondary/20 text-secondary transition-all" type="button">
+<span class="material-symbols-outlined text-[20px] fill-1" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+<span class="font-label-mono-xs text-label-mono-xs font-semibold text-secondary">184</span>
+</button>
+<!-- Copy Link -->
+<button aria-label="Copy Link" class="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all" onclick="navigator.clipboard.writeText(window.location.href); alert('Writeup link copied to clipboard!');" type="button">
+<span class="material-symbols-outlined text-[20px]">link</span>
+</button>
+<!-- Share on Social -->
+<button aria-label="Share writeup" class="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<div class="w-6 h-px bg-surface-container-highest"></div>
+<!-- Print / Export PDF -->
+<button aria-label="Export PDF" class="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all" onclick="window.print();" type="button">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</button>
+<!-- Font Size / Reader Mode Toggle -->
+<button aria-label="Adjust font size" class="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">format_size</span>
+</button>
+</div>
+<div class="text-outline font-label-mono-xs text-label-mono-xs [writing-mode:vertical-rl] select-none uppercase tracking-widest pt-2 opacity-60">
+          SEC // RES // 2024
+        </div>
+</aside>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-container-lowest border-t border-outline-variant/20 pt-space-xl pb-space-lg"><div class="max-w-7xl mx-auto px-gutter"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-gutter mb-space-xl"><div class="lg:col-span-2 flex flex-col gap-space-sm"><div class="flex items-center gap-space-sm"><div class="w-6 h-6 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container"><span class="material-symbols-outlined text-[14px]">terminal</span></div><span class="font-headline-sm text-headline-sm text-on-surface">Writeup<span class="text-primary">Hub</span></span></div><p class="font-body-md text-body-md text-on-surface-variant max-w-sm">High-performance repository for technical cybersecurity writeups, exploit proof-of-concepts, and competitive CTF post-mortems.</p><div class="flex items-center gap-2 pt-space-xs"><span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span><span class="font-label-mono-sm text-label-mono-sm text-primary uppercase tracking-wider">System Status: Normal // Node sync 99.98%</span></div></div><div class="flex flex-col gap-space-sm"><h4 class="font-label-mono-sm text-label-mono-sm uppercase text-outline tracking-wider">Platform</h4><nav class="flex flex-col gap-space-xs" data-active-classes="text-primary font-semibold"><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="explore" href="#">Explore Feed</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="categories" href="#">Categories</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="events" href="#">CTF Archives</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="hall-of-fame" href="#">Hall of Fame</a></nav></div><div class="flex flex-col gap-space-sm"><h4 class="font-label-mono-sm text-label-mono-sm uppercase text-outline tracking-wider">Taxonomy</h4><div class="flex flex-col gap-space-xs"><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="category-pwn" href="#">Binary Exploitation (Pwn)</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="category-rev" href="#">Reverse Engineering</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="category-web" href="#">Web Security &amp; AppSec</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="category-crypto" href="#">Applied Cryptography</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="category-forensics" href="#">Digital Forensics &amp; DFIR</a></div></div><div class="flex flex-col gap-space-sm"><h4 class="font-label-mono-sm text-label-mono-sm uppercase text-outline tracking-wider">Resources</h4><div class="flex flex-col gap-space-xs"><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="style-guide" href="#">Markdown Specification</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="telemetry" href="#">Platform Telemetry</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="api" href="#">API Endpoints</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="rules-conduct" href="#">Responsible Disclosure</a></div></div></div><div class="pt-space-md border-t border-outline-variant/20 flex flex-col sm:flex-row items-center justify-between gap-space-sm font-label-mono-sm text-label-mono-sm text-outline"><p>© 2025 WriteupHub. Built for security researchers and CTF operators.</p><div class="flex items-center gap-space-md"><span>VER 2.4.0-PROD</span><span class="text-outline-variant">|</span><span>SHA-256 VERIFIED</span></div></div></div></footer></body></html>

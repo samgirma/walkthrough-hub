@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>WriteupHub Studio</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { 'colors': { 'tertiary-container': '#c6aeff', 'on-secondary': '#00354a', 'surface-variant': '#32353c', 'error-container': '#93000a', 'on-tertiary-container': '#591ec2', 'surface-container': '#1d2027', 'on-background': '#e0e2ec', 'surface-container-low': '#191c23', 'outline': '#85948c', 'outline-variant': '#3c4a43', 'inverse-primary': '#006c4f', 'on-secondary-container': '#00374d', 'on-surface-variant': '#bacac1', 'background': '#10131a', 'primary-fixed': '#5ffcc6', 'on-tertiary-fixed': '#23005c', 'on-tertiary': '#3c0091', 'secondary-fixed-dim': '#7bd0ff', 'surface-tint': '#38dfab', 'on-error-container': '#ffdad6', 'tertiary-fixed': '#e9ddff', 'surface-dim': '#10131a', 'secondary': '#7bd0ff', 'primary-container': '#22d3a0', 'surface-bright': '#363941', 'secondary-fixed': '#c4e7ff', 'on-primary-fixed': '#002116', 'tertiary-fixed-dim': '#d0bcff', 'on-secondary-fixed': '#001e2c', 'inverse-on-surface': '#2d3038', 'surface-container-high': '#272a31', 'inverse-surface': '#e0e2ec', 'tertiary': '#dfcfff', 'primary': '#50f0bb', 'primary-fixed-dim': '#38dfab', 'surface-container-highest': '#32353c', 'on-secondary-fixed-variant': '#004c69', 'on-primary-fixed-variant': '#00513b', 'error': '#ffb4ab', 'on-error': '#690005', 'on-surface': '#e0e2ec', 'on-primary-container': '#00563e', 'surface-container-lowest': '#0b0e15', 'on-tertiary-fixed-variant': '#5516be', 'secondary-container': '#00a6e0', 'on-primary': '#003828', 'surface': '#10131a' }, 'borderRadius': { 'DEFAULT': '0.125rem', 'lg': '0.25rem', 'xl': '0.5rem', 'full': '0.75rem' }, 'spacing': { 'margin': '2rem', 'margin-sm': '1rem', 'gutter': '1.5rem', 'space-xs': '0.25rem', 'gutter-sm': '1rem', 'space-md': '1rem', 'space-lg': '1.5rem', 'space-xl': '2.5rem', 'space-sm': '0.5rem' }, 'fontFamily': { 'body-md': ['Inter'], 'headline-sm': ['Inter'], 'headline-lg': ['Inter'], 'display': ['Inter'], 'label-mono-sm': ['JetBrains Mono'], 'code-inline': ['JetBrains Mono'], 'headline-lg-mobile': ['Inter'], 'body-sm': ['Inter'], 'code-block': ['JetBrains Mono'], 'label-mono-xs': ['JetBrains Mono'], 'body-lg': ['Inter'], 'headline-md': ['Inter'] }, 'fontSize': { 'body-md': ['0.875rem', { 'lineHeight': '1.6', 'letterSpacing': '0', 'fontWeight': '400' }], 'headline-sm': ['1.125rem', { 'lineHeight': '1.4', 'letterSpacing': '-0.01em', 'fontWeight': '600' }], 'headline-lg': ['2.25rem', { 'lineHeight': '1.2', 'letterSpacing': '-0.025em', 'fontWeight': '600' }], 'display': ['3.5rem', { 'lineHeight': '1.1', 'letterSpacing': '-0.035em', 'fontWeight': '700' }], 'label-mono-sm': ['0.6875rem', { 'lineHeight': '1', 'letterSpacing': '0.04em', 'fontWeight': '500' }], 'code-inline': ['0.8125rem', { 'lineHeight': '1.2', 'letterSpacing': '-0.01em', 'fontWeight': '500' }], 'headline-lg-mobile': ['1.75rem', { 'lineHeight': '1.25', 'letterSpacing': '-0.02em', 'fontWeight': '600' }], 'body-sm': ['0.75rem', { 'lineHeight': '1.5', 'letterSpacing': '0.01em', 'fontWeight': '400' }], 'code-block': ['0.875rem', { 'lineHeight': '1.7', 'letterSpacing': '0', 'fontWeight': '400' }], 'label-mono-xs': ['0.625rem', { 'lineHeight': '1', 'letterSpacing': '0.06em', 'fontWeight': '600' }], 'body-lg': ['1rem', { 'lineHeight': '1.65', 'letterSpacing': '-0.005em', 'fontWeight': '400' }], 'headline-md': ['1.5rem', { 'lineHeight': '1.3', 'letterSpacing': '-0.02em', 'fontWeight': '600' }] } } } };</script></head><body class="bg-surface-container-lowest font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="h-14 w-full px-space-md flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-sm flex-1 min-w-0"><a class="flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" data-path="dashboard-feed" href="#" title="Return to Dashboard"><span class="material-symbols-outlined text-[18px]">arrow_back</span></a><div class="flex items-center gap-space-xs px-space-xs py-0.5 rounded bg-surface-container-low"><span class="material-symbols-outlined text-primary text-[14px]">terminal</span><span class="font-label-mono-xs text-label-mono-xs text-primary uppercase tracking-widest">STUDIO</span></div><input class="bg-transparent font-headline-sm text-headline-sm text-on-surface hover:bg-surface-container-low/50 focus:bg-surface-container-lowest px-space-xs py-1 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary truncate max-w-xl transition-all" placeholder="Untitled Writeup..." spellcheck="false" type="text" value="HTB: CyberApocalypse 2024 - Binary Exploitation &amp; Heap Grooming PoC"/><div class="hidden xl:flex items-center gap-space-xs pl-space-xs"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span></span><span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">Saved 2s ago</span></div></div><div class="flex items-center gap-space-sm"><div class="relative inline-flex items-center rounded-lg bg-surface-container-low px-space-xs py-1"><span class="material-symbols-outlined text-secondary text-[16px] mr-1">lock_open</span><select class="bg-transparent font-label-mono-sm text-label-mono-sm text-on-surface pr-space-md py-0.5 focus:outline-none cursor-pointer appearance-none"><option class="bg-surface-container-high text-on-surface" value="draft">Draft</option><option class="bg-surface-container-high text-on-surface" value="unlisted">Unlisted</option><option class="bg-surface-container-high text-on-surface" selected="" value="public">Public</option></select><span class="material-symbols-outlined text-on-surface-variant text-[14px] pointer-events-none absolute right-1.5">expand_more</span></div><div class="flex items-center bg-surface-container-low p-0.5 rounded-lg"><button class="flex items-center px-space-xs py-1 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs" title="Split View" type="button"><span class="material-symbols-outlined text-[16px] mr-1">vertical_split</span>Split</button><button class="flex items-center px-space-xs py-1 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-mono-xs text-label-mono-xs transition-colors" title="Preview Mode" type="button"><span class="material-symbols-outlined text-[16px] mr-1">visibility</span>Live</button></div><button class="flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Editor Settings" type="button"><span class="material-symbols-outlined text-[18px]">tune</span></button><button class="flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-gradient-to-r from-primary to-secondary text-surface-container-lowest font-headline-sm text-headline-sm font-bold shadow-[0_0_20px_-3px_rgba(80,240,187,0.35)] hover:brightness-110 active:scale-95 transition-all" type="button"><span class="material-symbols-outlined text-[18px]">rocket_launch</span><span>Publish</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-1"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-14 bg-surface-container-lowest min-h-screen"><div class="flex flex-col w-full relative">
+<!-- BACKGROUND ENVIRONMENT: Live Studio Editor Workspace (Dimmed & Blurred) -->
+<div aria-hidden="true" class="w-full flex flex-col pointer-events-none select-none filter blur-sm brightness-[0.28] transition-all duration-300">
+<!-- Editor Subheader Tooling Row -->
+<div class="w-full h-11 bg-surface-container-low px-space-md flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs font-label-mono-xs text-label-mono-xs text-on-surface-variant">
+<span class="text-primary font-bold">BRANCH:</span>
+<span>main</span>
+<span class="text-outline">/</span>
+<span>runc-cve-2024-21626.md</span>
+</div>
+<div class="h-3.5 w-px bg-surface-container-highest"></div>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-mono-xs text-label-mono-xs">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span>LSP: Clangd-v18 Active</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm font-label-mono-xs text-label-mono-xs text-on-surface-variant">
+<span>3,412 WORDS</span>
+<span>•</span>
+<span>424 LINES</span>
+<span>•</span>
+<span class="text-secondary">INDEXED_IN_GRAPH</span>
+</div>
+</div>
+<!-- Split-Pane Body Simulation -->
+<div class="w-full grid grid-cols-12 min-h-[calc(100vh-6.25rem)]">
+<!-- Editor Buffer Pane (Cols 1-6) -->
+<div class="col-span-6 bg-surface-container-lowest p-space-lg flex flex-col font-code-block text-code-block text-on-surface leading-relaxed">
+<div class="flex items-center gap-space-sm text-outline font-label-mono-xs text-label-mono-xs mb-space-md">
+<span>MARKDOWN DUAL_BUFFER</span>
+<span class="text-primary font-bold">[EDITABLE]</span>
+</div>
+<p class="text-on-surface-variant mb-space-sm"><span class="text-secondary font-bold"># CVE-2024-21626: runc Container Escape via Leaked FDs</span></p>
+<p class="text-outline mb-space-md"><span class="text-tertiary">---</span><br/>author: <span class="text-primary">@0xNullPtr</span><br/>classification: <span class="text-secondary">PWN / KERNEL_CONTAINER</span><br/>difficulty: <span class="text-error font-bold">INSANE</span><br/><span class="text-tertiary">---</span></p>
+<p class="text-on-surface mb-space-sm">During inspection of runc commit <span class="text-primary underline">739205e</span>, we identified that internal file descriptors allocated via <span class="text-code-inline font-code-inline bg-surface-container px-1 py-0.5 rounded text-primary">/proc/self/fd</span> were not marked with <span class="text-code-inline font-code-inline bg-surface-container px-1 py-0.5 rounded text-secondary">O_CLOEXEC</span> prior to the <span class="text-code-inline font-code-inline bg-surface-container px-1 py-0.5 rounded text-primary">clone(CLONE_NEWNS)</span> invocation.</p>
+<div class="bg-surface-container-low p-space-md rounded-lg my-space-md font-code-block text-code-block text-on-surface-variant">
+<span class="text-outline">// PoC Trigger payload setup</span><br/>
+<span class="text-secondary">int</span> cwd_fd = <span class="text-primary">open</span>(<span class="text-primary-fixed">"/proc/self/fd/7"</span>, O_RDONLY | O_PATH);<br/>
+<span class="text-primary">fchdir</span>(cwd_fd);<br/>
+<span class="text-secondary">execlp</span>(<span class="text-primary-fixed">"/bin/sh"</span>, <span class="text-primary-fixed">"sh"</span>, NULL);
+        </div>
+</div>
+<!-- Rendered Document View (Cols 7-12) -->
+<div class="col-span-6 bg-surface-container-low p-space-xl flex flex-col font-body-md text-body-md text-on-surface">
+<div class="flex items-center justify-between mb-space-lg">
+<span class="font-label-mono-xs text-label-mono-xs bg-surface-container px-2 py-0.5 rounded text-primary uppercase tracking-widest">Target Render View</span>
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">READ TIME: 8 MIN</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-space-sm">CVE-2024-21626: runc Container Escape via Leaked File Descriptors</h1>
+<div class="flex items-center gap-space-sm mb-space-lg">
+<span class="font-label-mono-xs text-label-mono-xs px-2 py-0.5 rounded bg-surface-container-high text-primary font-bold">PWN</span>
+<span class="font-label-mono-xs text-label-mono-xs px-2 py-0.5 rounded bg-surface-container-high text-error font-bold">• INSANE</span>
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">DEF CON 32 QUALS</span>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed mb-space-md">
+          A critical flaw in runc allowed containerized processes to acquire access to host file system root mounts through lingering host-side descriptors lingering in inherited dispatch table buffers.
+        </p>
+</div>
+</div>
+</div>
+<!-- FIXED MODAL DIALOG BACKDROP & CONTAINER -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-space-md md:p-space-xl bg-surface-container-lowest/80 backdrop-blur-md transition-opacity">
+<!-- Modal Card Node -->
+<div class="w-full max-w-[620px] rounded-xl bg-surface-container-low shadow-[0_20px_60px_-15px_rgba(0,0,0,0.85)] flex flex-col overflow-hidden relative" style="box-shadow: 0 0 0 1px rgba(80, 240, 187, 0.22), 0 24px 48px -12px rgba(0, 0, 0, 0.9);">
+<!-- Top Subtle Gradient Glow Strip -->
+<div class="w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary-container"></div>
+<!-- Close X Button -->
+<button class="absolute top-4 right-4 w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors focus:outline-none" id="closeModalBtn" title="Dismiss modal" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+<div class="p-space-lg md:p-space-xl flex flex-col gap-space-lg">
+<!-- Header: Refined Animated Checkmark & Publication Affirmation -->
+<div class="flex items-start gap-space-md">
+<!-- Animated Checkmark Pill -->
+<div class="relative flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center" style="box-shadow: 0 0 24px -2px rgba(80, 240, 187, 0.25);">
+<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<path class="origin-center transition-all duration-700" d="M4 12.5l5.5 5.5L20 6" stroke-dasharray="24" stroke-dashoffset="0"></path>
+</svg>
+<div class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-primary animate-ping opacity-75"></div>
+<div class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+<!-- Titles -->
+<div class="flex flex-col min-w-0 pr-space-md">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight leading-none mb-1.5">
+              Your writeup is live
+            </h2>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="inline-block w-2 h-2 rounded-full bg-primary flex-shrink-0"></span>
+<span class="truncate">Published to WriteupHub Global Directory &amp; cryptographically indexed.</span>
+</div>
+</div>
+</div>
+<!-- Section: Shareable URL Field -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-1.5 font-label-mono-xs text-label-mono-xs uppercase text-on-surface-variant" for="shareUrlInput">
+<span class="material-symbols-outlined text-[13px] text-primary">public</span>
+<span>Shareable Public URL</span>
+</label>
+<span class="font-label-mono-xs text-label-mono-xs text-primary/90 bg-primary/10 px-1.5 py-0.5 rounded">ZERO-AUTH VERIFIED</span>
+</div>
+<div class="w-full flex items-center bg-surface-container-lowest rounded-lg p-1 transition-all focus-within:shadow-[0_0_0_1px_#50f0bb]">
+<input class="w-full bg-transparent px-space-sm font-label-mono-sm text-label-mono-sm text-on-surface select-all focus:outline-none truncate" id="shareUrlInput" readonly="" type="text" value="https://writeuphub.com/w/runc-container-escape-cve-2024-21626"/>
+<button class="flex-shrink-0 flex items-center gap-1 px-space-md py-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-mono-sm text-label-mono-sm transition-all focus:outline-none active:scale-95" id="copyUrlBtn" type="button">
+<span class="material-symbols-outlined text-[15px] text-primary" id="copyIcon">content_copy</span>
+<span class="font-semibold text-primary" id="copyText">Copy link</span>
+</button>
+</div>
+</div>
+<!-- Section: Quick Share Actions -->
+<div class="flex flex-col gap-2">
+<span class="font-label-mono-xs text-label-mono-xs uppercase text-on-surface-variant tracking-wider">Quick Share</span>
+<div class="grid grid-cols-5 gap-2">
+<!-- 𝕏 / Twitter -->
+<a class="group flex flex-col items-center justify-center p-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high transition-all" href="https://twitter.com/intent/tweet?text=Just+published+a+deep+dive+into+CVE-2024-21626+runc+escape+on+WriteupHub&amp;url=https%3A%2F%2Fwriteuphub.com%2Fw%2Frunc-container-escape-cve-2024-21626" rel="noopener noreferrer" target="_blank" title="Share to X">
+<svg class="w-4 h-4 text-on-surface-variant group-hover:text-primary transition-colors" fill="currentColor" viewbox="0 0 24 24">
+<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+</svg>
+<span class="mt-1 font-label-mono-xs text-label-mono-xs text-on-surface-variant group-hover:text-on-surface">X / Post</span>
+</a>
+<!-- LinkedIn -->
+<a class="group flex flex-col items-center justify-center p-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high transition-all" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwriteuphub.com%2Fw%2Frunc-container-escape-cve-2024-21626" rel="noopener noreferrer" target="_blank" title="Share to LinkedIn">
+<svg class="w-4 h-4 text-on-surface-variant group-hover:text-secondary transition-colors" fill="currentColor" viewbox="0 0 24 24">
+<path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 0 0 1.66-1.66 1.66 1.66 0 0 0-1.66-1.66 1.66 1.66 0 0 0-1.66 1.66 1.66 1.66 0 0 0 1.66 1.66m1.39 9.74v-8.37H5.07v8.37h2.78z"></path>
+</svg>
+<span class="mt-1 font-label-mono-xs text-label-mono-xs text-on-surface-variant group-hover:text-on-surface">LinkedIn</span>
+</a>
+<!-- Telegram -->
+<a class="group flex flex-col items-center justify-center p-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high transition-all" href="https://t.me/share/url?url=https%3A%2F%2Fwriteuphub.com%2Fw%2Frunc-container-escape-cve-2024-21626&amp;text=runc+Container+Escape+Writeup" rel="noopener noreferrer" target="_blank" title="Share via Telegram">
+<svg class="w-4 h-4 text-on-surface-variant group-hover:text-secondary transition-colors" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"></path>
+</svg>
+<span class="mt-1 font-label-mono-xs text-label-mono-xs text-on-surface-variant group-hover:text-on-surface">Telegram</span>
+</a>
+<!-- Hacker News -->
+<a class="group flex flex-col items-center justify-center p-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high transition-all" href="https://news.ycombinator.com/submitlink?u=https%3A%2F%2Fwriteuphub.com%2Fw%2Frunc-container-escape-cve-2024-21626&amp;t=CVE-2024-21626%3A+runc+Container+Escape+Walkthrough" rel="noopener noreferrer" target="_blank" title="Submit to Hacker News">
+<div class="w-4 h-4 rounded-sm bg-[#ff6600]/20 flex items-center justify-center font-label-mono-xs text-[10px] font-bold text-[#ff6600]">Y</div>
+<span class="mt-1 font-label-mono-xs text-label-mono-xs text-on-surface-variant group-hover:text-on-surface">HN</span>
+</a>
+<!-- Copy Markdown Badge Snippet -->
+<button class="group flex flex-col items-center justify-center p-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high transition-all focus:outline-none" id="copyMdBtn" title="Copy Markdown Snippet" type="button">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:text-primary transition-colors">markdown</span>
+<span class="mt-1 font-label-mono-xs text-label-mono-xs text-on-surface-variant group-hover:text-on-surface" id="copyMdLabel">Embed MD</span>
+</button>
+</div>
+</div>
+<!-- Section: Social Card OG Preview -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-xs text-label-mono-xs uppercase text-on-surface-variant tracking-wider">Social Card Preview</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">TWITTER:CARD / SUMMARY_LARGE_IMAGE</span>
+</div>
+<!-- OpenGraph Card Simulation -->
+<div class="rounded-lg bg-surface-container-lowest p-3 flex flex-col gap-2.5 transition-all hover:bg-surface-container-lowest/90">
+<!-- Simulated Banner Thumbnail -->
+<div class="w-full h-28 rounded bg-surface-container-high relative overflow-hidden flex flex-col justify-between p-3">
+<div class="absolute inset-0 bg-gradient-to-tr from-surface-container-lowest via-surface-container/60 to-primary/10"></div>
+<!-- Subtle Terminal Watermark -->
+<div class="relative z-10 flex items-center justify-between">
+<div class="flex items-center gap-1.5 font-label-mono-xs text-[10px] text-primary">
+<span class="material-symbols-outlined text-[13px]">terminal</span>
+<span>CVE-2024-21626 EXPLOIT POC</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-error font-label-mono-xs text-[9px] font-bold">INSANE</span>
+<span class="px-1.5 py-0.5 rounded bg-primary/20 text-primary font-label-mono-xs text-[9px] font-bold">PWN</span>
+</div>
+</div>
+<!-- Terminal Shell Code Graphic In Banner -->
+<div class="relative z-10 font-code-inline text-[11px] text-on-surface-variant">
+<span class="text-primary font-bold">root@victim:/#</span> cat /proc/self/fd/7/../../etc/shadow<br/>
+<span class="text-secondary font-label-mono-xs text-[10px]">FLAG{runc_fd_leak_b0undary_br34k_defcon}</span>
+</div>
+</div>
+<!-- Card Metadata -->
+<div class="flex flex-col gap-1 px-1">
+<div class="flex items-center justify-between">
+<span class="font-label-mono-xs text-label-mono-xs text-secondary font-semibold uppercase">writeuphub.com</span>
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">@0xNullPtr • DEF CON 32 Quals</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold line-clamp-1">
+                CVE-2024-21626: runc Container Escape via Leaked File Descriptors
+              </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+                Deep-dive walkthrough analyzing file descriptor leaks in runc, exploitation primitives, memory-safe patch regression, and reliable local privilege escalation weaponization.
+              </p>
+</div>
+</div>
+</div>
+<!-- Section: Bottom Action Footer -->
+<div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<button class="text-on-surface-variant hover:text-on-surface font-label-mono-sm text-label-mono-sm transition-colors order-2 sm:order-1 focus:outline-none" id="backToEditorBtn" type="button">
+            ← Return to Editor
+          </button>
+<div class="flex items-center gap-space-sm w-full sm:w-auto order-1 sm:order-2">
+<!-- Secondary Action: Write another -->
+<button class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-space-md py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-headline-sm text-body-md transition-colors focus:outline-none" id="writeAnotherBtn" type="button">
+<span class="material-symbols-outlined text-[17px] text-primary">add_circle</span>
+<span>New Writeup</span>
+</button>
+<!-- Primary Action: View writeup live -->
+<a class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-space-lg py-2 rounded-lg bg-gradient-to-r from-primary to-secondary text-surface-container-lowest font-headline-sm text-body-md font-bold shadow-[0_0_20px_-3px_rgba(80,240,187,0.35)] hover:brightness-110 active:scale-95 transition-all focus:outline-none" href="https://writeuphub.com/w/runc-container-escape-cve-2024-21626" rel="noopener noreferrer" target="_blank">
+<span>View Writeup</span>
+<span class="material-symbols-outlined text-[17px]">open_in_new</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Micro-interaction: Copy Link functionality with tactile feedback
+  const copyBtn = document.getElementById('copyUrlBtn');
+  const copyIcon = document.getElementById('copyIcon');
+  const copyText = document.getElementById('copyText');
+  const shareInput = document.getElementById('shareUrlInput');
+
+  if (copyBtn && shareInput) {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(shareInput.value).then(() => {
+        copyIcon.textContent = 'check';
+        copyText.textContent = 'Copied!';
+        copyBtn.classList.add('bg-primary/20');
+        setTimeout(() => {
+          copyIcon.textContent = 'content_copy';
+          copyText.textContent = 'Copy link';
+          copyBtn.classList.remove('bg-primary/20');
+        }, 2200);
+      }).catch(() => {
+        shareInput.select();
+      });
+    });
+  }
+
+  // Micro-interaction: Markdown Snippet Embed Copy
+  const copyMdBtn = document.getElementById('copyMdBtn');
+  const copyMdLabel = document.getElementById('copyMdLabel');
+  if (copyMdBtn && copyMdLabel) {
+    copyMdBtn.addEventListener('click', () => {
+      const snippet = '[![WriteupHub](https://writeuphub.com/badge/cve-2024-21626.svg)](https://writeuphub.com/w/runc-container-escape-cve-2024-21626)';
+      navigator.clipboard.writeText(snippet).then(() => {
+        copyMdLabel.textContent = 'Copied!';
+        setTimeout(() => {
+          copyMdLabel.textContent = 'Embed MD';
+        }, 2000);
+      });
+    });
+  }
+
+  // Dismiss interactions
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const backToEditorBtn = document.getElementById('backToEditorBtn');
+  const dismissModal = () => {
+    const overlay = document.querySelector('.fixed.inset-0');
+    if (overlay) {
+      overlay.style.transition = 'opacity 200ms ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        const blurredBg = document.querySelector('.filter.blur-sm');
+        if (blurredBg) {
+          blurredBg.classList.remove('blur-sm', 'brightness-[0.28]', 'pointer-events-none', 'select-none');
+        }
+      }, 200);
+    }
+  };
+
+  if (closeModalBtn) closeModalBtn.addEventListener('click', dismissModal);
+  if (backToEditorBtn) backToEditorBtn.addEventListener('click', dismissModal);
+</script></main><footer class="w-full bg-surface-container-lowest py-space-sm px-space-md shadow-[0_-1px_6px_rgba(0,0,0,0.3)]"><div class="w-full flex items-center justify-between text-on-surface-variant font-label-mono-xs text-label-mono-xs"><span>MODE: DUAL_BUFFER_SPLIT • UTF-8</span><span>CTRL+S TO SYNC • WRITEUPHUB ENGINE V3.2</span></div></footer></body></html>

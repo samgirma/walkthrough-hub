@@ -1,0 +1,537 @@
+import { prisma } from "@/lib/prisma";
+import { generateSlug } from "@/lib/slug";
+import { calculateReadingTime } from "@/lib/reading-time";
+import { checkRateLimit } from "@/lib/rate-limit";
+import {
+  CreateWriteupInput,
+  UpdateWriteupInput,
+  FilterWriteupInput,
+  filterWriteupSchema,
+} from "@/lib/validations/writeup.schema";
+import { Prisma, Status } from "@prisma/client";
+
+/**
+ * Generate a unique slug for a given author.
+ * If author already has writeup with slug 'x', increments to 'x-2', etc.
+ */
+async function resolveUniqueSlug(
+  authorId: string,
+  baseTitle: string,
+  customSlug?: string,
+  excludeWriteupId?: string
+): Promise<string> {
+  const initialSlug = customSlug ? generateSlug(customSlug) : generateSlug(baseTitle);
+  let slug = initialSlug;
+  let counter = 1;
+
+  while (true) {
+    const existing = await prisma.writeup.findUnique({
+      where: {
+        authorId_slug: {
+          authorId,
+          slug,
+        },
+      },
+    });
+
+    if (!existing || existing.id === excludeWriteupId) {
+      return slug;
+    }
+
+    counter++;
+    slug = `${initialSlug}-${counter}`;
+  }
+}
+
+/**
+ * Extract clean plain text excerpt from Markdown content.
+ */
+function createExcerptFromMarkdown(contentMd: string, maxLen = 220): string {
+  const cleaned = contentMd
+    .replace(/^#+\s+.*$/gm, "") // headers
+    .replace(/```[\s\S]*?```/g, "") // code blocks
+    .replace(/`([^`]+)`/g, "$1") // inline code
+    .replace(/!\[.*?\]\(.*?\)/g, "") // images
+    .replace(/\[(.*?)\]\(.*?\)/g, "$1") // links
+    .replace(/:::.*?:::/gs, "") // custom callouts
+    .replace(/[*_~>-]/g, " ") // formatting
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (cleaned.length <= maxLen) return cleaned;
+  return cleaned.substring(0, maxLen).trim() + "...";
+}
+
+export async function createWriteup(
+  authorId: string,
+  input: CreateWriteupInput
+) {
+  const slug = await resolveUniqueSlug(authorId, input.title, input.slug);
+  const excerpt =
+    input.excerpt?.trim() || createExcerptFromMarkdown(input.contentMd);
+  const readTimeMin = calculateReadingTime(input.contentMd);
+  const publishedAt =
+    input.status === "PUBLIC" || input.status === "UNLISTED"
+      ? new Date()
+      : null;
+
+  // Process tags: connect or create
+  const tagConnects: { id: string }[] = [];
+  if (input.tags && input.tags.length > 0) {
+    for (const tagName of input.tags) {
+      const cleanName = tagName.trim().toLowerCase();
+      if (!cleanName) continue;
+      const tag = await prisma.tag.upsert({
+        where: { name: cleanName },
+        update: {},
+        create: { name: cleanName },
+      });
+      tagConnects.push({ id: tag.id });
+    }
+  }
+
+  const writeup = await prisma.writeup.create({
+    data: {
+      authorId,
+      title: input.title.trim(),
+      slug,
+      excerpt,
+      contentMd: input.contentMd,
+      coverImageUrl: input.coverImageUrl || null,
+      ctfName: input.ctfName.trim(),
+      ctfYear: input.ctfYear,
+      category: input.category,
+      difficulty: input.difficulty,
+      status: input.status,
+      readTimeMin,
+      publishedAt,
+      tags: {
+        create: tagConnects.map((tag) => ({
+          tag: { connect: { id: tag.id } },
+        })),
+      },
+    },
+    include: {
+      author: {
+        select: {
+          id: true,
+          username: true,
+          avatarUrl: true,
+        },
+      },
+      tags: {
+        include: { tag: true },
+      },
+    },
+  });
+
+  return writeup;
+}
+
+export async function updateWriteup(
+  authorId: string,
+  input: UpdateWriteupInput
+) {
+  // Authorization check: author must own writeup
+  const existing = await prisma.writeup.findUnique({
+    where: { id: input.id },
+  });
+
+  if (!existing) {
+    throw new Error("Writeup not found.");
+  }
+
+  if (existing.authorId !== authorId) {
+    throw new Error("Unauthorized: You do not have permission to modify this writeup.");
+  }
+
+  // Resolve slug if title or slug changed
+  let slug = existing.slug;
+  if (
+    (input.title && input.title !== existing.title) ||
+    (input.slug && input.slug !== existing.slug)
+  ) {
+    slug = await resolveUniqueSlug(
+      authorId,
+      input.title || existing.title,
+      input.slug,
+      existing.id
+    );
+  }
+
+  const contentMd = input.contentMd ?? existing.contentMd;
+  const excerpt = input.excerpt
+    ? input.excerpt.trim()
+    : input.contentMd
+    ? createExcerptFromMarkdown(contentMd)
+    : existing.excerpt;
+  const readTimeMin = input.contentMd
+    ? calculateReadingTime(contentMd)
+    : existing.readTimeMin;
+
+  let publishedAt = existing.publishedAt;
+  if (
+    !publishedAt &&
+    (input.status === "PUBLIC" || input.status === "UNLISTED")
+  ) {
+    publishedAt = new Date();
+  }
+
+  // Handle tags if provided
+  if (input.tags) {
+    // Delete existing WriteupTag relations
+    await prisma.writeupTag.deleteMany({
+      where: { writeupId: existing.id },
+    });
+
+    for (const tagName of input.tags) {
+      const cleanName = tagName.trim().toLowerCase();
+      if (!cleanName) continue;
+      const tag = await prisma.tag.upsert({
+        where: { name: cleanName },
+        update: {},
+        create: { name: cleanName },
+      });
+      await prisma.writeupTag.create({
+        data: {
+          writeupId: existing.id,
+          tagId: tag.id,
+        },
+      });
+    }
+  }
+
+  const updated = await prisma.writeup.update({
+    where: { id: existing.id },
+    data: {
+      title: input.title ? input.title.trim() : undefined,
+      slug,
+      excerpt,
+      contentMd,
+      coverImageUrl:
+        input.coverImageUrl !== undefined
+          ? input.coverImageUrl || null
+          : undefined,
+      ctfName: input.ctfName ? input.ctfName.trim() : undefined,
+      ctfYear: input.ctfYear,
+      category: input.category,
+      difficulty: input.difficulty,
+      status: input.status,
+      readTimeMin,
+      publishedAt,
+    },
+    include: {
+      author: {
+        select: {
+          id: true,
+          username: true,
+          avatarUrl: true,
+        },
+      },
+      tags: {
+        include: { tag: true },
+      },
+    },
+  });
+
+  return updated;
+}
+
+export async function deleteWriteup(authorId: string, writeupId: string) {
+  const existing = await prisma.writeup.findUnique({
+    where: { id: writeupId },
+  });
+
+  if (!existing) {
+    throw new Error("Writeup not found.");
+  }
+
+  if (existing.authorId !== authorId) {
+    throw new Error("Unauthorized: You do not have permission to delete this writeup.");
+  }
+
+  await prisma.writeupTag.deleteMany({ where: { writeupId } });
+  await prisma.bookmark.deleteMany({ where: { writeupId } });
+  await prisma.writeup.delete({ where: { id: writeupId } });
+
+  return { success: true };
+}
+
+/**
+ * Public Reader Query with strict Data-Layer Authorization:
+ * - DRAFT: only author can view (returns null for non-author)
+ * - UNLISTED: anyone with link can view (returns writeup with isUnlisted: true)
+ * - PUBLIC: anyone can view
+ */
+export async function getWriteupByAuthorAndSlug(
+  username: string,
+  slug: string,
+  currentUserId?: string | null
+) {
+  const author = await prisma.user.findUnique({
+    where: { username },
+    select: { id: true },
+  });
+
+  if (!author) {
+    return null;
+  }
+
+  const writeup = await prisma.writeup.findUnique({
+    where: {
+      authorId_slug: {
+        authorId: author.id,
+        slug,
+      },
+    },
+    include: {
+      author: {
+        select: {
+          id: true,
+          username: true,
+          avatarUrl: true,
+          bio: true,
+          githubUrl: true,
+        },
+      },
+      tags: {
+        include: { tag: true },
+      },
+      _count: {
+        select: { bookmarks: true },
+      },
+    },
+  });
+
+  if (!writeup) {
+    return null;
+  }
+
+  // Data layer status enforcement
+  if (writeup.status === "DRAFT") {
+    // Only the author can view drafts
+    if (!currentUserId || currentUserId !== writeup.authorId) {
+      return null;
+    }
+  }
+
+  return writeup;
+}
+
+/**
+ * Get writeup by ID for author editor
+ */
+export async function getWriteupByIdForAuthor(writeupId: string, authorId: string) {
+  const writeup = await prisma.writeup.findUnique({
+    where: { id: writeupId },
+    include: {
+      tags: {
+        include: { tag: true },
+      },
+    },
+  });
+
+  if (!writeup) return null;
+  if (writeup.authorId !== authorId) {
+    throw new Error("Unauthorized: You do not own this writeup.");
+  }
+
+  return writeup;
+}
+
+/**
+ * Public Feed Query:
+ * Strictly returns only PUBLIC writeups.
+ * Excludes DRAFT and UNLISTED completely from lists and search.
+ */
+export async function getPublicWriteups(rawFilters: FilterWriteupInput = {}) {
+  const filters = filterWriteupSchema.parse(rawFilters);
+  const {
+    category,
+    difficulty,
+    ctfName,
+    ctfYear,
+    tag,
+    author,
+    search,
+    sort,
+    page,
+    limit,
+  } = filters;
+
+  const skip = (page - 1) * limit;
+
+  // Build where conditions
+  const where: Prisma.WriteupWhereInput = {
+    status: Status.PUBLIC, // Strictly PUBLIC only
+  };
+
+  if (category) {
+    where.category = category;
+  }
+
+  if (difficulty) {
+    where.difficulty = difficulty;
+  }
+
+  if (ctfName) {
+    where.ctfName = { contains: ctfName, mode: "insensitive" };
+  }
+
+  if (ctfYear) {
+    where.ctfYear = ctfYear;
+  }
+
+  if (author) {
+    where.author = { username: author };
+  }
+
+  if (tag) {
+    where.tags = {
+      some: {
+        tag: { name: tag.toLowerCase() },
+      },
+    };
+  }
+
+  if (search && search.trim().length > 0) {
+    const term = search.trim();
+    where.OR = [
+      { title: { contains: term, mode: "insensitive" } },
+      { excerpt: { contains: term, mode: "insensitive" } },
+      { contentMd: { contains: term, mode: "insensitive" } },
+      { ctfName: { contains: term, mode: "insensitive" } },
+    ];
+  }
+
+  // Determine sort order
+  let orderBy: Prisma.WriteupOrderByWithRelationInput[];
+  switch (sort) {
+    case "latest":
+      orderBy = [{ publishedAt: "desc" }, { createdAt: "desc" }];
+      break;
+    case "views":
+      orderBy = [{ viewCount: "desc" }];
+      break;
+    case "alphabetical":
+      orderBy = [{ title: "asc" }];
+      break;
+    case "trending":
+    default:
+      orderBy = [{ viewCount: "desc" }, { publishedAt: "desc" }];
+      break;
+  }
+
+  const [items, total] = await Promise.all([
+    prisma.writeup.findMany({
+      where,
+      orderBy,
+      skip,
+      take: limit,
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            avatarUrl: true,
+            bio: true,
+          },
+        },
+        tags: {
+          include: { tag: true },
+        },
+        _count: {
+          select: { bookmarks: true },
+        },
+      },
+    }),
+    prisma.writeup.count({ where }),
+  ]);
+
+  return {
+    items,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
+}
+
+/**
+ * Get Author Writeups for Dashboard
+ */
+export async function getAuthorWriteups(
+  authorId: string,
+  status?: Status
+) {
+  const where: Prisma.WriteupWhereInput = { authorId };
+  if (status) {
+    where.status = status;
+  }
+
+  const writeups = await prisma.writeup.findMany({
+    where,
+    orderBy: { updatedAt: "desc" },
+    include: {
+      tags: { include: { tag: true } },
+      _count: { select: { bookmarks: true } },
+    },
+  });
+
+  return writeups;
+}
+
+/**
+ * Increment view count with IP/session rate-limiting
+ */
+export async function recordWriteupView(writeupId: string, clientIp: string) {
+  const rateLimitKey = `view:${writeupId}:${clientIp}`;
+  // Allow at most 1 view increment per 30 minutes per IP
+  const rateCheck = checkRateLimit(rateLimitKey, 1, 30 * 60 * 1000);
+
+  if (!rateCheck.success) {
+    return { incremented: false };
+  }
+
+  await prisma.writeup.update({
+    where: { id: writeupId },
+    data: {
+      viewCount: { increment: 1 },
+    },
+  });
+
+  return { incremented: true };
+}
+
+/**
+ * Get dashboard overview statistics for author
+ */
+export async function getAuthorDashboardMetrics(authorId: string) {
+  const [writeups, bookmarksCount] = await Promise.all([
+    prisma.writeup.findMany({
+      where: { authorId },
+      select: {
+        status: true,
+        viewCount: true,
+      },
+    }),
+    prisma.bookmark.count({
+      where: { userId: authorId },
+    }),
+  ]);
+
+  const totalWriteups = writeups.length;
+  const totalViews = writeups.reduce((acc, w) => acc + w.viewCount, 0);
+  const publishedCount = writeups.filter((w) => w.status === "PUBLIC").length;
+  const draftCount = writeups.filter((w) => w.status === "DRAFT").length;
+  const unlistedCount = writeups.filter((w) => w.status === "UNLISTED").length;
+
+  return {
+    totalWriteups,
+    totalViews,
+    publishedCount,
+    draftCount,
+    unlistedCount,
+    bookmarksCount,
+  };
+}

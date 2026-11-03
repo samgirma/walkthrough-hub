@@ -1,0 +1,43 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/cache
+
+# Testing
+/coverage
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Next.js build output
+/.next/
+/out/
+/build
+dist/
+
+# TypeScript build info
+*.tsbuildinfo
+next-env.d.ts
+
+# Misc
+.DS_Store
+*.pem
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment files
+.env
+.env*.local
+
+# Vercel
+.vercel
+
+# Uploads directory
+/public/uploads/*
+!/public/uploads/.gitkeep

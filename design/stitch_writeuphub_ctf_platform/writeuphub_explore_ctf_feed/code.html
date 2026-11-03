@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>WriteupHub // CTF &amp; Security Research Publishing</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-fixed":"#5ffcc6","primary":"#50f0bb","on-error":"#690005","secondary-container":"#00a6e0","on-primary":"#003828","tertiary-fixed-dim":"#d0bcff","inverse-surface":"#e0e2ec","tertiary":"#dfcfff","outline":"#85948c","on-surface":"#e0e2ec","inverse-primary":"#006c4f","surface-variant":"#32353c","on-background":"#e0e2ec","on-secondary-container":"#00374d","outline-variant":"#3c4a43","on-tertiary-fixed":"#23005c","surface-container-low":"#191c23","on-secondary-fixed":"#001e2c","on-primary-fixed":"#002116","surface-bright":"#363941","secondary-fixed":"#c4e7ff","primary-container":"#22d3a0","tertiary-fixed":"#e9ddff","background":"#10131a","surface-container":"#1d2027","surface-dim":"#10131a","surface-tint":"#38dfab","on-error-container":"#ffdad6","secondary-fixed-dim":"#7bd0ff","on-tertiary":"#3c0091","surface-container-high":"#272a31","primary-fixed-dim":"#38dfab","secondary":"#7bd0ff","on-tertiary-container":"#591ec2","inverse-on-surface":"#2d3038","error-container":"#93000a","on-primary-container":"#00563e","tertiary-container":"#c6aeff","on-tertiary-fixed-variant":"#5516be","surface-container-lowest":"#0b0e15","on-primary-fixed-variant":"#00513b","on-secondary-fixed-variant":"#004c69","surface":"#10131a","on-surface-variant":"#bacac1","on-secondary":"#00354a","error":"#ffb4ab","surface-container-highest":"#32353c"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"space-md":"1rem",gutter:"1.5rem","space-sm":"0.5rem",margin:"2rem","space-xl":"2.5rem","space-xs":"0.25rem","gutter-sm":"1rem","space-lg":"1.5rem","margin-sm":"1rem"},fontFamily:{"headline-lg-mobile":["Inter"],"label-mono-xs":["JetBrains Mono"],"label-mono-sm":["JetBrains Mono"],"body-lg":["Inter"],"headline-sm":["Inter"],display:["Inter"],"body-sm":["Inter"],"code-block":["JetBrains Mono"],"headline-lg":["Inter"],"headline-md":["Inter"],"code-inline":["JetBrains Mono"],"body-md":["Inter"]},fontSize:{"headline-lg-mobile":["1.75rem",{lineHeight:"1.25",letterSpacing:"-0.02em",fontWeight:"600"}],"label-mono-xs":["0.625rem",{lineHeight:"1",letterSpacing:"0.06em",fontWeight:"600"}],"label-mono-sm":["0.6875rem",{lineHeight:"1",letterSpacing:"0.04em",fontWeight:"500"}],"body-lg":["1rem",{lineHeight:"1.65",letterSpacing:"-0.005em",fontWeight:"400"}],"headline-sm":["1.125rem",{lineHeight:"1.4",letterSpacing:"-0.01em",fontWeight:"600"}],display:["3.5rem",{lineHeight:"1.1",letterSpacing:"-0.035em",fontWeight:"700"}],"body-sm":["0.75rem",{lineHeight:"1.5",letterSpacing:"0.01em",fontWeight:"400"}],"code-block":["0.875rem",{lineHeight:"1.7",letterSpacing:"0",fontWeight:"400"}],"headline-lg":["2.25rem",{lineHeight:"1.2",letterSpacing:"-0.025em",fontWeight:"600"}],"headline-md":["1.5rem",{lineHeight:"1.3",letterSpacing:"-0.02em",fontWeight:"600"}],"code-inline":["0.8125rem",{lineHeight:"1.2",letterSpacing:"-0.01em",fontWeight:"500"}],"body-md":["0.875rem",{lineHeight:"1.6",letterSpacing:"0",fontWeight:"400"}]}}}};</script></head><body class="bg-surface font-body-md text-body-md text-on-surface min-h-screen selection:bg-primary-container selection:text-on-primary-container antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-gutter flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg shrink-0"><div class="flex items-center gap-space-sm"><img alt="WriteupHub Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1V2nY7DOx0LlQKlRBDvdJao2Q_DYUi2FzQ1vyymLTr9Q3YIkdxxaKlELGv5GH0gg92S-gZ9zUAhMjUkROSffoK3HtHvldPsIssimoCTxIUis0zJUVw0leOqPdoQ6mOmlWBif-du0UKB5rIRVGShBAhEWn1PO9sP1RFzx8LCF2NL-AMSsJIqnP5JkR0ZiDDTIuP0AFYRZWzPWaXYa5KmJKChz-4Rs3uJhZHZt9OGnlUZkA"/><span class="font-headline-sm text-headline-sm font-semibold tracking-tight text-on-surface">WriteupHub</span><span class="px-space-xs py-0.5 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs uppercase">v1.4</span></div><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-surface-container-high text-primary font-body-md"><a aria-current="page" class="px-space-sm py-1.5 rounded transition-colors bg-surface-container-high text-primary font-body-md" data-path="explore-writeups" href="#">Explore Writeups</a><a class="px-space-sm py-1.5 rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="events-and-ctfs" href="#">Events &amp; CTFs</a><a class="px-space-sm py-1.5 rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="tags-and-categories" href="#">Tags &amp; Categories</a><a class="px-space-sm py-1.5 rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="leaderboard" href="#">Leaderboard</a><a class="px-space-sm py-1.5 rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="docs-and-cheatsheets" href="#">Docs &amp; Cheatsheets</a></nav></div><div class="flex-1 max-w-md hidden md:block"><button class="w-full flex items-center justify-between px-space-sm py-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface-variant transition-colors" type="button"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-outline">search</span><span class="font-body-sm text-body-sm text-on-surface-variant">Search challenges, CVEs, authors...</span></div><div class="flex items-center gap-1 font-label-mono-xs text-label-mono-xs text-outline px-1.5 py-0.5 rounded bg-surface-container-high"><span>⌘</span><span>K</span></div></button></div><div class="flex items-center gap-space-sm shrink-0"><div class="hidden sm:flex items-center gap-space-xs px-space-xs py-1 rounded bg-surface-container-low"><button aria-label="Reader mode telemetry" class="p-1 text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-headline-sm">chrome_reader_mode</span></button><button aria-label="Share writeup feed" class="p-1 text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-headline-sm">ios_share</span></button></div><a class="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-xl bg-gradient-to-r from-primary-container to-secondary-container text-on-primary font-headline-sm text-body-sm font-semibold hover:opacity-95 shadow-[0_0_20px_-3px_rgba(34,211,160,0.25)] transition-all" data-path="new-writeup" href="#"><span class="material-symbols-outlined text-headline-sm">add</span><span>New Writeup</span></a><div class="relative flex items-center pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmh0mA_ZxPYCoWyDwMjqWxpk26ezmgB2bodqpLQOVC7vXIYJts9OrsjO6kb6DQWRUq910L9M761WDx_AkJEKC7VErI5JqRvZkm87I57Ix69wmBQ3oh4TQXD0RkvI43yvVwdZQZu9xwPzXB9NEKFkXTcr1isa2DeMbikMj5clKnVTeSeVGsuBEd5fr_M7dvbMnTaLh8k_60YMde9cn7KBgLXE8mBiEE57HMeWoVCb1o"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface-container-lowest"></span></div></div></div></header><main class="w-full pt-16 bg-surface"><div class="flex flex-col w-full">
+<!-- Interactive Background Canvas & Ambient Gradients -->
+<div class="relative w-full overflow-hidden">
+<!-- Ambient Radial Glows -->
+<div class="absolute -top-32 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="absolute top-48 right-10 w-80 h-80 bg-secondary/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<!-- Hero / Feed Terminal Header -->
+<div class="max-w-7xl mx-auto px-gutter pt-8 pb-10">
+<!-- Terminal Command Breadcrumb Prompt -->
+<div class="flex items-center gap-space-sm mb-4">
+<div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-md bg-surface-container-lowest shadow-sm">
+<span class="text-primary font-label-mono-xs text-label-mono-xs">$</span>
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface">writeuphub --feed --latest --stream</span>
+<span class="inline-block w-2 h-3.5 bg-primary animate-pulse ml-0.5"></span>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-outline hidden sm:inline-flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container inline-block"></span>
+          REALTIME INDEX SYNCHRONIZED
+        </span>
+</div>
+<!-- Main Heading & Typography Texture -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-lg mb-6">
+<div class="max-w-3xl">
+<h1 class="font-headline-lg text-headline-lg md:font-display md:text-display text-on-surface tracking-tight mb-3">
+            The Open Archive for <span class="bg-gradient-to-r from-primary via-primary-container to-secondary bg-clip-text text-transparent">CTF Walkthroughs</span> &amp; Exploit Analysis
+          </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+            Read, publish, and dissect real-world capture-the-flag solutions, zero-day research, and offensive engineering writeups verified by peer researchers.
+          </p>
+</div>
+<!-- Quick Terminal Action Status Box -->
+<div class="shrink-0 p-space-md rounded-xl bg-surface-container-lowest shadow-md flex items-center gap-space-md">
+<div class="flex flex-col">
+<span class="font-label-mono-xs text-label-mono-xs text-outline uppercase tracking-wider">Indexed Exploit DB</span>
+<span class="font-label-mono-sm text-label-mono-sm text-primary font-semibold">12,480 SHA256-Signed</span>
+</div>
+<div class="h-8 w-px bg-surface-container-high"></div>
+<button class="px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-primary font-label-mono-xs text-label-mono-xs transition-all flex items-center gap-1.5 shadow-sm" type="button">
+<span class="material-symbols-outlined text-body-md">terminal</span>
+<span>CLI CLI_V1.4</span>
+</button>
+</div>
+</div>
+<!-- Quick Action Pills Navigation -->
+<div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none" id="categoryPillBar">
+<button class="category-pill active-pill px-space-md py-1.5 rounded-full font-label-mono-sm text-label-mono-sm transition-all whitespace-nowrap bg-primary text-on-primary font-semibold shadow-[0_0_16px_rgba(80,240,187,0.3)]" type="button">
+          All Categories (12.4k)
+        </button>
+<button class="category-pill px-space-md py-1.5 rounded-full font-label-mono-sm text-label-mono-sm transition-all whitespace-nowrap bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container" type="button">
+          Web Exploitation
+        </button>
+<button class="category-pill px-space-md py-1.5 rounded-full font-label-mono-sm text-label-mono-sm transition-all whitespace-nowrap bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container" type="button">
+          Binary Exploitation (Pwn)
+        </button>
+<button class="category-pill px-space-md py-1.5 rounded-full font-label-mono-sm text-label-mono-sm transition-all whitespace-nowrap bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container" type="button">
+          Cryptography
+        </button>
+<button class="category-pill px-space-md py-1.5 rounded-full font-label-mono-sm text-label-mono-sm transition-all whitespace-nowrap bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container" type="button">
+          Reverse Engineering
+        </button>
+<button class="category-pill px-space-md py-1.5 rounded-full font-label-mono-sm text-label-mono-sm transition-all whitespace-nowrap bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container" type="button">
+          Digital Forensics
+        </button>
+<button class="category-pill px-space-md py-1.5 rounded-full font-label-mono-sm text-label-mono-sm transition-all whitespace-nowrap bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container" type="button">
+          Hardware / Misc
+        </button>
+</div>
+</div>
+</div>
+<!-- Multi-Dimension Control Filter Bar -->
+<div class="w-full bg-surface-container-lowest shadow-sm mb-8">
+<div class="max-w-7xl mx-auto px-gutter py-3.5 flex flex-wrap items-center justify-between gap-space-md">
+<!-- Left Filters -->
+<div class="flex flex-wrap items-center gap-space-md">
+<!-- CTF Event Dropdown -->
+<div class="relative group">
+<button class="flex items-center gap-space-sm px-space-md py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high font-label-mono-sm text-label-mono-sm text-on-surface transition-colors shadow-sm" id="eventDropdownBtn" type="button">
+<span class="material-symbols-outlined text-body-md text-primary">flag</span>
+<span id="selectedEventText">Event: DEF CON 32</span>
+<span class="material-symbols-outlined text-body-md text-outline">expand_more</span>
+</button>
+<div class="hidden absolute top-full left-0 mt-1.5 w-60 rounded-xl bg-surface-container-high shadow-xl p-1.5 z-30 flex-col gap-0.5" id="eventMenu">
+<button class="w-full text-left px-3 py-1.5 rounded font-label-mono-sm text-label-mono-sm text-on-surface hover:bg-surface-container transition-colors event-item" data-event="All Tournaments" type="button">All Tournaments</button>
+<button class="w-full text-left px-3 py-1.5 rounded font-label-mono-sm text-label-mono-sm text-primary hover:bg-surface-container transition-colors event-item" data-event="DEF CON CTF 32" type="button">DEF CON CTF 32</button>
+<button class="w-full text-left px-3 py-1.5 rounded font-label-mono-sm text-label-mono-sm text-on-surface hover:bg-surface-container transition-colors event-item" data-event="Google CTF 2024" type="button">Google CTF 2024</button>
+<button class="w-full text-left px-3 py-1.5 rounded font-label-mono-sm text-label-mono-sm text-on-surface hover:bg-surface-container transition-colors event-item" data-event="HackTheBox Apocalypse" type="button">HackTheBox Apocalypse</button>
+<button class="w-full text-left px-3 py-1.5 rounded font-label-mono-sm text-label-mono-sm text-on-surface hover:bg-surface-container transition-colors event-item" data-event="PicoCTF 2024" type="button">PicoCTF 2024</button>
+<button class="w-full text-left px-3 py-1.5 rounded font-label-mono-sm text-label-mono-sm text-on-surface hover:bg-surface-container transition-colors event-item" data-event="UIUCTF 2024" type="button">UIUCTF 2024</button>
+</div>
+</div>
+<!-- Difficulty Pills -->
+<div class="flex items-center gap-1.5 bg-surface-container p-1 rounded-lg">
+<span class="font-label-mono-xs text-label-mono-xs text-outline px-2 uppercase">Diff:</span>
+<button class="difficulty-toggle px-2.5 py-1 rounded font-label-mono-xs text-label-mono-xs text-primary-fixed bg-surface-container-lowest hover:bg-surface-container-high transition-colors flex items-center gap-1.5" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Easy
+          </button>
+<button class="difficulty-toggle px-2.5 py-1 rounded font-label-mono-xs text-label-mono-xs text-secondary-fixed bg-surface-container-lowest hover:bg-surface-container-high transition-colors flex items-center gap-1.5" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Med
+          </button>
+<button class="difficulty-toggle px-2.5 py-1 rounded font-label-mono-xs text-label-mono-xs text-error bg-surface-container-lowest hover:bg-surface-container-high transition-colors flex items-center gap-1.5" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Hard
+          </button>
+<button class="difficulty-toggle px-2.5 py-1 rounded font-label-mono-xs text-label-mono-xs text-tertiary-fixed bg-surface-container-lowest hover:bg-surface-container-high transition-colors flex items-center gap-1.5" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Insane
+          </button>
+</div>
+<!-- Solved Status Checkbox -->
+<label class="flex items-center gap-2 cursor-pointer select-none px-space-sm py-1 rounded hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 rounded bg-surface-container-lowest accent-primary cursor-pointer" type="checkbox"/>
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface">Verified Flag Solved</span>
+</label>
+</div>
+<!-- Right Sort By Controls -->
+<div class="flex items-center gap-space-sm">
+<span class="font-label-mono-xs text-label-mono-xs text-outline uppercase">Sort:</span>
+<div class="flex items-center gap-1 bg-surface-container p-1 rounded-lg">
+<button class="sort-btn px-2.5 py-1 rounded font-label-mono-sm text-label-mono-sm bg-surface-container-high text-primary font-semibold shadow-sm transition-colors" type="button">Trending</button>
+<button class="sort-btn px-2.5 py-1 rounded font-label-mono-sm text-label-mono-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button">Bookmarked</button>
+<button class="sort-btn px-2.5 py-1 rounded font-label-mono-sm text-label-mono-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button">Recently Solved</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Primary Layout: 12-Column Responsive Matrix -->
+<div class="max-w-7xl mx-auto px-gutter w-full pb-16">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: The Discovery Feed (8 of 12 columns) -->
+<div class="lg:col-span-8 flex flex-col gap-space-md">
+<!-- Feed Metric Strip -->
+<div class="flex items-center justify-between px-2 text-outline font-label-mono-xs text-label-mono-xs">
+<span>SHOWING 5 OF 1,482 VERIFIED DECLASSIFIED SOLUTIONS</span>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span>FEED LATENCY: 22ms</span>
+</div>
+</div>
+<!-- Writeup Card 1: DEF CON 32 io_uring Race Condition (Featured Hero Card) -->
+<article class="p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all shadow-md group relative">
+<!-- Top Metadata Header -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-3">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs uppercase tracking-wider font-semibold">
+                DEF CON CTF 32
+              </span>
+<span class="px-2 py-0.5 rounded bg-error-container text-error font-label-mono-xs text-label-mono-xs uppercase tracking-wider font-semibold">
+                PWN
+              </span>
+<span class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high text-tertiary-fixed font-label-mono-xs text-label-mono-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Insane
+              </span>
+</div>
+<div class="flex items-center gap-space-sm font-label-mono-xs text-label-mono-xs text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm text-primary">verified</span> 47 Teams Solved</span>
+<span>•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm">schedule</span> 14 min read</span>
+</div>
+</div>
+<!-- Title -->
+<a class="block group-hover:text-primary transition-colors" href="#">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2 font-semibold tracking-tight">
+              [DEF CON 32] Kernel UAF via Race Condition in io_uring driver
+            </h2>
+</a>
+<!-- Abstract Excerpt -->
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 leading-relaxed">
+            Detailed walkthrough on weaponizing an asynchronous ring buffer race window. Exploiting dangling struct req pointers through dirty page allocation techniques to achieve arbitrary ring-0 kernel memory read/write.
+          </p>
+<!-- Rich Payload Code Preview Snippet -->
+<div class="rounded-lg bg-surface-container-lowest overflow-hidden shadow-sm mb-4">
+<div class="px-space-md py-1.5 bg-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-error/70"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary/70"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-primary/70"></span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline ml-2">exploit_uring_race.c (PoC Extract)</span>
+</div>
+<button class="copy-snippet-btn font-label-mono-xs text-label-mono-xs text-primary hover:text-primary-fixed flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-body-sm">content_copy</span>
+<span>Copy Payload</span>
+</button>
+</div>
+<pre class="p-space-md font-code-block text-code-block text-on-surface overflow-x-auto leading-relaxed"><code><span class="text-secondary">// 1. Prime the async worker race thread</span>
+<span class="text-tertiary">struct</span> io_uring_sqe *sqe = io_uring_get_sqe(&amp;ring);
+io_uring_prep_readv(sqe, fd, &amp;iovec, <span class="text-primary-container">1</span>, <span class="text-primary-container">0</span>);
+sqe-&gt;flags |= IOSQE_ASYNC;
+<span class="text-secondary">// 2. Spray slab cache kmalloc-512 with malicious fake credentials</span>
+spray_cred_payload(target_cred_offset, <span class="text-primary-fixed">0xdeadbeefcafe</span>);
+<span class="text-tertiary">int</span> ret = io_uring_submit(&amp;ring); <span class="text-outline">/* Trigger UAF write primitive */</span></code></pre>
+</div>
+<!-- Bottom Metadata Strip & Author Info -->
+<div class="flex flex-wrap items-center justify-between gap-space-md pt-2">
+<div class="flex items-center gap-space-sm">
+<img class="w-7 h-7 rounded-full object-cover" data-alt="Cybersecurity researcher avatar photo, close up portrait in moody cyan and emerald rim lighting, dark futuristic hacker studio backdrop, ultra sharp photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiJNrlAWJcxVLFHqQ0r6QzNeobCbH7UWkUrNonZ2drFmnsunfcWYqhz-3s-n54JuXn4wMGgCMpoI8U9Nsr_890DunIFA5TpbFsHM9Dc0dpRxzxVK3Sqrf_WrFIYil2ceVn7qyv744tE2S2XKWCn3JXZXti0cxhJ2UY9zxqVFXNhfJ12755WgEaSJZKG80b_TKKo78L1j1DkCjH6hJfePUpUm3TkwB5niUfCeQEAy3H"/>
+<div class="flex items-center gap-1.5">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">@0xret2libc</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs">14.2k rep</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md font-label-mono-sm text-label-mono-sm text-outline">
+<div class="flex items-center gap-1">
+<button class="upvote-btn flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high hover:text-primary transition-colors text-on-surface" type="button">
+<span class="material-symbols-outlined text-body-md text-primary">thumb_up</span>
+<span class="font-semibold text-primary">382</span>
+</button>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high text-on-surface-variant">
+<span class="material-symbols-outlined text-body-md">chat_bubble</span>
+<span>49</span>
+</div>
+<button class="bookmark-btn p-1 rounded hover:text-primary transition-colors text-outline" type="button">
+<span class="material-symbols-outlined text-body-md">bookmark</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Writeup Card 2: Google CTF 2024 Strict CSP DOM Clobbering -->
+<article class="p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all shadow-md group">
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-3">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs uppercase tracking-wider font-semibold">
+                Google CTF 2024
+              </span>
+<span class="px-2 py-0.5 rounded bg-secondary-container/20 text-secondary font-label-mono-xs text-label-mono-xs uppercase tracking-wider font-semibold">
+                WEB
+              </span>
+<span class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high text-error font-label-mono-xs text-label-mono-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Hard
+              </span>
+</div>
+<div class="flex items-center gap-space-sm font-label-mono-xs text-label-mono-xs text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm text-primary">verified</span> 89 Teams Solved</span>
+<span>•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm">schedule</span> 9 min read</span>
+</div>
+</div>
+<a class="block group-hover:text-primary transition-colors" href="#">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2 font-semibold tracking-tight">
+              [Google CTF 2024] Bypassing Strict CSP &amp; DOM Clobbering in Modern Chromium
+            </h2>
+</a>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 leading-relaxed">
+            Exploiting document.domain isolation bypass alongside nested form element clobbering to override DOMPurify sanitization callbacks and execute arbitrary JavaScript under strict CSP nonce policies.
+          </p>
+<!-- Interactive Exploit Tag Badges -->
+<div class="flex flex-wrap items-center gap-1.5 mb-4">
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-secondary-fixed">#xss</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-secondary-fixed">#csp-bypass</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-secondary-fixed">#dompurify</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-outline">#chromium-v125</span>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-space-md pt-2">
+<div class="flex items-center gap-space-sm">
+<img class="w-7 h-7 rounded-full object-cover" data-alt="High contrast hacker portrait photograph with ultraviolet backlighting, dark moody digital lab, female offensive security researcher with headphones, neon reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQjCHzRmt_ALJdmabpHlP7etjePBufIiKqtEcRIcNxOFeNeOK6K_h7zSCqTvOo35sybdpRaU9WQfdO76K3Iufnb617pfHC_X37PPMx4mg9ZXrI5PorlRQI8h45ihEp8rFIZAavPFAq5MH7i5BIIikXIajT7LcWAVxNCEncvnoK-r8ahSmxlFR2E1jVHNhCYIr2D5IcRlrZa_XS38txg9PyahrbFKZUdEX3BShOkvsq"/>
+<div class="flex items-center gap-1.5">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">@zenith_sec</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs">8.9k rep</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md font-label-mono-sm text-label-mono-sm text-outline">
+<div class="flex items-center gap-1">
+<button class="upvote-btn flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high hover:text-primary transition-colors text-on-surface" type="button">
+<span class="material-symbols-outlined text-body-md text-primary">thumb_up</span>
+<span class="font-semibold text-primary">294</span>
+</button>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high text-on-surface-variant">
+<span class="material-symbols-outlined text-body-md">chat_bubble</span>
+<span>31</span>
+</div>
+<button class="bookmark-btn p-1 rounded hover:text-primary transition-colors text-outline" type="button">
+<span class="material-symbols-outlined text-body-md">bookmark</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Writeup Card 3: PicoCTF LCG State Recovery -->
+<article class="p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all shadow-md group">
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-3">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs uppercase tracking-wider font-semibold">
+                PicoCTF 2024
+              </span>
+<span class="px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-mono-xs text-label-mono-xs uppercase tracking-wider font-semibold">
+                CRYPTO
+              </span>
+<span class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high text-secondary-fixed font-label-mono-xs text-label-mono-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Medium
+              </span>
+</div>
+<div class="flex items-center gap-space-sm font-label-mono-xs text-label-mono-xs text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm text-primary">verified</span> 1.2k Teams Solved</span>
+<span>•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm">schedule</span> 6 min read</span>
+</div>
+</div>
+<a class="block group-hover:text-primary transition-colors" href="#">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2 font-semibold tracking-tight">
+              [PicoCTF] Modern LCG State Recovery with Hidden Seeds
+            </h2>
+</a>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 leading-relaxed">
+            Constructing truncated LCG polynomial lattices using SageMath. How to leverage the Babai nearest plane algorithm to reconstruct 64-bit secret multipliers with only 4 consecutive PRNG sample leakages.
+          </p>
+<div class="flex flex-wrap items-center gap-1.5 mb-4">
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-tertiary-fixed">#sagemath</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-tertiary-fixed">#lattice-reduction</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-tertiary-fixed">#prng-attack</span>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-space-md pt-2">
+<div class="flex items-center gap-space-sm">
+<img class="w-7 h-7 rounded-full object-cover" data-alt="Portrait photography of a mathematical cryptographer sitting behind high end multi-monitor developer station, emerald and obsidian terminal screen glow, sharp cinematic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-vBN-_llJpFp9rX5k6thsCiQkrFJHJCr81EK8dqXUuBFc6UtnlvHdUoL-yuyS44bf2KSQ5B_DkR1GtFKm8e9eJ0p8Sm0XHhmhZmRzh-UvXmJkRDlLI5jio5CmV829R0s7YZ55-KdJYa3Ezftx3NXymCqRMk8NQsQZZYLET9Tv5GKYxDIRfVYvDtQ_iSx7oFAQgdUXalZWHNMoT20mRoN7WbFUuFR_VpEFxZrRjTQ-"/>
+<div class="flex items-center gap-1.5">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">@cipher_byte</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs">5.1k rep</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md font-label-mono-sm text-label-mono-sm text-outline">
+<div class="flex items-center gap-1">
+<button class="upvote-btn flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high hover:text-primary transition-colors text-on-surface" type="button">
+<span class="material-symbols-outlined text-body-md text-primary">thumb_up</span>
+<span class="font-semibold text-primary">188</span>
+</button>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high text-on-surface-variant">
+<span class="material-symbols-outlined text-body-md">chat_bubble</span>
+<span>14</span>
+</div>
+<button class="bookmark-btn p-1 rounded hover:text-primary transition-colors text-outline" type="button">
+<span class="material-symbols-outlined text-body-md">bookmark</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Writeup Card 4: HTB Apocalypse Custom VM Bytecode -->
+<article class="p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all shadow-md group">
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-3">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs uppercase tracking-wider font-semibold">
+                HTB Cyber Apocalypse
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-bright text-primary-fixed font-label-mono-xs text-label-mono-xs uppercase tracking-wider font-semibold">
+                REVERSE
+              </span>
+<span class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high text-error font-label-mono-xs text-label-mono-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Hard
+              </span>
+</div>
+<div class="flex items-center gap-space-sm font-label-mono-xs text-label-mono-xs text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm text-primary">verified</span> 112 Teams Solved</span>
+<span>•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm">schedule</span> 11 min read</span>
+</div>
+</div>
+<a class="block group-hover:text-primary transition-colors" href="#">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2 font-semibold tracking-tight">
+              [HTB Apocalypse] De-obfuscating Custom VM Bytecode with Ghidra &amp; Python
+            </h2>
+</a>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 leading-relaxed">
+            Writing a custom disassembler plugin in Ghidra for an undocumented 32-register virtual architecture. Reconstructing control-flow graphs, decrypting instruction dispatch jump tables, and recovering the static flag verifier.
+          </p>
+<div class="flex flex-wrap items-center gap-1.5 mb-4">
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-outline">#ghidra</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-outline">#custom-vm</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-outline">#pcode</span>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-space-md pt-2">
+<div class="flex items-center gap-space-sm">
+<img class="w-7 h-7 rounded-full object-cover" data-alt="Reverse engineer headshot in dark high-tech security laboratory, cyan LED strips in soft background bokeh, wearing dark hoodie, focused expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp2zPtHXSlUL4j0oxAthNmD8fZSGGlbf8TNAgAek35mLB8KQGP4IxoI6CkNOz14XaroppVLBNLSHfKr_24FZaW37NiLcsz1gRrLOx34D91xLrIQGBRrgSu6M0haVYmYc_dqCF9MMxtQjHSn0AjcMrjLDdi7s24ZZ32S7D_2W5WmLi9BACqyGlQ5vM2t4b7q3Q4HaH0VAJD3XL58wT-Lb3wP7Jqmi01RMcB9GMDfbSl"/>
+<div class="flex items-center gap-1.5">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">@bin_ninja</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs">11.8k rep</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md font-label-mono-sm text-label-mono-sm text-outline">
+<div class="flex items-center gap-1">
+<button class="upvote-btn flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high hover:text-primary transition-colors text-on-surface" type="button">
+<span class="material-symbols-outlined text-body-md text-primary">thumb_up</span>
+<span class="font-semibold text-primary">215</span>
+</button>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high text-on-surface-variant">
+<span class="material-symbols-outlined text-body-md">chat_bubble</span>
+<span>27</span>
+</div>
+<button class="bookmark-btn p-1 rounded hover:text-primary transition-colors text-outline" type="button">
+<span class="material-symbols-outlined text-body-md">bookmark</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Writeup Card 5: UIUCTF Memory Dumps & Rootkit Artifacts -->
+<article class="p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all shadow-md group">
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-3">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs uppercase tracking-wider font-semibold">
+                UIUCTF 2024
+              </span>
+<span class="px-2 py-0.5 rounded bg-primary-container/20 text-primary-fixed font-label-mono-xs text-label-mono-xs uppercase tracking-wider font-semibold">
+                FORENSICS
+              </span>
+<span class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high text-secondary-fixed font-label-mono-xs text-label-mono-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Medium
+              </span>
+</div>
+<div class="flex items-center gap-space-sm font-label-mono-xs text-label-mono-xs text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm text-primary">verified</span> 341 Teams Solved</span>
+<span>•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-body-sm">schedule</span> 8 min read</span>
+</div>
+</div>
+<a class="block group-hover:text-primary transition-colors" href="#">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2 font-semibold tracking-tight">
+              [UIUCTF 2024] Recovering Ephemeral Memory Dumps &amp; Rootkit Artifacts
+            </h2>
+</a>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 leading-relaxed">
+            Unpacking Volatility 3 custom kernel symbols to identify hidden hook symbols in the syscall table. Extracting in-memory decrypted payloads that were dynamically injected into an active SSH daemon process.
+          </p>
+<div class="flex flex-wrap items-center gap-1.5 mb-4">
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-primary">#volatility3</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-primary">#memory-analysis</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-mono-xs text-label-mono-xs text-primary">#rootkit-hunter</span>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-space-md pt-2">
+<div class="flex items-center gap-space-sm">
+<img class="w-7 h-7 rounded-full object-cover" data-alt="Cyber forensics specialist looking into screen in blue dimmed server room environment, ultra detailed tech setup, sharp portrait photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv5bdVcCGLItfqFmd5BGJq1KvQ-BWLdIPSqYoFdOhoQ_63QHiXgmqBO-MifzrBNzAaEAjSF0Rpa37W-alz86TQIMmoOQJSsFQcgCXN-A0qXm8jn3-kFaZAW-d0RHYE_Vm3gdQDghnFmB1Wd1qO3A2n5RtyYUQgED9ygU8My9jQzQ2xgSl62woyHDifPqJjOk2nlwxdi1p1czH7GFU7ze17YB16hFtDcp6pOxrvrFy9"/>
+<div class="flex items-center gap-1.5">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">@packet_tracer</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs">6.4k rep</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md font-label-mono-sm text-label-mono-sm text-outline">
+<div class="flex items-center gap-1">
+<button class="upvote-btn flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high hover:text-primary transition-colors text-on-surface" type="button">
+<span class="material-symbols-outlined text-body-md text-primary">thumb_up</span>
+<span class="font-semibold text-primary">142</span>
+</button>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high text-on-surface-variant">
+<span class="material-symbols-outlined text-body-md">chat_bubble</span>
+<span>19</span>
+</div>
+<button class="bookmark-btn p-1 rounded hover:text-primary transition-colors text-outline" type="button">
+<span class="material-symbols-outlined text-body-md">bookmark</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Pagination / Stream Navigation Button -->
+<div class="flex items-center justify-center pt-4">
+<button class="px-space-xl py-3 rounded-xl bg-surface-container-low hover:bg-surface-container text-primary font-headline-sm text-headline-sm transition-all shadow-md flex items-center gap-2 group" type="button">
+<span class="material-symbols-outlined text-headline-sm group-hover:rotate-180 transition-transform">autorenew</span>
+<span>Fetch Next 25 Technical Walkthroughs</span>
+</button>
+</div>
+</div>
+<!-- Right Column: Tactical Sidebars & Tooling (4 of 12 columns) -->
+<aside class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- Widget 1: Platform Telemetry & Quick Stats -->
+<div class="p-space-lg rounded-xl bg-surface-container-low shadow-md">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-mono-sm text-label-mono-sm uppercase text-on-surface font-semibold tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-body-md">query_stats</span>
+              Writeup Index Metrics
+            </span>
+<span class="font-label-mono-xs text-label-mono-xs text-primary animate-pulse">● LIVE</span>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="p-3 rounded-lg bg-surface-container-lowest flex flex-col">
+<span class="font-headline-sm text-headline-sm text-primary font-semibold">12,480</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline mt-1">Walkthroughs</span>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-lowest flex flex-col">
+<span class="font-headline-sm text-headline-sm text-secondary font-semibold">4,200</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline mt-1">Flags Solved</span>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-lowest flex flex-col">
+<span class="font-headline-sm text-headline-sm text-tertiary-fixed font-semibold">89</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline mt-1">Active CTFs</span>
+</div>
+</div>
+<!-- Inline Telemetry SVG Activity Distribution Chart -->
+<div class="mt-4 pt-4 bg-surface-container-lowest p-3 rounded-lg">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs mb-2">
+<span>SOLVE DISTRIBUTION (LAST 24H)</span>
+<span class="text-primary font-semibold">+342 SOLVES</span>
+</div>
+<svg class="w-full h-12 text-primary" fill="none" viewbox="0 0 300 48">
+<path d="M0,40 L25,32 L50,35 L75,18 L100,28 L125,12 L150,22 L175,8 L200,16 L225,5 L250,18 L275,10 L300,14" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+<path d="M0,40 L25,32 L50,35 L75,18 L100,28 L125,12 L150,22 L175,8 L200,16 L225,5 L250,18 L275,10 L300,14 L300,48 L0,48 Z" fill="currentColor" fill-opacity="0.1"></path>
+</svg>
+</div>
+</div>
+<!-- Widget 2: Trending CTF Events Now Active -->
+<div class="p-space-lg rounded-xl bg-surface-container-low shadow-md">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-mono-sm text-label-mono-sm uppercase text-on-surface font-semibold tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-body-md">timer</span>
+              Trending CTFs Now Active
+            </span>
+<a class="font-label-mono-xs text-label-mono-xs text-primary hover:underline" href="#">All Events</a>
+</div>
+<div class="flex flex-col gap-2.5">
+<!-- Event 1 -->
+<div class="p-space-md rounded-lg bg-surface-container-lowest hover:bg-surface-container transition-colors flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+<h3 class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">DEF CON 32 Finals</h3>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Las Vegas / Global Mirror • 84 Writeups</span>
+</div>
+<span class="px-2 py-1 rounded bg-error-container text-error font-label-mono-xs text-label-mono-xs font-semibold">Ends in 18h</span>
+</div>
+<!-- Event 2 -->
+<div class="p-space-md rounded-lg bg-surface-container-lowest hover:bg-surface-container transition-colors flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<h3 class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">HTB Cyber Apocalypse</h3>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Open League • 612 Writeups</span>
+</div>
+<span class="px-2 py-1 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs font-semibold">Ends in 2d</span>
+</div>
+<!-- Event 3 -->
+<div class="p-space-md rounded-lg bg-surface-container-lowest hover:bg-surface-container transition-colors flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<h3 class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">PlaidCTF 2024</h3>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">CMU PPP Invitational • 120 Writeups</span>
+</div>
+<span class="px-2 py-1 rounded bg-surface-container-high text-secondary font-label-mono-xs text-label-mono-xs font-semibold">Starts in 4d</span>
+</div>
+</div>
+</div>
+<!-- Widget 3: Top Writeup Authors this Week -->
+<div class="p-space-lg rounded-xl bg-surface-container-low shadow-md">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-mono-sm text-label-mono-sm uppercase text-on-surface font-semibold tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-body-md">military_tech</span>
+              Top Researchers This Week
+            </span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">WK 34</span>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Author 1 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-primary w-4">01</span>
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Avatar portrait of offensive security research leader in cyber terminal room with soft rim lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOKoJ_RCDGn28ceLK2MjsSNRHD_Xkl_JdYWgy1FvXEPdxLYdJixyK657hgqa_mvso6O_BgKg3v8HHkjp5tRhi6ZslpGde894j0zMbgq-s3dFU7aagKykKDFwsPK9hGljivWS31eDa0MlP6ubp8Iv4lgw_gYNnpZ0m0EQIGZy4jKjG4JwReQ0FSsBP7iq15r2jwn9AfLCjTJ4MlelmXFLjIdLQUVxJxDOBenCByWKrn"/>
+<div>
+<div class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">@0xret2libc</div>
+<div class="font-label-mono-xs text-label-mono-xs text-outline">4 writeups • 382 upvotes</div>
+</div>
+</div>
+<button class="follow-btn px-2.5 py-1 rounded-md bg-surface-container-high hover:bg-primary hover:text-on-primary font-label-mono-xs text-label-mono-xs text-on-surface transition-colors" type="button">
+                Follow
+              </button>
+</div>
+<!-- Author 2 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-secondary w-4">02</span>
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Avatar portrait of web security researcher in dark office setup, cyan light spill, high tech focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASk2gzBNmjEpltVsSaTKYtAjvZq5K6vWOKjuzD7gIJ5x7RL5SNT9qZ4KvCyCiipvU-totjgyhEcKvUGBiQU9bITQTpfGObe9290DdvzubaV6pBs9IX3m_5JePsr9tiD7SV9IO5eFzdYu-nW3IUrZm1UHdKHAc9ua-kQCweACop88udqj3MQTGCJOjcTgjM5fEmBLagWlpb6JpHpayCCNl2pR9wbvfj90qKmOjSpMZk"/>
+<div>
+<div class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">@zenith_sec</div>
+<div class="font-label-mono-xs text-label-mono-xs text-outline">3 writeups • 294 upvotes</div>
+</div>
+</div>
+<button class="follow-btn px-2.5 py-1 rounded-md bg-surface-container-high hover:bg-primary hover:text-on-primary font-label-mono-xs text-label-mono-xs text-on-surface transition-colors" type="button">
+                Follow
+              </button>
+</div>
+<!-- Author 3 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-tertiary w-4">03</span>
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Avatar of binary reverse engineer in front of triple code screens with green matrix ambient reflection." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1_f9BdVkBKPMzzyMw3sCQoiduaZr08exqAIEkmOGgjnq4_p1tZxKOgpG9BHnLpajwM-2DeagVRjnDzA3a5dkAcNg0b_irB3K6cJTZG5RbmQ-8eGfjPm22i3g2dojkIKxIby6YCWU76GOfdgkXn48riRQR8pDZuv69PDvQ8iGsLdhCN4xFfbdpP15JwXGbPj2KXeQcZ5UQZMkO0MVGqL-VvNrqEaCHlDEHh0TuRncG"/>
+<div>
+<div class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">@bin_ninja</div>
+<div class="font-label-mono-xs text-label-mono-xs text-outline">2 writeups • 215 upvotes</div>
+</div>
+</div>
+<button class="follow-btn px-2.5 py-1 rounded-md bg-surface-container-high hover:bg-primary hover:text-on-primary font-label-mono-xs text-label-mono-xs text-on-surface transition-colors" type="button">
+                Follow
+              </button>
+</div>
+<!-- Author 4 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-outline w-4">04</span>
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Avatar of cryptography researcher smiling warmly, dark room, blue monitor illumination." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeBVoPjUj7n9gkA-vuF2ilE98myObCknlrua2RdskJs-ZaSLXqfcWke0-Y0xYs9PlAy9WZQh6nQha8U904ir9Cxi3AwdZ8gXkMe_T_eUC_WKuUBSivW5_xxLkxLt1pHU3sWvVToYNllvnctAfQZckRp00lZQ3E0M3S_x_yCB5jQebIIdP7-Ye3RAanMDbq0J4vcbDCEDCwzpm45rTamIiJ62ebcnMtjWaki-wGXKQy"/>
+<div>
+<div class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">@cipher_byte</div>
+<div class="font-label-mono-xs text-label-mono-xs text-outline">2 writeups • 188 upvotes</div>
+</div>
+</div>
+<button class="follow-btn px-2.5 py-1 rounded-md bg-surface-container-high hover:bg-primary hover:text-on-primary font-label-mono-xs text-label-mono-xs text-on-surface transition-colors" type="button">
+                Follow
+              </button>
+</div>
+</div>
+</div>
+<!-- Widget 4: Terminal Quick-Tip Protip Card -->
+<div class="p-space-lg rounded-xl bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest shadow-md relative overflow-hidden">
+<div class="absolute -right-4 -bottom-4 text-surface-container-highest/20 pointer-events-none">
+<span class="material-symbols-outlined text-[96px]">terminal</span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-label-mono-xs text-label-mono-xs font-bold uppercase">
+              CLI Protip
+            </span>
+<span class="font-label-mono-xs text-label-mono-xs text-primary font-semibold">TIP_ID #802</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface mb-3 leading-relaxed">
+            Use the <code class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-primary font-code-inline text-code-inline">cat flag | base64 -d</code> shortcut in your writeups to provide instantaneous, copyable one-liners for your team validation pipeline:
+          </p>
+<div class="flex items-center justify-between p-2 rounded bg-surface-container-lowest">
+<span class="font-code-block text-code-block text-secondary selection:bg-primary-container">$ curl -sL poc.run | sh</span>
+<button class="copy-tip-btn text-outline hover:text-primary transition-colors p-1" title="Copy tip command" type="button">
+<span class="material-symbols-outlined text-body-md">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Widget 5: Cryptographic Submission Badge / CTA -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-md flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-headline-sm">lock_open</span>
+<div>
+<div class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">Got a CTF Solution?</div>
+<div class="font-body-sm text-body-sm text-outline">Publish with signed GPG proof</div>
+</div>
+</div>
+<button class="px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-fixed text-on-primary font-label-mono-xs text-label-mono-xs font-bold transition-all shadow-[0_0_12px_rgba(80,240,187,0.3)] whitespace-nowrap" type="button">
+            Submit PoC
+          </button>
+</div>
+</aside>
+</div>
+</div>
+<!-- Inline Micro-interactions Script -->
+<script>
+    // Event Dropdown Toggle
+    const eventBtn = document.getElementById('eventDropdownBtn');
+    const eventMenu = document.getElementById('eventMenu');
+    const selectedEventText = document.getElementById('selectedEventText');
+
+    if (eventBtn && eventMenu) {
+      eventBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        eventMenu.classList.toggle('hidden');
+        eventMenu.classList.toggle('flex');
+      });
+
+      document.querySelectorAll('.event-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const val = item.getAttribute('data-event');
+          selectedEventText.textContent = `Event: ${val}`;
+          eventMenu.classList.add('hidden');
+          eventMenu.classList.remove('flex');
+        });
+      });
+
+      document.addEventListener('click', () => {
+        eventMenu.classList.add('hidden');
+        eventMenu.classList.remove('flex');
+      });
+    }
+
+    // Category Pill Active States
+    const categoryPills = document.querySelectorAll('.category-pill');
+    categoryPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        categoryPills.forEach(p => {
+          p.classList.remove('bg-primary', 'text-on-primary', 'font-semibold', 'shadow-[0_0_16px_rgba(80,240,187,0.3)]');
+          p.classList.add('bg-surface-container-lowest', 'text-on-surface-variant');
+        });
+        pill.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant');
+        pill.classList.add('bg-primary', 'text-on-primary', 'font-semibold', 'shadow-[0_0_16px_rgba(80,240,187,0.3)]');
+      });
+    });
+
+    // Sort Button Switcher
+    const sortBtns = document.querySelectorAll('.sort-btn');
+    sortBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sortBtns.forEach(b => {
+          b.classList.remove('bg-surface-container-high', 'text-primary', 'font-semibold', 'shadow-sm');
+          b.classList.add('text-on-surface-variant');
+        });
+        btn.classList.add('bg-surface-container-high', 'text-primary', 'font-semibold', 'shadow-sm');
+        btn.classList.remove('text-on-surface-variant');
+      });
+    });
+
+    // Upvote Increment Micro-interaction
+    document.querySelectorAll('.upvote-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const countSpan = this.querySelector('span:last-child');
+        let count = parseInt(countSpan.textContent, 10);
+        if (!this.classList.contains('upvoted')) {
+          this.classList.add('upvoted', 'bg-primary', 'text-on-primary');
+          this.querySelector('.material-symbols-outlined').classList.replace('text-primary', 'text-on-primary');
+          countSpan.classList.replace('text-primary', 'text-on-primary');
+          countSpan.textContent = count + 1;
+        } else {
+          this.classList.remove('upvoted', 'bg-primary', 'text-on-primary');
+          this.querySelector('.material-symbols-outlined').classList.replace('text-on-primary', 'text-primary');
+          countSpan.classList.replace('text-on-primary', 'text-primary');
+          countSpan.textContent = count - 1;
+        }
+      });
+    });
+
+    // Bookmark Toggle Micro-interaction
+    document.querySelectorAll('.bookmark-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const icon = this.querySelector('.material-symbols-outlined');
+        if (icon.getAttribute('style')) {
+          icon.removeAttribute('style');
+          this.classList.remove('text-primary');
+        } else {
+          icon.setAttribute('style', "font-variation-settings: 'FILL' 1;");
+          this.classList.add('text-primary');
+        }
+      });
+    });
+
+    // Follow Button Toggle
+    document.querySelectorAll('.follow-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (this.textContent.trim() === 'Follow') {
+          this.textContent = 'Following';
+          this.classList.add('bg-primary-container', 'text-on-primary', 'font-semibold');
+        } else {
+          this.textContent = 'Follow';
+          this.classList.remove('bg-primary-container', 'text-on-primary', 'font-semibold');
+        }
+      });
+    });
+
+    // Copy Payload Button
+    document.querySelectorAll('.copy-snippet-btn, .copy-tip-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const originalText = this.innerHTML;
+        this.innerHTML = '<span class="material-symbols-outlined text-body-sm text-primary">check</span> <span class="text-primary font-label-mono-xs">Copied!</span>';
+        setTimeout(() => {
+          this.innerHTML = originalText;
+        }, 1800);
+      });
+    });
+  </script>
+</div></main><footer class="w-full bg-surface-container-lowest mt-space-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-7xl mx-auto px-gutter py-space-xl flex flex-col gap-space-lg"><div class="grid grid-cols-2 md:grid-cols-5 gap-gutter"><div class="col-span-2 flex flex-col gap-space-sm"><div class="flex items-center gap-space-sm"><img alt="WriteupHub Logo" class="h-6 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1V2nY7DOx0LlQKlRBDvdJao2Q_DYUi2FzQ1vyymLTr9Q3YIkdxxaKlELGv5GH0gg92S-gZ9zUAhMjUkROSffoK3HtHvldPsIssimoCTxIUis0zJUVw0leOqPdoQ6mOmlWBif-du0UKB5rIRVGShBAhEWn1PO9sP1RFzx8LCF2NL-AMSsJIqnP5JkR0ZiDDTIuP0AFYRZWzPWaXYa5KmJKChz-4Rs3uJhZHZt9OGnlUZkA"/><span class="font-headline-sm text-headline-sm font-semibold text-on-surface">WriteupHub</span></div><p class="font-body-sm text-body-sm text-on-surface-variant max-w-sm">High-fidelity security publishing platform built for exploit researchers, offensive security engineers, and CTF operatives.</p><div class="flex items-center gap-space-sm pt-space-xs font-label-mono-xs text-label-mono-xs text-primary"><span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span><span>FEED ORBITAL STATUS: ALL SYSTEMS OPERATIONAL</span></div></div><div class="flex flex-col gap-space-xs"><span class="font-label-mono-xs text-label-mono-xs uppercase text-on-surface font-semibold">Index</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="explore-writeups" href="#">Browse Archives</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="events-and-ctfs" href="#">Active Tournaments</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="tags-and-categories" href="#">CVE Exploits</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="leaderboard" href="#">Global Ranking</a></div><div class="flex flex-col gap-space-xs"><span class="font-label-mono-xs text-label-mono-xs uppercase text-on-surface font-semibold">Tooling</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs-and-cheatsheets" href="#">Payload Guides</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs-and-cheatsheets" href="#">Reverse Engineering</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs-and-cheatsheets" href="#">Binary Analysis</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">RSS / JSON Feeds</a></div><div class="flex flex-col gap-space-xs"><span class="font-label-mono-xs text-label-mono-xs uppercase text-on-surface font-semibold">Platform</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Responsible Disclosure</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Verification Badges</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Telemetry Status</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Security Policy</a></div></div><div class="pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm font-label-mono-xs text-label-mono-xs text-outline"><p>© 2025 WriteupHub. Cryptographically signed publications. All rights reserved.</p><div class="flex items-center gap-space-md"><span class="text-on-surface-variant">LATENCY: 18ms</span><span class="text-on-surface-variant">REGION: ORD-EDGE</span><a class="hover:text-primary transition-colors" href="#">RSS 2.0</a></div></div></div></footer></body></html>

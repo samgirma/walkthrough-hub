@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>WriteupHub // CTF &amp; Security Research Publishing</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-fixed":"#5ffcc6","primary":"#50f0bb","on-error":"#690005","secondary-container":"#00a6e0","on-primary":"#003828","tertiary-fixed-dim":"#d0bcff","inverse-surface":"#e0e2ec","tertiary":"#dfcfff","outline":"#85948c","on-surface":"#e0e2ec","inverse-primary":"#006c4f","surface-variant":"#32353c","on-background":"#e0e2ec","on-secondary-container":"#00374d","outline-variant":"#3c4a43","on-tertiary-fixed":"#23005c","surface-container-low":"#191c23","on-secondary-fixed":"#001e2c","on-primary-fixed":"#002116","surface-bright":"#363941","secondary-fixed":"#c4e7ff","primary-container":"#22d3a0","tertiary-fixed":"#e9ddff","background":"#10131a","surface-container":"#1d2027","surface-dim":"#10131a","surface-tint":"#38dfab","on-error-container":"#ffdad6","secondary-fixed-dim":"#7bd0ff","on-tertiary":"#3c0091","surface-container-high":"#272a31","primary-fixed-dim":"#38dfab","secondary":"#7bd0ff","on-tertiary-container":"#591ec2","inverse-on-surface":"#2d3038","error-container":"#93000a","on-primary-container":"#00563e","tertiary-container":"#c6aeff","on-tertiary-fixed-variant":"#5516be","surface-container-lowest":"#0b0e15","on-primary-fixed-variant":"#00513b","on-secondary-fixed-variant":"#004c69","surface":"#10131a","on-surface-variant":"#bacac1","on-secondary":"#00354a","error":"#ffb4ab","surface-container-highest":"#32353c"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"space-md":"1rem",gutter:"1.5rem","space-sm":"0.5rem",margin:"2rem","space-xl":"2.5rem","space-xs":"0.25rem","gutter-sm":"1rem","space-lg":"1.5rem","margin-sm":"1rem"},fontFamily:{"headline-lg-mobile":["Inter"],"label-mono-xs":["JetBrains Mono"],"label-mono-sm":["JetBrains Mono"],"body-lg":["Inter"],"headline-sm":["Inter"],display:["Inter"],"body-sm":["Inter"],"code-block":["JetBrains Mono"],"headline-lg":["Inter"],"headline-md":["Inter"],"code-inline":["JetBrains Mono"],"body-md":["Inter"]},fontSize:{"headline-lg-mobile":["1.75rem",{lineHeight:"1.25",letterSpacing:"-0.02em",fontWeight:"600"}],"label-mono-xs":["0.625rem",{lineHeight:"1",letterSpacing:"0.06em",fontWeight:"600"}],"label-mono-sm":["0.6875rem",{lineHeight:"1",letterSpacing:"0.04em",fontWeight:"500"}],"body-lg":["1rem",{lineHeight:"1.65",letterSpacing:"-0.005em",fontWeight:"400"}],"headline-sm":["1.125rem",{lineHeight:"1.4",letterSpacing:"-0.01em",fontWeight:"600"}],display:["3.5rem",{lineHeight:"1.1",letterSpacing:"-0.035em",fontWeight:"700"}],"body-sm":["0.75rem",{lineHeight:"1.5",letterSpacing:"0.01em",fontWeight:"400"}],"code-block":["0.875rem",{lineHeight:"1.7",letterSpacing:"0",fontWeight:"400"}],"headline-lg":["2.25rem",{lineHeight:"1.2",letterSpacing:"-0.025em",fontWeight:"600"}],"headline-md":["1.5rem",{lineHeight:"1.3",letterSpacing:"-0.02em",fontWeight:"600"}],"code-inline":["0.8125rem",{lineHeight:"1.2",letterSpacing:"-0.01em",fontWeight:"500"}],"body-md":["0.875rem",{lineHeight:"1.6",letterSpacing:"0",fontWeight:"400"}]}}}};</script></head><body class="bg-surface font-body-md text-body-md text-on-surface min-h-screen selection:bg-primary-container selection:text-on-primary-container antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-gutter flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg shrink-0"><div class="flex items-center gap-space-sm"><img alt="WriteupHub Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1V2nY7DOx0LlQKlRBDvdJao2Q_DYUi2FzQ1vyymLTr9Q3YIkdxxaKlELGv5GH0gg92S-gZ9zUAhMjUkROSffoK3HtHvldPsIssimoCTxIUis0zJUVw0leOqPdoQ6mOmlWBif-du0UKB5rIRVGShBAhEWn1PO9sP1RFzx8LCF2NL-AMSsJIqnP5JkR0ZiDDTIuP0AFYRZWzPWaXYa5KmJKChz-4Rs3uJhZHZt9OGnlUZkA"/><span class="font-headline-sm text-headline-sm font-semibold tracking-tight text-on-surface">WriteupHub</span><span class="px-space-xs py-0.5 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs uppercase">v1.4</span></div><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-surface-container-high text-primary font-body-md"><a class="px-space-sm py-1.5 rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="explore-writeups" href="#">Explore Writeups</a><a aria-current="page" class="px-space-sm py-1.5 rounded transition-colors bg-surface-container-high text-primary font-body-md" data-path="events-and-ctfs" href="#">Events &amp; CTFs</a><a class="px-space-sm py-1.5 rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="tags-and-categories" href="#">Tags &amp; Categories</a><a class="px-space-sm py-1.5 rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="leaderboard" href="#">Leaderboard</a><a class="px-space-sm py-1.5 rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="docs-and-cheatsheets" href="#">Docs &amp; Cheatsheets</a></nav></div><div class="flex-1 max-w-md hidden md:block"><button class="w-full flex items-center justify-between px-space-sm py-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface-variant transition-colors" type="button"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-outline">search</span><span class="font-body-sm text-body-sm text-on-surface-variant">Search challenges, CVEs, authors...</span></div><div class="flex items-center gap-1 font-label-mono-xs text-label-mono-xs text-outline px-1.5 py-0.5 rounded bg-surface-container-high"><span>⌘</span><span>K</span></div></button></div><div class="flex items-center gap-space-sm shrink-0"><div class="hidden sm:flex items-center gap-space-xs px-space-xs py-1 rounded bg-surface-container-low"><button aria-label="Reader mode telemetry" class="p-1 text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-headline-sm">chrome_reader_mode</span></button><button aria-label="Share writeup feed" class="p-1 text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-headline-sm">ios_share</span></button></div><a class="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-xl bg-gradient-to-r from-primary-container to-secondary-container text-on-primary font-headline-sm text-body-sm font-semibold hover:opacity-95 shadow-[0_0_20px_-3px_rgba(34,211,160,0.25)] transition-all" data-path="new-writeup" href="#"><span class="material-symbols-outlined text-headline-sm">add</span><span>New Writeup</span></a><div class="relative flex items-center pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmh0mA_ZxPYCoWyDwMjqWxpk26ezmgB2bodqpLQOVC7vXIYJts9OrsjO6kb6DQWRUq910L9M761WDx_AkJEKC7VErI5JqRvZkm87I57Ix69wmBQ3oh4TQXD0RkvI43yvVwdZQZu9xwPzXB9NEKFkXTcr1isa2DeMbikMj5clKnVTeSeVGsuBEd5fr_M7dvbMnTaLh8k_60YMde9cn7KBgLXE8mBiEE57HMeWoVCb1o"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface-container-lowest"></span></div></div></div></header><main class="w-full pt-16 bg-surface"><div class="flex flex-col w-full">
+<div class="w-full max-w-7xl mx-auto px-gutter py-space-lg flex flex-col gap-space-xl">
+<!-- Top Header & Filter Array -->
+<div class="flex flex-col gap-space-md">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-space-xs font-label-mono-xs text-label-mono-xs text-primary mb-1">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span>INDEX // COMPETITION ARCHIVE &amp; TELEMETRY</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">CTF Competitions &amp; Archive</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-1">
+            Explore active operations, inspect categorized matrix boards, and access peer-reviewed exploit writeups with cryptographically signed PoCs.
+          </p>
+</div>
+<div class="flex items-center gap-space-xs">
+<div class="px-space-sm py-1.5 rounded-xl bg-surface-container-high flex items-center gap-space-xs text-on-surface font-label-mono-xs text-label-mono-xs">
+<span class="material-symbols-outlined text-secondary text-base">military_tech</span>
+<span class="text-outline">OPERATIONAL INDEX:</span>
+<span class="text-primary font-bold">248 EVENTS</span>
+</div>
+</div>
+</div>
+<!-- Tactical Search & Filter Ribbon -->
+<div class="p-space-sm rounded-xl bg-surface-container-low shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-sm">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+<input class="w-full h-10 pl-9 pr-space-md rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-sm placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary shadow-inner" placeholder="Search by CTF name, year, or organizing team (e.g. DEF CON, Nautilus, 2024)..." type="text"/>
+</div>
+<div class="flex flex-wrap items-center gap-space-xs">
+<button class="filter-chip active px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary font-label-mono-xs text-label-mono-xs font-semibold flex items-center gap-1 transition-all" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-on-primary"></span>
+<span>ALL EVENTS</span>
+</button>
+<button class="filter-chip px-space-md py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-mono-xs text-label-mono-xs transition-colors" type="button">
+<span>ONGOING (3)</span>
+</button>
+<button class="filter-chip px-space-md py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-mono-xs text-label-mono-xs transition-colors" type="button">
+<span>UPCOMING (14)</span>
+</button>
+<button class="filter-chip px-space-md py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-mono-xs text-label-mono-xs transition-colors" type="button">
+<span>ARCHIVED (231)</span>
+</button>
+<button class="filter-chip px-space-md py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-secondary font-label-mono-xs text-label-mono-xs flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-xs">bolt</span>
+<span>HIGH MULTIPLIER (&gt;4.0)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Active Event Showcase: DEF CON CTF 32 Quals -->
+<section class="flex flex-col gap-space-md">
+<!-- Hero Card Banner -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container p-space-md sm:p-space-lg shadow-md">
+<!-- Ambient Cyber Graphic Glow Backdrop -->
+<div class="absolute -right-20 -top-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -left-20 -bottom-20 w-80 h-80 bg-secondary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg">
+<div class="flex flex-col gap-space-xs max-w-2xl">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-mono-xs text-label-mono-xs font-semibold uppercase tracking-wider flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
+<span>LIVE COMBAT PHASE</span>
+</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-secondary font-label-mono-xs text-label-mono-xs">
+                ORGANIZER: NAUTILUS INSTITUTE
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-outline font-label-mono-xs text-label-mono-xs">
+                WEIGHT: 100.00 PTS
+              </span>
+</div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight mt-1">
+              DEF CON CTF 32 Quals
+            </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              The premier offensive security tournament. Real-time dynamic zero-day binary exploitation, advanced hypervisor escape, cryptography primitives, and web targets.
+            </p>
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-lg">flag</span>
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">32 Challenges</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">(6 Categories)</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-lg">description</span>
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">84 Writeups Submitted</span>
+<span class="font-label-mono-xs text-label-mono-xs text-primary">+12 in review</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-tertiary text-lg">groups</span>
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">1,240 Teams Active</span>
+</div>
+</div>
+</div>
+<!-- Scoreboard Countdown & Metric Box -->
+<div class="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end gap-space-md shrink-0">
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-inner flex flex-col gap-space-xs min-w-[280px]">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>TIME REMAINING</span>
+<span class="text-primary font-bold">ROUND 4 / 6</span>
+</div>
+<!-- Countdown Display -->
+<div class="grid grid-cols-4 gap-space-xs text-center py-1">
+<div class="p-1 rounded bg-surface-container flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">14</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">HRS</span>
+</div>
+<div class="p-1 rounded bg-surface-container flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">38</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">MIN</span>
+</div>
+<div class="p-1 rounded bg-surface-container flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">52</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">SEC</span>
+</div>
+<div class="p-1 rounded bg-surface-container flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-primary">#04</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">RANK</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-outline">YOUR SQUAD:</span>
+<span class="font-label-mono-xs text-label-mono-xs text-primary font-semibold">coronary_bypass (2,450 pts)</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs w-full sm:w-auto">
+<a class="flex-1 sm:flex-none text-center px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-mono-sm text-label-mono-sm transition-colors" href="#">
+                Live Scoreboard
+              </a>
+<a class="flex-1 sm:flex-none inline-flex items-center justify-center gap-space-xs px-space-md py-2 rounded-lg bg-gradient-to-r from-primary-container to-secondary-container text-on-primary font-label-mono-sm text-label-mono-sm font-bold shadow-md hover:opacity-95 transition-all" href="#">
+<span class="material-symbols-outlined text-sm">post_add</span>
+<span>Submit Writeup</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Matrix Header Controls -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-xl">grid_view</span>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">
+            Live Challenge Matrix
+          </h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-mono-xs text-label-mono-xs">
+            32 Nodes
+          </span>
+</div>
+<div class="flex items-center gap-space-md font-label-mono-xs text-label-mono-xs text-outline">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded bg-primary"></span>
+<span>SOLVED BY SQUAD</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded bg-surface-container-highest"></span>
+<span>UNSOLVED</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded bg-secondary"></span>
+<span>HOT WRITEUP</span>
+</div>
+</div>
+</div>
+<!-- Interactive Challenge Matrix Grid (6 Columns) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-space-sm">
+<!-- COLUMN: WEB -->
+<div class="flex flex-col gap-space-xs">
+<div class="p-space-xs rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-sm">language</span>
+<span class="font-label-mono-sm text-label-mono-sm font-bold text-secondary uppercase">Web</span>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">5 NODES</span>
+</div>
+<!-- Challenge Card 1 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-primary/10 text-primary font-label-mono-xs text-label-mono-xs font-semibold">150 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">EASY</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                Echo Chamber
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">SSTI in Jinja3 isolate</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>142 solves</span>
+</span>
+<span class="px-1.5 py-0.5 rounded bg-primary text-on-primary font-label-mono-xs text-label-mono-xs font-bold">
+                SOLVED
+              </span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>9 WRITEUPS</span>
+<a class="text-primary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>Top: @liveoverflow</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Challenge Card 2 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/20 text-secondary font-label-mono-xs text-label-mono-xs font-semibold">350 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">HARD</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                GraphQL Smuggle
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">HTTP/2 Pipeline desync</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>28 solves</span>
+</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">UNSOLVED</span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>2 WRITEUPS</span>
+<a class="text-secondary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>PoC breakdown</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN: PWN -->
+<div class="flex flex-col gap-space-xs">
+<div class="p-space-xs rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-error text-sm">terminal</span>
+<span class="font-label-mono-sm text-label-mono-sm font-bold text-error uppercase">Pwn</span>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">6 NODES</span>
+</div>
+<!-- Challenge Card 3 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-error-container/30 text-error font-label-mono-xs text-label-mono-xs font-semibold">450 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">EXPERT</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                HeapHop
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">glibc 2.39 tcache stashing</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>11 solves</span>
+</span>
+<span class="px-1.5 py-0.5 rounded bg-primary text-on-primary font-label-mono-xs text-label-mono-xs font-bold">
+                SOLVED
+              </span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>4 WRITEUPS</span>
+<a class="text-primary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>Top: @geohot</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Challenge Card 4 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/20 text-secondary font-label-mono-xs text-label-mono-xs font-semibold">250 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">MED</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                Kernel Jailbreak
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">eBPF verifier bypass</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>49 solves</span>
+</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">UNSOLVED</span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>7 WRITEUPS</span>
+<a class="text-secondary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>Exploit Chain</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN: CRYPTO -->
+<div class="flex flex-col gap-space-xs">
+<div class="p-space-xs rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-sm">lock</span>
+<span class="font-label-mono-sm text-label-mono-sm font-bold text-tertiary uppercase">Crypto</span>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">5 NODES</span>
+</div>
+<!-- Challenge Card 5 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-label-mono-xs text-label-mono-xs font-semibold">300 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">HARD</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                Rabin's Revenge
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">LWE lattice reduction</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>35 solves</span>
+</span>
+<span class="px-1.5 py-0.5 rounded bg-primary text-on-primary font-label-mono-xs text-label-mono-xs font-bold">
+                SOLVED
+              </span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>5 WRITEUPS</span>
+<a class="text-primary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>SageMath solution</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Challenge Card 6 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-primary/10 text-primary font-label-mono-xs text-label-mono-xs font-semibold">100 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">EASY</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                Curveball Nonce
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">ECDSA biased k-value</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>219 solves</span>
+</span>
+<span class="px-1.5 py-0.5 rounded bg-primary text-on-primary font-label-mono-xs text-label-mono-xs font-bold">
+                SOLVED
+              </span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>18 WRITEUPS</span>
+<a class="text-primary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>Quick solve</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN: REVERSE -->
+<div class="flex flex-col gap-space-xs">
+<div class="p-space-xs rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-sm">memory</span>
+<span class="font-label-mono-sm text-label-mono-sm font-bold text-primary uppercase">Reverse</span>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">6 NODES</span>
+</div>
+<!-- Challenge Card 7 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-error-container/30 text-error font-label-mono-xs text-label-mono-xs font-semibold">500 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">EXPERT</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                Wasm-Jit-O-Matic
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Custom bytecode engine VM</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>6 solves</span>
+</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">UNSOLVED</span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>1 WRITEUP</span>
+<a class="text-secondary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>Ghidra script</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Challenge Card 8 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/20 text-secondary font-label-mono-xs text-label-mono-xs font-semibold">200 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">MED</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                Obfuscated Android
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">OLLVM string decryption</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>83 solves</span>
+</span>
+<span class="px-1.5 py-0.5 rounded bg-primary text-on-primary font-label-mono-xs text-label-mono-xs font-bold">
+                SOLVED
+              </span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>6 WRITEUPS</span>
+<a class="text-primary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>Frida hooking</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN: FORENSICS -->
+<div class="flex flex-col gap-space-xs">
+<div class="p-space-xs rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary-container text-sm">troubleshoot</span>
+<span class="font-label-mono-sm text-label-mono-sm font-bold text-secondary uppercase">Forensics</span>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">5 NODES</span>
+</div>
+<!-- Challenge Card 9 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/20 text-secondary font-label-mono-xs text-label-mono-xs font-semibold">250 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">MED</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                Ghost in the PCAP
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">QUIC stream exfiltration</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>61 solves</span>
+</span>
+<span class="px-1.5 py-0.5 rounded bg-primary text-on-primary font-label-mono-xs text-label-mono-xs font-bold">
+                SOLVED
+              </span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>8 WRITEUPS</span>
+<a class="text-primary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>Wireshark filter</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Challenge Card 10 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/20 text-secondary font-label-mono-xs text-label-mono-xs font-semibold">300 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">HARD</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                RAM Specter
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Volatility3 Linux 6.8 profile</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>22 solves</span>
+</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">UNSOLVED</span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>3 WRITEUPS</span>
+<a class="text-secondary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>Dump analysis</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN: MISC -->
+<div class="flex flex-col gap-space-xs">
+<div class="p-space-xs rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-outline text-sm">extension</span>
+<span class="font-label-mono-sm text-label-mono-sm font-bold text-on-surface uppercase">Misc</span>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">5 NODES</span>
+</div>
+<!-- Challenge Card 11 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-primary/10 text-primary font-label-mono-xs text-label-mono-xs font-semibold">100 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">EASY</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                PyJailbreak v4
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">AST sanitization escape</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>190 solves</span>
+</span>
+<span class="px-1.5 py-0.5 rounded bg-primary text-on-primary font-label-mono-xs text-label-mono-xs font-bold">
+                SOLVED
+              </span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>15 WRITEUPS</span>
+<a class="text-primary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>Payload: __subclasses__</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Challenge Card 12 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-xs shadow-sm group">
+<div class="flex items-center justify-between">
+<span class="px-1.5 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-label-mono-xs text-label-mono-xs font-semibold">400 PTS</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-mono-xs text-label-mono-xs">EXPERT</span>
+</div>
+<div class="flex flex-col">
+<a class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors truncate" href="#">
+                Cosmic Ray Hardware
+              </a>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Single-event upset FPGA</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">done_all</span>
+<span>8 solves</span>
+</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">UNSOLVED</span>
+</div>
+<div class="mt-1 pt-1.5 bg-surface-container-lowest rounded-lg p-2 flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-mono-xs text-label-mono-xs">
+<span>2 WRITEUPS</span>
+<a class="text-secondary hover:underline font-semibold flex items-center gap-0.5" href="#">
+<span>Bitflip writeup</span>
+<span class="material-symbols-outlined text-xs">north_east</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Visual telemetry strip & team stats -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col md:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">verified_user</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">coronary_bypass</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-primary font-label-mono-xs text-label-mono-xs">RANK #4</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+            Matrix Solve Progress: 7 of 32 nodes cleared (21.8% capture rate) • DEF CON 32 Quals
+          </span>
+</div>
+</div>
+<!-- Compact inline Progress Bar -->
+<div class="w-full md:w-80 flex flex-col gap-1">
+<div class="flex items-center justify-between font-label-mono-xs text-label-mono-xs text-outline">
+<span>AGGREGATE TEAM COMPLETION</span>
+<span class="text-primary font-bold">2,450 / 9,800 PTS</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary-container" style="width: 25%;"></div>
+</div>
+</div>
+</div>
+<!-- Event List Table Underneath -->
+<section class="flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div>
+<h3 class="font-headline-md text-headline-md font-bold text-on-surface">
+            Global Competition Directory
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+            Archived and in-progress events with team metrics, difficulty curves, and open submission slots.
+          </p>
+</div>
+<div class="flex items-center gap-space-xs font-label-mono-xs text-label-mono-xs">
+<span class="text-outline">SORT:</span>
+<button class="px-2 py-1 rounded bg-surface-container-high text-on-surface font-semibold flex items-center gap-1" type="button">
+<span>WRITEUPS COUNT</span>
+<span class="material-symbols-outlined text-xs">arrow_downward</span>
+</button>
+</div>
+</div>
+<!-- Dense Table Container -->
+<div class="overflow-x-auto rounded-xl bg-surface-container-low shadow-sm">
+<table class="w-full text-left font-body-sm text-body-sm border-collapse">
+<thead>
+<tr class="bg-surface-container font-label-mono-xs text-label-mono-xs text-outline uppercase tracking-wider">
+<th class="py-space-sm px-space-md">Event &amp; Host</th>
+<th class="py-space-sm px-space-md">Timeline</th>
+<th class="py-space-sm px-space-md">Challenges</th>
+<th class="py-space-sm px-space-md">Exploit Writeups</th>
+<th class="py-space-sm px-space-md">Team Solve Rate</th>
+<th class="py-space-sm px-space-md text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-transparent">
+<!-- Row 1: HackTheBox Cyber Apocalypse -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-xl">shield</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors">
+                      HackTheBox Cyber Apocalypse
+                    </span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Organized by Hack The Box • Multiplier 38.5</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col font-label-mono-xs text-label-mono-xs">
+<span class="text-on-surface font-semibold">MAR 2024</span>
+<span class="text-outline">ARCHIVED</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">60 Challenges</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Web, Pwn, SCADA, Hardware</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-label-mono-xs text-label-mono-xs font-bold">
+                    180 Writeups
+                  </span>
+<span class="material-symbols-outlined text-outline text-sm">verified</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-1 w-36">
+<div class="flex justify-between font-label-mono-xs text-label-mono-xs">
+<span class="text-primary font-bold">88.3%</span>
+<span class="text-outline">53/60</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-primary" style="width: 88.3%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="flex items-center justify-end gap-space-xs">
+<a class="px-space-sm py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-mono-xs text-label-mono-xs transition-colors" href="#">
+                    Explore
+                  </a>
+<a class="inline-flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-surface-container hover:bg-primary-container text-on-surface hover:text-on-primary font-label-mono-xs text-label-mono-xs font-semibold transition-all" href="#">
+<span class="material-symbols-outlined text-xs">add</span>
+<span>Submit Writeup</span>
+</a>
+</div>
+</td>
+</tr>
+<!-- Row 2: PicoCTF 2024 -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary text-xl">school</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors">
+                      PicoCTF 2024
+                    </span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Organized by Carnegie Mellon University • Multiplier 15.0</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col font-label-mono-xs text-label-mono-xs">
+<span class="text-on-surface font-semibold">MAR 2024</span>
+<span class="text-outline">ARCHIVED</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">55 Challenges</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">All Skills • High School &amp; Global</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-label-mono-xs text-label-mono-xs font-bold">
+                    110 Writeups
+                  </span>
+<span class="material-symbols-outlined text-outline text-sm">verified</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-1 w-36">
+<div class="flex justify-between font-label-mono-xs text-label-mono-xs">
+<span class="text-primary font-bold">100.0%</span>
+<span class="text-outline">55/55</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-primary" style="width: 100%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="flex items-center justify-end gap-space-xs">
+<a class="px-space-sm py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-mono-xs text-label-mono-xs transition-colors" href="#">
+                    Explore
+                  </a>
+<a class="inline-flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-surface-container hover:bg-primary-container text-on-surface hover:text-on-primary font-label-mono-xs text-label-mono-xs font-semibold transition-all" href="#">
+<span class="material-symbols-outlined text-xs">add</span>
+<span>Submit Writeup</span>
+</a>
+</div>
+</td>
+</tr>
+<!-- Row 3: Google CTF 2024 -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-tertiary text-xl">security</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors">
+                      Google CTF 2024
+                    </span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Organized by Google Security • Multiplier 65.2</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col font-label-mono-xs text-label-mono-xs">
+<span class="text-on-surface font-semibold">JUN 2024</span>
+<span class="text-outline">ARCHIVED</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">28 Challenges</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Advanced V8, Sandbox, Crypto</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-label-mono-xs text-label-mono-xs font-bold">
+                    42 Writeups
+                  </span>
+<span class="material-symbols-outlined text-outline text-sm">verified</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-1 w-36">
+<div class="flex justify-between font-label-mono-xs text-label-mono-xs">
+<span class="text-secondary font-bold">64.2%</span>
+<span class="text-outline">18/28</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-secondary-container" style="width: 64.2%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="flex items-center justify-end gap-space-xs">
+<a class="px-space-sm py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-mono-xs text-label-mono-xs transition-colors" href="#">
+                    Explore
+                  </a>
+<a class="inline-flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-surface-container hover:bg-primary-container text-on-surface hover:text-on-primary font-label-mono-xs text-label-mono-xs font-semibold transition-all" href="#">
+<span class="material-symbols-outlined text-xs">add</span>
+<span>Submit Writeup</span>
+</a>
+</div>
+</td>
+</tr>
+<!-- Row 4: UIUCTF 2024 -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-xl">psychology</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors">
+                      UIUCTF 2024
+                    </span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">Organized by SIGPwny (UIUC) • Multiplier 32.8</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col font-label-mono-xs text-label-mono-xs">
+<span class="text-on-surface font-semibold">JUN 2024</span>
+<span class="text-outline">ARCHIVED</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface font-semibold">24 Challenges</span>
+<span class="font-label-mono-xs text-label-mono-xs text-outline">LLM Jailbreak, RF, Kernel</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-label-mono-xs text-label-mono-xs font-bold">
+                    38 Writeups
+                  </span>
+<span class="material-symbols-outlined text-outline text-sm">verified</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-1 w-36">
+<div class="flex justify-between font-label-mono-xs text-label-mono-xs">
+<span class="text-secondary font-bold">50.0%</span>
+<span class="text-outline">12/24</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-secondary-container" style="width: 50.0%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="flex items-center justify-end gap-space-xs">
+<a class="px-space-sm py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-mono-xs text-label-mono-xs transition-colors" href="#">
+                    Explore
+                  </a>
+<a class="inline-flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-surface-container hover:bg-primary-container text-on-surface hover:text-on-primary font-label-mono-xs text-label-mono-xs font-semibold transition-all" href="#">
+<span class="material-symbols-outlined text-xs">add</span>
+<span>Submit Writeup</span>
+</a>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination & Feed Health Strip -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-xs font-label-mono-xs text-label-mono-xs text-outline">
+<div class="flex items-center gap-space-sm">
+<span>SHOWING 4 OF 248 EVENTS</span>
+<span class="text-surface-variant">•</span>
+<span class="text-primary flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+            ALL WRITEUP SIGNATURES VERIFIED
+          </span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="px-space-sm py-1 rounded bg-surface-container text-outline hover:text-on-surface transition-colors" disabled="" type="button">
+            PREV
+          </button>
+<button class="px-space-sm py-1 rounded bg-primary-container text-on-primary font-bold" type="button">
+            1
+          </button>
+<button class="px-space-sm py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+            2
+          </button>
+<button class="px-space-sm py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+            3
+          </button>
+<span class="px-1 text-outline">...</span>
+<button class="px-space-sm py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+            62
+          </button>
+<button class="px-space-sm py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+            NEXT
+          </button>
+</div>
+</div>
+</section>
+</div>
+<!-- Interactive script for filter chips state toggle -->
+<script>
+    document.querySelectorAll('.filter-chip').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.filter-chip').forEach(b => {
+          b.classList.remove('bg-primary-container', 'text-on-primary', 'font-semibold');
+          b.classList.add('bg-surface-container', 'text-on-surface-variant');
+        });
+        button.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        button.classList.add('bg-primary-container', 'text-on-primary', 'font-semibold');
+      });
+    });
+  </script>
+</div></main><footer class="w-full bg-surface-container-lowest mt-space-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-7xl mx-auto px-gutter py-space-xl flex flex-col gap-space-lg"><div class="grid grid-cols-2 md:grid-cols-5 gap-gutter"><div class="col-span-2 flex flex-col gap-space-sm"><div class="flex items-center gap-space-sm"><img alt="WriteupHub Logo" class="h-6 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1V2nY7DOx0LlQKlRBDvdJao2Q_DYUi2FzQ1vyymLTr9Q3YIkdxxaKlELGv5GH0gg92S-gZ9zUAhMjUkROSffoK3HtHvldPsIssimoCTxIUis0zJUVw0leOqPdoQ6mOmlWBif-du0UKB5rIRVGShBAhEWn1PO9sP1RFzx8LCF2NL-AMSsJIqnP5JkR0ZiDDTIuP0AFYRZWzPWaXYa5KmJKChz-4Rs3uJhZHZt9OGnlUZkA"/><span class="font-headline-sm text-headline-sm font-semibold text-on-surface">WriteupHub</span></div><p class="font-body-sm text-body-sm text-on-surface-variant max-w-sm">High-fidelity security publishing platform built for exploit researchers, offensive security engineers, and CTF operatives.</p><div class="flex items-center gap-space-sm pt-space-xs font-label-mono-xs text-label-mono-xs text-primary"><span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span><span>FEED ORBITAL STATUS: ALL SYSTEMS OPERATIONAL</span></div></div><div class="flex flex-col gap-space-xs"><span class="font-label-mono-xs text-label-mono-xs uppercase text-on-surface font-semibold">Index</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="explore-writeups" href="#">Browse Archives</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="events-and-ctfs" href="#">Active Tournaments</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="tags-and-categories" href="#">CVE Exploits</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="leaderboard" href="#">Global Ranking</a></div><div class="flex flex-col gap-space-xs"><span class="font-label-mono-xs text-label-mono-xs uppercase text-on-surface font-semibold">Tooling</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs-and-cheatsheets" href="#">Payload Guides</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs-and-cheatsheets" href="#">Reverse Engineering</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="docs-and-cheatsheets" href="#">Binary Analysis</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">RSS / JSON Feeds</a></div><div class="flex flex-col gap-space-xs"><span class="font-label-mono-xs text-label-mono-xs uppercase text-on-surface font-semibold">Platform</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Responsible Disclosure</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Verification Badges</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Telemetry Status</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Security Policy</a></div></div><div class="pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm font-label-mono-xs text-label-mono-xs text-outline"><p>© 2025 WriteupHub. Cryptographically signed publications. All rights reserved.</p><div class="flex items-center gap-space-md"><span class="text-on-surface-variant">LATENCY: 18ms</span><span class="text-on-surface-variant">REGION: ORD-EDGE</span><a class="hover:text-primary transition-colors" href="#">RSS 2.0</a></div></div></div></footer></body></html>

@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #0B0D12;
+    --foreground: #E0E2EC;
+
+    --card: #12151C;
+    --card-foreground: #E0E2EC;
+
+    --popover: #181C25;
+    --popover-foreground: #E0E2EC;
+
+    --primary: #22D3A0;
+    --primary-foreground: #003828;
+
+    --secondary: #38BDF8;
+    --secondary-foreground: #00354A;
+
+    --muted: #181C25;
+    --muted-foreground: #94A3B8;
+
+    --accent: #1D2027;
+    --accent-foreground: #50F0BB;
+
+    --destructive: #F43F5E;
+    --destructive-foreground: #FFF;
+
+    --border: #242936;
+    --input: #12151C;
+    --ring: #22D3A0;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: #0B0D12;
+    --foreground: #E0E2EC;
+
+    --card: #12151C;
+    --card-foreground: #E0E2EC;
+
+    --popover: #181C25;
+    --popover-foreground: #E0E2EC;
+
+    --primary: #22D3A0;
+    --primary-foreground: #003828;
+
+    --secondary: #38BDF8;
+    --secondary-foreground: #00354A;
+
+    --muted: #181C25;
+    --muted-foreground: #94A3B8;
+
+    --accent: #1D2027;
+    --accent-foreground: #50F0BB;
+
+    --destructive: #F43F5E;
+    --destructive-foreground: #FFF;
+
+    --border: #242936;
+    --input: #12151C;
+    --ring: #22D3A0;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-color: #0B0D12;
+  }
+}
+
+/* Custom scrollbars & utilities */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0D12;
+}
+::-webkit-scrollbar-thumb {
+  background: #242936;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #363E52;
+}
+
+/* Custom Cyber / Telemetry Animations & Helpers */
+.bg-grid-cyber {
+  background-image: radial-gradient(#181C25 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.glow-primary {
+  box-shadow: 0 0 20px -3px rgba(34, 211, 160, 0.25);
+}
+
+.glow-primary-hover:hover {
+  box-shadow: 0 0 24px -2px rgba(34, 211, 160, 0.4);
+}
+
+.gradient-cta {
+  background: linear-gradient(135deg, #22D3A0 0%, #38BDF8 100%);
+}
+
+.gradient-cta:hover {
+  background: linear-gradient(135deg, #38DFAB 0%, #60A5FA 100%);
+  box-shadow: 0 0 20px rgba(34, 211, 160, 0.35);
+}
+
+.card-cyber {
+  background: #12151C;
+  border: 1px solid #242936;
+  border-radius: 12px;
+  transition: all 0.2s ease-in-out;
+}
+
+.card-cyber:hover {
+  border-color: #363E52;
+  transform: translateY(-1px);
+}
