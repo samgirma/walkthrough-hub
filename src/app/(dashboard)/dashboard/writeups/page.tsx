@@ -141,12 +141,12 @@ export default async function WriteupsPage({ searchParams }: WriteupsPageProps) 
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end sm:justify-start pt-2 sm:pt-0 border-t sm:border-t-0 border-[#242936]/40 shrink-0">
                     <Link href={`/write/${w.id}`}>
                       <Button
                         variant="secondary"
                         size="sm"
-                        className="text-xs font-mono h-8 gap-1"
+                        className="text-xs font-mono h-8 min-h-[36px] gap-1"
                       >
                         <Edit className="h-3.5 w-3.5" />
                         <span>Edit</span>
@@ -156,7 +156,7 @@ export default async function WriteupsPage({ searchParams }: WriteupsPageProps) 
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-xs font-mono h-8 gap-1"
+                        className="text-xs font-mono h-8 min-h-[36px] gap-1"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                         <span>View</span>

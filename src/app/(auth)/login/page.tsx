@@ -132,7 +132,7 @@ function LoginForm() {
             <button
               type="button"
               onClick={() => signIn("github", { callbackUrl })}
-              className="w-full bg-[#181C25] hover:bg-[#1D2027] border border-[#242936] text-white py-2.5 px-3 rounded-lg font-mono text-xs font-medium flex items-center justify-center gap-2 transition-all hover:border-[#363E52]"
+              className="w-full min-h-[44px] bg-[#181C25] hover:bg-[#1D2027] border border-[#242936] text-white py-2.5 px-3 rounded-lg font-mono text-xs font-medium flex items-center justify-center gap-2 transition-all hover:border-[#363E52]"
             >
               <Github className="h-4 w-4 text-white" />
               <span>Continue with GitHub</span>
@@ -170,7 +170,7 @@ function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nullptr@writeuphub.sec"
-                className="font-mono text-xs"
+                className="font-mono text-base sm:text-xs h-11 sm:h-9"
               />
             </div>
 
@@ -189,14 +189,14 @@ function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="font-mono text-xs"
+                className="font-mono text-base sm:text-xs h-11 sm:h-9"
               />
             </div>
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-10 mt-2 gradient-cta text-[#0B0D12] font-semibold text-xs tracking-wide uppercase gap-2 shadow-[0_0_16px_rgba(34,211,160,0.3)]"
+              className="w-full h-11 sm:h-10 min-h-[44px] mt-2 gradient-cta text-[#0B0D12] font-semibold text-xs tracking-wide uppercase gap-2 shadow-[0_0_16px_rgba(34,211,160,0.3)]"
             >
               <span>{loading ? "Decrypting Session..." : "Authorize Access"}</span>
               <ArrowRight className="h-3.5 w-3.5" />

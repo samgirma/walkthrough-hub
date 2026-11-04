@@ -57,17 +57,17 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     <div className="w-full min-h-screen bg-[#0B0D12] pb-24">
       {/* Top Banner / Author Header */}
       <section className="w-full bg-[#10131A] border-b border-[#242936] py-12">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/explore"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-[#94A3B8] hover:text-white mb-6 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-mono text-[#94A3B8] hover:text-white mb-6 transition-colors min-h-[36px]"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Back to Explorer</span>
           </Link>
 
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="flex items-center gap-5">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
               {user.avatarUrl ? (
                 <img
                   src={user.avatarUrl}
@@ -139,7 +139,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       </section>
 
       {/* Published Writeups Feed */}
-      <section className="max-w-7xl mx-auto px-6 py-12">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex items-center gap-2 mb-8">
           <Terminal className="h-5 w-5 text-primary" />
           <h2 className="font-sans font-bold text-xl text-white tracking-tight">

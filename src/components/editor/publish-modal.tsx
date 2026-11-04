@@ -152,7 +152,7 @@ export function PublishModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[580px] bg-[#12151C] border-[#242936] text-[#E0E2EC] p-6 sm:p-8 rounded-xl shadow-2xl">
+      <DialogContent className="max-w-[580px] w-[95vw] sm:w-full max-h-[90svh] overflow-y-auto bg-[#12151C] border-[#242936] text-[#E0E2EC] p-4 sm:p-8 rounded-2xl sm:rounded-xl shadow-2xl">
         <div className="absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-transparent via-[#22D3A0] to-transparent opacity-80" />
 
         {publishedUrl ? (

@@ -75,9 +75,23 @@ export function WriteupCard({ writeup }: WriteupCardProps) {
         </Link>
 
         {/* Excerpt */}
-        <p className="font-sans text-xs text-[#94A3B8] line-clamp-2 leading-relaxed mb-4">
+        <p className="font-sans text-xs text-[#94A3B8] line-clamp-2 leading-relaxed mb-3">
           {writeup.excerpt}
         </p>
+
+        {/* Horizontally scrollable tag chips */}
+        {writeup.tags && writeup.tags.length > 0 && (
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 mb-3">
+            {writeup.tags.map((t) => (
+              <span
+                key={t.tag.id}
+                className="shrink-0 px-2 py-0.5 rounded bg-[#181C25] border border-[#242936] text-[10px] font-mono text-[#BACAC1]"
+              >
+                #{t.tag.name}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Bottom Metadata Strip */}

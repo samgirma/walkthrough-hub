@@ -31,6 +31,8 @@ import {
   getCategoryColor,
   getDifficultyColor,
 } from "@/lib/utils";
+import { MobileTOCAccordion } from "./mobile-toc-sheet";
+import { WriteupReaderClient } from "./writeup-reader-client";
 
 interface WriteupPageProps {
   params: Promise<{
@@ -118,16 +120,16 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
   }/w/${username}/${slug}`;
 
   return (
-    <div className="relative w-full min-h-screen bg-[#0B0D12] pb-24">
+    <div className="relative w-full min-h-screen bg-[#0B0D12] pb-32 lg:pb-24">
       {/* Top Reading Progress Bar */}
       <ReadingProgress />
 
-      <div className="max-w-7xl mx-auto px-6 pt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between gap-4 mb-6 text-xs font-mono text-[#94A3B8]">
           <Link
             href="/explore"
-            className="flex items-center gap-1.5 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 hover:text-white transition-colors min-h-[36px]"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Back to Explorer</span>
@@ -147,10 +149,10 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
           )}
         </div>
 
-        {/* 3-Column Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          {/* LEFT STICKY SIDEBAR: TOC & Challenge Files (3 cols) */}
-          <aside className="hidden lg:flex lg:col-span-3 flex-col gap-6 sticky top-24 self-start">
+        {/* Layout Grid: Sticky TOC on lg+, single column on mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+          {/* LEFT STICKY SIDEBAR: TOC & Challenge Files (lg+ only) */}
+          <aside className="hidden lg:flex lg:col-span-4 xl:col-span-3 flex-col gap-6 sticky top-24 self-start">
             {/* Table of Contents Container */}
             <nav
               aria-label="Table of contents"
@@ -259,10 +261,13 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
             </div>
           </aside>
 
-          {/* MAIN ARTICLE & CONTENT (9 cols) */}
-          <main className="lg:col-span-9 flex flex-col gap-6">
+          {/* MAIN ARTICLE & CONTENT (lg:col-span-8 xl:col-span-9) */}
+          <main className="lg:col-span-8 xl:col-span-9 flex flex-col gap-6 min-w-0 w-full">
+            {/* Mobile Collapsible TOC Accordion at top of article */}
+            <MobileTOCAccordion toc={toc} />
+
             {/* Header Document Area */}
-            <div className="p-6 sm:p-8 rounded-xl border border-[#242936] bg-[#12151C] shadow-lg">
+            <div className="p-4 sm:p-8 rounded-xl border border-[#242936] bg-[#12151C] shadow-lg">
               {/* Category & CTF Badges */}
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 <span
@@ -356,13 +361,13 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
               </div>
             </div>
 
-            {/* Markdown Body Article */}
-            <div className="p-6 sm:p-10 rounded-xl border border-[#242936] bg-[#12151C] shadow-md">
+            {/* Markdown Body Article (Comfortable max-w-prose, 16-18px font) */}
+            <div className="p-4 sm:p-8 lg:p-10 rounded-xl border border-[#242936] bg-[#12151C] shadow-md max-w-full overflow-hidden">
               <MarkdownViewer htmlContent={htmlContent} />
             </div>
 
             {/* Author Footer Bio Card */}
-            <div className="p-6 rounded-xl border border-[#242936] bg-[#12151C] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="p-4 sm:p-6 rounded-xl border border-[#242936] bg-[#12151C] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 {writeup.author.avatarUrl ? (
                   <img
@@ -387,7 +392,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
 
               <Link
                 href={`/u/${writeup.author.username}`}
-                className="px-4 py-2 rounded-lg bg-[#181C25] hover:bg-[#1D2027] text-xs font-mono text-[#BACAC1] hover:text-white border border-[#242936] transition-colors flex items-center gap-1.5 shrink-0"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-[#181C25] hover:bg-[#1D2027] text-xs font-mono text-[#BACAC1] hover:text-white border border-[#242936] transition-colors flex items-center justify-center gap-1.5 shrink-0 min-h-[44px]"
               >
                 <span>View Researcher Profile</span>
                 <ExternalLink className="h-3.5 w-3.5" />
@@ -396,6 +401,16 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
           </main>
         </div>
       </div>
+
+      {/* Mobile Reader Interactive Experience: Fixed Bottom Bar, Floating TOC Pill & Sheet */}
+      <WriteupReaderClient
+        writeupId={writeup.id}
+        initialBookmarked={bookmarked}
+        userId={session?.user?.id}
+        title={writeup.title}
+        url={currentUrl}
+        toc={toc}
+      />
     </div>
   );
 }

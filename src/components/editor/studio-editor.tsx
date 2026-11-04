@@ -91,6 +91,31 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editorContainerRef = useRef<HTMLDivElement>(null);
+
+  // Set default view mode based on viewport and handle mobile virtual keyboard
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setViewMode("editor");
+    }
+
+    if (typeof window === "undefined" || !window.visualViewport) return;
+
+    const handleViewportChange = () => {
+      if (editorContainerRef.current && window.visualViewport) {
+        const vh = window.visualViewport.height;
+        // Dynamically fit workspace so virtual keyboard does not cover textarea
+        editorContainerRef.current.style.height = `${Math.max(300, vh - 105)}px`;
+      }
+    };
+
+    window.visualViewport.addEventListener("resize", handleViewportChange);
+    window.visualViewport.addEventListener("scroll", handleViewportChange);
+    return () => {
+      window.visualViewport?.removeEventListener("resize", handleViewportChange);
+      window.visualViewport?.removeEventListener("scroll", handleViewportChange);
+    };
+  }, []);
 
   // Calculate live stats
   const wordsCount = contentMd.trim().split(/\s+/).filter(Boolean).length;
@@ -212,9 +237,37 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
         </div>
 
         {/* View Mode & Publish CTA */}
-        <div className="flex items-center gap-2.5">
-          {/* Split Mode Toggles */}
-          <div className="flex items-center bg-[#0B0D12] p-0.5 rounded-lg border border-[#242936] font-mono text-xs">
+        <div className="flex items-center gap-2">
+          {/* Mobile Write / Preview Tabs (< lg) */}
+          <div className="flex lg:hidden items-center bg-[#0B0D12] p-0.5 rounded-lg border border-[#242936] font-mono text-xs">
+            <button
+              type="button"
+              onClick={() => setViewMode("editor")}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded transition-colors min-h-[36px] ${
+                viewMode === "editor" || viewMode === "split"
+                  ? "bg-[#181C25] text-primary font-bold"
+                  : "text-[#94A3B8] hover:text-white"
+              }`}
+            >
+              <PenTool className="h-3.5 w-3.5" />
+              <span>Write</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("preview")}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded transition-colors min-h-[36px] ${
+                viewMode === "preview"
+                  ? "bg-[#181C25] text-primary font-bold"
+                  : "text-[#94A3B8] hover:text-white"
+              }`}
+            >
+              <Eye className="h-3.5 w-3.5" />
+              <span>Preview</span>
+            </button>
+          </div>
+
+          {/* Desktop Split Mode Toggles (>= lg) */}
+          <div className="hidden lg:flex items-center bg-[#0B0D12] p-0.5 rounded-lg border border-[#242936] font-mono text-xs">
             <button
               type="button"
               onClick={() => setViewMode("split")}
@@ -225,7 +278,7 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
               }`}
             >
               <Columns className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Split</span>
+              <span>Split</span>
             </button>
             <button
               type="button"
@@ -237,7 +290,7 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
               }`}
             >
               <PenTool className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Editor</span>
+              <span>Editor</span>
             </button>
             <button
               type="button"
@@ -249,14 +302,14 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
               }`}
             >
               <Eye className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Live</span>
+              <span>Live</span>
             </button>
           </div>
 
           <Button
             size="sm"
             onClick={() => setPublishModalOpen(true)}
-            className="gradient-cta text-[#0B0D12] font-mono font-bold text-xs gap-1.5 shadow-[0_0_16px_rgba(34,211,160,0.3)] hover:shadow-[0_0_20px_rgba(34,211,160,0.4)]"
+            className="gradient-cta text-[#0B0D12] font-mono font-bold text-xs gap-1.5 shadow-[0_0_16px_rgba(34,211,160,0.3)] hover:shadow-[0_0_20px_rgba(34,211,160,0.4)] min-h-[36px]"
           >
             <Rocket className="h-3.5 w-3.5" />
             <span>Publish</span>
@@ -283,8 +336,8 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
         </div>
       </div>
 
-      {/* Main Workspace */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* Main Workspace (Handles visualViewport resize on mobile) */}
+      <div ref={editorContainerRef} className="flex-1 flex overflow-hidden">
         {/* LEFT COLUMN: Markdown Editor */}
         {(viewMode === "split" || viewMode === "editor") && (
           <section
@@ -447,7 +500,7 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
                 }}
                 spellCheck={false}
                 placeholder="Write your CTF exploit walkthrough in Markdown..."
-                className="w-full h-full min-h-[500px] bg-transparent text-[#E0E2EC] font-mono text-xs sm:text-sm leading-relaxed resize-none focus:outline-none"
+                className="w-full h-full min-h-[500px] bg-transparent text-[#E0E2EC] font-mono text-base sm:text-sm leading-relaxed resize-none focus:outline-none"
               />
             </div>
           </section>

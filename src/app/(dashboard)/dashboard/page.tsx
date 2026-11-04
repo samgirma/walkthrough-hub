@@ -75,8 +75,8 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Metrics Row (4 Cards) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      {/* Metrics Row (2x2 on mobile, 4-col on lg) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Total Writeups */}
         <div className="p-4 rounded-xl border border-[#242936] bg-[#12151C] shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2 text-[#475569] font-mono text-[11px] uppercase">
