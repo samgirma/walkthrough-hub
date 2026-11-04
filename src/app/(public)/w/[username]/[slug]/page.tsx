@@ -79,20 +79,11 @@ export async function generateMetadata({
       url,
       publishedTime: writeup.publishedAt?.toISOString(),
       authors: [username],
-      images: [
-        {
-          url: `${url}/opengraph-image`,
-          width: 1200,
-          height: 630,
-          alt: writeup.title,
-        },
-      ],
     },
     twitter: {
       card: "summary_large_image",
       title: writeup.title,
       description: writeup.excerpt,
-      images: [`${url}/opengraph-image`],
     },
   };
 }
