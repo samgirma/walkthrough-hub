@@ -22,6 +22,10 @@ declare module "next-auth" {
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
+  secret:
+    process.env.AUTH_SECRET ||
+    process.env.NEXTAUTH_SECRET ||
+    "writeuphub-super-secret-development-key-change-in-production-min32chars",
   pages: {
     signIn: "/login",
     newUser: "/dashboard",

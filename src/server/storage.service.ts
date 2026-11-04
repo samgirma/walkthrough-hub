@@ -28,8 +28,10 @@ export interface IStorageService {
 }
 
 class StorageService implements IStorageService {
-  private supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  private supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  private supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  private supabaseServiceKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
   private bucketName = process.env.SUPABASE_STORAGE_BUCKET || "writeup-assets";
 
   async uploadImage(
