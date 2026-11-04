@@ -70,7 +70,8 @@ describe("Writeup Service CRUD & Authorization", () => {
     } as any);
 
     await expect(
-      updateWriteup("malicious-user", "w-target", {
+      updateWriteup("malicious-user", {
+        id: "w-target",
         title: "Defaced Title",
         contentMd: "hacked",
         ctfName: "CTF",
