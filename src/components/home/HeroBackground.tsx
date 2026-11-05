@@ -6,21 +6,14 @@ export function HeroBackground() {
   return (
     <div
       aria-hidden="true"
-      className="absolute inset-0 w-full h-full overflow-hidden select-none pointer-events-none"
-      style={{
-        backgroundColor: "#0B0D12",
-        // Inline base64 dark cyber placeholder prevents any flash before image paint
-        backgroundImage:
-          'url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 9\'%3E%3Crect width=\'16\' height=\'9\' fill=\'%230B0D12\'/%3E%3Ccircle cx=\'11\' cy=\'5\' r=\'4\' fill=\'%2312151C\' filter=\'blur(2px)\'/%3E%3Ccircle cx=\'8\' cy=\'1\' r=\'3\' fill=\'%23381A22\' opacity=\'0.3\' filter=\'blur(2px)\'/%3E%3C/svg%3E")',
-        backgroundSize: "cover",
-      }}
+      className="absolute inset-0 w-full h-full overflow-hidden select-none pointer-events-none bg-[#0B0D12]"
     >
       {/* 
         <picture> with responsive AVIF / WebP srcset.
-        Mobile <= 767px serves 1x & @2x mobile crop (centered around the terminal/desk figure).
+        Mobile <= 767px serves mobile crop (centered around the cyber desk figure).
         Desktop >= 768px serves the 1920x1080 full scenery.
       */}
-      <picture className="w-full h-full block">
+      <picture className="absolute inset-0 w-full h-full block">
         {/* Mobile: AVIF (1x and 2x) */}
         <source
           media="(max-width: 767px)"
@@ -54,51 +47,17 @@ export function HeroBackground() {
           decoding="async"
           loading="eager"
           alt=""
-          className="absolute inset-0 h-full w-full object-cover hero-zoom-desktop transition-transform duration-1000 ease-out"
-          style={{
-            objectPosition: "var(--hero-img-pos, 65% center)",
-          }}
+          className="w-full h-full object-cover object-[65%_center] md:object-center hero-zoom-desktop transition-transform duration-1000 ease-out"
         />
       </picture>
 
-      {/* Dynamic media-query inline style for CSS variables controlling object position */}
-      <style jsx>{`
-        img {
-          --hero-img-pos: var(--hero-pos-mobile, 65% center);
-        }
-        @media (min-width: 768px) {
-          img {
-            --hero-img-pos: var(--hero-pos-desktop, center center);
-          }
-        }
-      `}</style>
+      {/* --- Minimal Edge Fades to keep typography crisp without obscuring the artwork --- */}
 
-      {/* --- Overlays for WCAG AA readability over the busiest illustration areas --- */}
+      {/* 1. Subtle top gradient so top navbar text remains crisp */}
+      <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#0B0D12]/70 via-[#0B0D12]/20 to-transparent pointer-events-none" />
 
-      {/* 1. Top-to-bottom depth gradient: darker at top & bottom so navbar and hero bottom merge seamlessly */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0B0D12]/75 via-[#0B0D12]/40 to-[#0B0D12]" />
-
-      {/* 2. Desktop Left-to-right gradient: ensures high-contrast readability behind text column */}
-      <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#0B0D12]/95 via-[#0B0D12]/65 to-transparent w-full" />
-
-      {/* 3. Subtle radial vignette overlay */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(circle at 50% 40%, transparent 20%, rgba(11, 13, 18, 0.6) 80%, rgba(11, 13, 18, 0.95) 100%)",
-        }}
-      />
-
-      {/* 4. Fine cyber grid texture overlay (CSS only, no extra network images) */}
-      <div
-        className="absolute inset-0 opacity-[0.12] mix-blend-overlay pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, #242936 1px, transparent 1px), linear-gradient(to bottom, #242936 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+      {/* 2. Soft left tint behind typewriter text */}
+      <div className="absolute inset-y-0 left-0 w-full sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-[#0B0D12]/60 via-[#0B0D12]/20 to-transparent pointer-events-none" />
     </div>
   );
 }

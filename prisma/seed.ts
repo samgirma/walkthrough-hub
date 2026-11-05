@@ -21,8 +21,10 @@ async function main() {
   const user1 = await prisma.user.create({
     data: {
       username: "0xNullPtr",
+      name: "Null Pointer",
       email: "nullptr@writeuphub.sec",
       passwordHash,
+      role: "ADMIN",
       avatarUrl: "https://avatars.githubusercontent.com/u/1024025?v=4",
       bio: "Offensive security researcher & kernel exploitation specialist. Pwn / Hypervisors / Zero-Days.",
       githubUrl: "https://github.com/0xNullPtr",
@@ -32,8 +34,10 @@ async function main() {
   const user2 = await prisma.user.create({
     data: {
       username: "cyber_ghost",
+      name: "Cyber Ghost",
       email: "ghost@writeuphub.sec",
       passwordHash,
+      role: "USER",
       avatarUrl: "https://avatars.githubusercontent.com/u/2048050?v=4",
       bio: "Web & Crypto CTF player | Top 10 DEF CON CTF 32 Quals | Security Architect",
       githubUrl: "https://github.com/cyber_ghost",

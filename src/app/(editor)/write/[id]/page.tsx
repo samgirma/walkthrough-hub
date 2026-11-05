@@ -1,7 +1,6 @@
 import React from "react";
-import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { auth } from "@/lib/auth";
+import { requireWriteupOwner } from "@/server/auth/dal";
 import { getWriteupByIdForAuthor } from "@/server/writeup.service";
 import { StudioEditor } from "@/components/editor/studio-editor";
 
@@ -15,21 +14,17 @@ export const metadata: Metadata = {
 
 export default async function EditWriteupPage({ params }: EditWriteupPageProps) {
   const { id } = await params;
-  const session = await auth();
+  const { user } = await requireWriteupOwner(id);
+  const writeup = await getWriteupByIdForAuthor(id, user.id);
 
-  if (!session?.user?.id) {
-    notFound();
-  }
-
-  const writeup = await getWriteupByIdForAuthor(id, session.user.id);
   if (!writeup) {
-    notFound();
+    throw new Error("Writeup not found");
   }
 
   return (
     <StudioEditor
       initialWriteup={writeup}
-      authorUsername={session.user.username || "author"}
+      authorUsername={user.username || "author"}
     />
   );
 }

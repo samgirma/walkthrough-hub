@@ -23,6 +23,13 @@ import {
   Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Logo } from "@/components/brand/Logo";
 import { MarkdownViewer } from "@/components/markdown/markdown-viewer";
 import { PublishModal } from "@/components/editor/publish-modal";
 import { calculateReadingTime } from "@/lib/reading-time";
@@ -88,10 +95,43 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
   const [publishModalOpen, setPublishModalOpen] = useState(false);
   const [saveStatus, setSaveStatus] = useState<string>("Synced");
   const [isUploading, setIsUploading] = useState(false);
+  const [sessionExpiredOpen, setSessionExpiredOpen] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
+
+  // Local storage draft auto-save and recovery
+  const draftStorageKey = `writeuphub:draft:${initialWriteup?.id || "new"}`;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const saved = localStorage.getItem(draftStorageKey);
+      if (saved && !initialWriteup) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.contentMd) {
+          setTitle(parsed.title || title);
+          setContentMd(parsed.contentMd);
+        }
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem(
+          draftStorageKey,
+          JSON.stringify({ title, contentMd, updatedAt: Date.now() })
+        );
+        setSaveStatus("Local draft saved");
+      } catch {}
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [title, contentMd, draftStorageKey]);
 
   // Set default view mode based on viewport and handle mobile virtual keyboard
   useEffect(() => {
@@ -208,8 +248,14 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
             <ArrowLeft className="h-4 w-4" />
           </Link>
 
+          <Logo
+            variant="icon"
+            size={26}
+            href="/dashboard"
+            aria-label="Return to Dashboard"
+          />
+
           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#181C25] border border-[#242936]">
-            <Terminal className="h-3.5 w-3.5 text-primary" />
             <span className="font-mono text-[10px] text-primary uppercase font-bold tracking-wider">
               STUDIO
             </span>
@@ -550,7 +596,47 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
         onSaveSuccess={(updated) => {
           setSaveStatus("Saved");
         }}
+        onSessionExpired={() => setSessionExpiredOpen(true)}
       />
+
+      {/* Session Expired Recovery Modal (Keeps in-memory draft safe) */}
+      <Dialog open={sessionExpiredOpen} onOpenChange={setSessionExpiredOpen}>
+        <DialogContent className="max-w-md bg-[#12151C] border-[#242936] text-[#E0E2EC] p-6 rounded-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-rose-400 font-sans font-bold text-lg">
+              <AlertTriangle className="h-5 w-5 text-rose-400" />
+              <span>Session Expired</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 text-xs font-mono leading-relaxed text-[#BACAC1] py-2">
+            <p>
+              Your sign-in session has expired. Don&apos;t worry: your entire draft has been safely captured in local browser memory.
+            </p>
+            <p className="text-[11px] text-[#475569]">
+              Please sign in again in a new tab or window, then return here to publish without losing any progress.
+            </p>
+            <div className="flex items-center gap-3 pt-2">
+              <a
+                href="/login"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1"
+              >
+                <Button className="w-full gradient-cta text-[#0B0D12] font-bold text-xs min-h-[38px]">
+                  Sign In Again
+                </Button>
+              </a>
+              <Button
+                variant="outline"
+                onClick={() => setSessionExpiredOpen(false)}
+                className="border-[#242936] text-[#BACAC1] hover:text-white min-h-[38px]"
+              >
+                Keep Editing
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { Edit, Plus, ExternalLink, Trash2 } from "lucide-react";
-import { auth } from "@/lib/auth";
+import { requireOnboarded } from "@/server/auth/dal";
 import { getAuthorWriteups } from "@/server/writeup.service";
 import { Button } from "@/components/ui/button";
 import { formatDate, getCategoryColor } from "@/lib/utils";
@@ -19,13 +19,9 @@ interface WriteupsPageProps {
 
 export default async function WriteupsPage({ searchParams }: WriteupsPageProps) {
   const params = await searchParams;
-  const session = await auth();
-  if (!session?.user?.id) {
-    redirect("/login?callbackUrl=/dashboard/writeups");
-  }
-
-  const userId = session.user.id;
-  const username = session.user.username || "author";
+  const user = await requireOnboarded("/dashboard/writeups");
+  const userId = user.id;
+  const username = user.username;
 
   const filterStatus = params.status as Status | undefined;
   const writeups = await getAuthorWriteups(userId, filterStatus);

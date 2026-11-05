@@ -1,23 +1,17 @@
 import React from "react";
 import Link from "next/link";
-import { Terminal, Rss, FileCode, ShieldCheck, Heart } from "lucide-react";
+import { Rss, FileCode, ShieldCheck, Heart } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 
 export function Footer() {
   return (
-    <footer className="border-t border-[#242936] bg-[#0B0D12] text-[#94A3B8] text-xs font-mono py-12">
+    <footer className="border-t border-[#242936] bg-[#0B0D12]/90 backdrop-blur-md text-[#94A3B8] text-xs font-mono py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-[#242936]/60">
           <div className="flex flex-col gap-2">
-            <Link href="/" className="flex items-center gap-2 group min-h-[36px]">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-[#22D3A0] to-[#38BDF8] flex items-center justify-center text-[#0B0D12]">
-                <Terminal className="h-3.5 w-3.5 stroke-[2.5]" />
-              </div>
-              <span className="font-sans font-bold text-base text-white tracking-tight">
-                Writeup<span className="text-[#22D3A0]">Hub</span>
-              </span>
-            </Link>
+            <Logo variant="horizontal" size={28} />
             <p className="text-[#BACAC1] max-w-md font-sans text-xs">
-              Open-access CTF publishing platform. Cryptographically structured, zero-auth public reading, and developer-grade dark aesthetic.
+              Open-access CTF and cybersecurity research publishing platform.
             </p>
           </div>
 

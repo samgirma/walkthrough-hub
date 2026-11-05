@@ -86,6 +86,48 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
+## 🔑 Auth Setup (Google, GitHub, Telegram)
+
+WriteupHub provides unified, passwordless OAuth sign-in with Google, GitHub, and Telegram.
+
+### 1. Google OAuth
+1. Create a project in [Google Cloud Console](https://console.cloud.google.com/).
+2. Navigate to **APIs & Services > Credentials** > **Create Credentials > OAuth client ID**.
+3. Select **Web application**.
+4. Set **Authorized redirect URIs**:
+   - Local: `http://localhost:3000/api/auth/callback/google`
+   - Production: `https://walkthrough-by.samgirma.app/api/auth/callback/google`
+5. Copy the Client ID and Client Secret into `.env`:
+   ```bash
+   AUTH_GOOGLE_ID="your-client-id.apps.googleusercontent.com"
+   AUTH_GOOGLE_SECRET="your-client-secret"
+   ```
+
+### 2. GitHub OAuth
+1. In GitHub, go to **Settings > Developer Settings > OAuth Apps > New OAuth App**.
+2. Set **Homepage URL**: `http://localhost:3000` (or your domain).
+3. Set **Authorization callback URL**:
+   - Local: `http://localhost:3000/api/auth/callback/github`
+   - Production: `https://walkthrough-by.samgirma.app/api/auth/callback/github`
+4. Copy Client ID and generate a Client Secret into `.env`:
+   ```bash
+   AUTH_GITHUB_ID="your-github-client-id"
+   AUTH_GITHUB_SECRET="your-github-client-secret"
+   ```
+
+### 3. Telegram Login Widget
+Telegram uses HMAC-SHA256 signature verification tied to a Telegram bot:
+1. Message [@BotFather](https://t.me/BotFather) on Telegram and create a bot (`/newbot`).
+2. Copy the bot token into `TELEGRAM_BOT_TOKEN` in `.env`.
+3. Note the Bot ID (the numeric prefix before `:` in the token) into `NEXT_PUBLIC_TELEGRAM_BOT_ID`.
+4. Link your domain with BotFather:
+   - Send `/setdomain` to `@BotFather`.
+   - Select your bot.
+   - Enter your public domain (e.g. `walkthrough-by.samgirma.app`).
+   - *Note for local development:* Telegram login widgets require a publicly resolvable HTTPS domain or tunnel (e.g. Cloudflare Tunnel, ngrok, or localtunnel) pointing to port 3000. Set `/setdomain` to that HTTPS tunnel host.
+
+---
+
 ## 🧪 Testing
 
 ```bash

@@ -18,7 +18,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { auth } from "@/lib/auth";
-import { getWriteupByAuthorAndSlug } from "@/server/writeup.service";
+import { getWriteupForViewer } from "@/server/writeup.service";
 import { isBookmarked } from "@/server/bookmark.service";
 import { renderMarkdown, extractTOC } from "@/lib/markdown";
 import { MarkdownViewer } from "@/components/markdown/markdown-viewer";
@@ -48,9 +48,8 @@ export async function generateMetadata({
 }: WriteupPageProps): Promise<Metadata> {
   const { username, slug } = await params;
   const session = await auth();
-  const writeup = await getWriteupByAuthorAndSlug(
-    username,
-    slug,
+  const writeup = await getWriteupForViewer(
+    { username, slug },
     session?.user?.id
   );
 
@@ -94,9 +93,8 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
   const { username, slug } = await params;
   const session = await auth();
 
-  const writeup = await getWriteupByAuthorAndSlug(
-    username,
-    slug,
+  const writeup = await getWriteupForViewer(
+    { username, slug },
     session?.user?.id
   );
 
@@ -120,7 +118,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
   }/w/${username}/${slug}`;
 
   return (
-    <div className="relative w-full min-h-screen bg-[#0B0D12] pb-32 lg:pb-24">
+    <div className="relative w-full min-h-screen bg-transparent pb-32 lg:pb-24">
       {/* Top Reading Progress Bar */}
       <ReadingProgress />
 
@@ -156,7 +154,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
             {/* Table of Contents Container */}
             <nav
               aria-label="Table of contents"
-              className="p-4 rounded-xl border border-[#242936] bg-[#12151C] shadow-md flex flex-col gap-3"
+              className="p-4 rounded-xl border border-[#242936] bg-[#12151C]/80 backdrop-blur-md shadow-md flex flex-col gap-3"
             >
               <div className="flex items-center justify-between pb-2 border-b border-[#242936]/60">
                 <span className="font-mono text-xs uppercase tracking-wider text-[#94A3B8] flex items-center gap-1.5 font-semibold">
@@ -267,7 +265,8 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
             <MobileTOCAccordion toc={toc} />
 
             {/* Header Document Area */}
-            <div className="p-4 sm:p-8 rounded-xl border border-[#242936] bg-[#12151C] shadow-lg">
+            {/* Main Article Container (/92 opacity for optimal long-form readability over ambient world map) */}
+            <div className="p-4 sm:p-8 rounded-xl border border-[#242936] bg-[#12151C]/92 backdrop-blur-md shadow-lg">
               {/* Category & CTF Badges */}
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 <span
@@ -307,23 +306,23 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
               <div className="pt-4 border-t border-[#242936]/60 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-[#94A3B8]">
                 {/* Author Info */}
                 <Link
-                  href={`/u/${writeup.author.username}`}
+                  href={`/u/${writeup.author.username || "anonymous"}`}
                   className="flex items-center gap-2.5 group hover:text-white transition-colors"
                 >
                   {writeup.author.avatarUrl ? (
                     <img
                       src={writeup.author.avatarUrl}
-                      alt={writeup.author.username}
+                      alt={writeup.author.username || "Author"}
                       className="w-7 h-7 rounded-full object-cover"
                     />
                   ) : (
                     <div className="w-7 h-7 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-xs">
-                      {writeup.author.username[0].toUpperCase()}
+                      {(writeup.author.username || "A")[0].toUpperCase()}
                     </div>
                   )}
                   <div className="flex flex-col">
                     <span className="text-white font-semibold group-hover:text-primary transition-colors">
-                      @{writeup.author.username}
+                      @{writeup.author.username || "anonymous"}
                     </span>
                     <span className="text-[10px] text-[#475569]">
                       Author // Research Op
@@ -372,17 +371,17 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                 {writeup.author.avatarUrl ? (
                   <img
                     src={writeup.author.avatarUrl}
-                    alt={writeup.author.username}
+                    alt={writeup.author.username || "Author"}
                     className="w-12 h-12 rounded-full object-cover border border-[#242936]"
                   />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-sm">
-                    {writeup.author.username.slice(0, 2).toUpperCase()}
+                    {(writeup.author.username || "A").slice(0, 2).toUpperCase()}
                   </div>
                 )}
                 <div className="flex flex-col">
                   <span className="font-sans font-bold text-base text-white">
-                    @{writeup.author.username}
+                    @{writeup.author.username || "anonymous"}
                   </span>
                   <p className="font-sans text-xs text-[#94A3B8] max-w-md">
                     {writeup.author.bio || "Security researcher & CTF author."}
@@ -391,7 +390,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
               </div>
 
               <Link
-                href={`/u/${writeup.author.username}`}
+                href={`/u/${writeup.author.username || "anonymous"}`}
                 className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-[#181C25] hover:bg-[#1D2027] text-xs font-mono text-[#BACAC1] hover:text-white border border-[#242936] transition-colors flex items-center justify-center gap-1.5 shrink-0 min-h-[44px]"
               >
                 <span>View Researcher Profile</span>

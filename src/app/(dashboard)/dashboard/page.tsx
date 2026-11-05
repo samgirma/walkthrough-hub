@@ -12,7 +12,7 @@ import {
   ExternalLink,
   Trash2,
 } from "lucide-react";
-import { auth } from "@/lib/auth";
+import { requireOnboarded } from "@/server/auth/dal";
 import {
   getAuthorDashboardMetrics,
   getAuthorWriteups,
@@ -30,13 +30,9 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    redirect("/login?callbackUrl=/dashboard");
-  }
-
-  const userId = session.user.id;
-  const username = session.user.username || "author";
+  const user = await requireOnboarded("/dashboard");
+  const userId = user.id;
+  const username = user.username;
 
   const [metrics, writeups] = await Promise.all([
     getAuthorDashboardMetrics(userId),
@@ -52,10 +48,17 @@ export default async function DashboardPage() {
             <h1 className="font-sans font-bold text-2xl text-white tracking-tight">
               Author Overview
             </h1>
-            <span className="px-2 py-0.5 rounded bg-[#181C25] border border-[#242936] text-primary font-mono text-[10px] uppercase tracking-wider flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              Verified Op
-            </span>
+            {user.role === "ADMIN" ? (
+              <span className="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-400 font-mono text-[10px] uppercase tracking-wider flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                Admin Op
+              </span>
+            ) : (
+              <span className="px-2 py-0.5 rounded bg-[#181C25] border border-[#242936] text-primary font-mono text-[10px] uppercase tracking-wider flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                Verified Op
+              </span>
+            )}
           </div>
           <p className="font-sans text-xs text-[#94A3B8] max-w-2xl">
             Manage your CTF walkthroughs, analyze readership impact, and publish rigorous exploit documentation.

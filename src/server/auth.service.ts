@@ -55,6 +55,7 @@ export async function getUserById(userId: string) {
       bio: true,
       avatarUrl: true,
       githubUrl: true,
+      role: true,
       createdAt: true,
     },
   });

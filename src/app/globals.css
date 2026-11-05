@@ -82,8 +82,82 @@
 }
 
 :root {
+  --font-inter: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-jetbrains-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
   --hero-pos-mobile: 65% center;
   --hero-pos-desktop: center center;
+
+  /* Global World Map Background Variables */
+  --site-bg-opacity: 0.55;
+  --site-bg-overlay-1: rgba(11, 13, 18, 0.55);
+  --site-bg-overlay-2: rgba(11, 13, 18, 0.90);
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --site-bg-opacity: 0.40;
+  }
+}
+
+.light {
+  --site-bg-opacity: 0.07;
+  --site-bg-overlay-1: rgba(244, 246, 250, 0.40);
+  --site-bg-overlay-2: rgba(244, 246, 250, 0.85);
+}
+
+/* Responsive Global World Map Background with image-set() */
+.site-world-bg {
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  opacity: var(--site-bg-opacity, 0.55);
+}
+
+/* Screen width >= 1024px: High-resolution 1920 map */
+@media (min-width: 1024px) {
+  .site-world-bg {
+    background-image: url("/bg/bg-world-1920.jpg");
+    background-image: -webkit-image-set(
+      url("/bg/bg-world-1920.avif") type("image/avif"),
+      url("/bg/bg-world-1920.webp") type("image/webp"),
+      url("/bg/bg-world-1920.jpg") type("image/jpeg")
+    );
+    background-image: image-set(
+      url("/bg/bg-world-1920.avif") type("image/avif"),
+      url("/bg/bg-world-1920.webp") type("image/webp"),
+      url("/bg/bg-world-1920.jpg") type("image/jpeg")
+    );
+  }
+}
+
+/* Screen width < 1024px: Optimized 1280 map */
+@media (max-width: 1023px) {
+  .site-world-bg {
+    background-image: url("/bg/bg-world-1280.jpg");
+    background-image: -webkit-image-set(
+      url("/bg/bg-world-1280.avif") type("image/avif"),
+      url("/bg/bg-world-1280.webp") type("image/webp"),
+      url("/bg/bg-world-1280.jpg") type("image/jpeg")
+    );
+    background-image: image-set(
+      url("/bg/bg-world-1280.avif") type("image/avif"),
+      url("/bg/bg-world-1280.webp") type("image/webp"),
+      url("/bg/bg-world-1280.jpg") type("image/jpeg")
+    );
+  }
+}
+
+/* Light mode blend styling */
+.light .site-world-bg {
+  mix-blend-mode: multiply;
+}
+
+/* Bandwidth saving: disable heavy raster background under prefers-reduced-data */
+@media (prefers-reduced-data: reduce) {
+  .site-world-bg {
+    display: none !important;
+  }
 }
 
 /* Safe area padding utilities for notched devices */
@@ -107,6 +181,27 @@
 @media (max-width: 640px) {
   input, textarea, select {
     font-size: 16px !important;
+  }
+}
+
+/* Blinking Cursor Underscore */
+@keyframes cursorBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-cursor-blink {
+  animation: cursorBlink 1s step-start infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-cursor-blink {
+    animation: none !important;
+    opacity: 1 !important;
   }
 }
 

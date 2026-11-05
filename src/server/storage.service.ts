@@ -23,7 +23,8 @@ export interface IStorageService {
   uploadImage(
     buffer: Buffer,
     originalName: string,
-    mimeType: string
+    mimeType: string,
+    userId?: string
   ): Promise<StorageUploadResult>;
 }
 
@@ -37,7 +38,8 @@ class StorageService implements IStorageService {
   async uploadImage(
     buffer: Buffer,
     originalName: string,
-    mimeType: string
+    mimeType: string,
+    userId?: string
   ): Promise<StorageUploadResult> {
     // 1. Validate file size
     if (buffer.length > MAX_FILE_SIZE) {
@@ -51,10 +53,11 @@ class StorageService implements IStorageService {
       );
     }
 
-    // 3. Generate sanitized random file key
+    // 3. Generate sanitized user-namespaced file key
     const ext = path.extname(originalName).toLowerCase() || ".png";
     const randomHash = crypto.randomBytes(16).toString("hex");
-    const key = `uploads/${Date.now()}-${randomHash}${ext}`;
+    const userPrefix = userId ? `uploads/${userId}` : "uploads";
+    const key = `${userPrefix}/${Date.now()}-${randomHash}${ext}`;
 
     // 4. If Supabase is configured, upload to Supabase Storage
     if (this.supabaseUrl && this.supabaseServiceKey) {

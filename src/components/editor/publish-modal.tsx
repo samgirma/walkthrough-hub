@@ -47,6 +47,7 @@ interface PublishModalProps {
   writeupId?: string;
   authorUsername: string;
   onSaveSuccess?: (updated: any) => void;
+  onSessionExpired?: () => void;
 }
 
 export function PublishModal({
@@ -65,6 +66,7 @@ export function PublishModal({
   writeupId,
   authorUsername,
   onSaveSuccess,
+  onSessionExpired,
 }: PublishModalProps) {
   const router = useRouter();
 
@@ -124,10 +126,17 @@ export function PublishModal({
         });
       }
 
-      const data = await res.json();
       if (!res.ok) {
+        if (res.status === 401 && onSessionExpired) {
+          onOpenChange(false);
+          onSessionExpired();
+          return;
+        }
+        const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Failed to save writeup.");
       }
+
+      const data = await res.json();
 
       const fullUrl = `${window.location.origin}/w/${authorUsername}/${data.slug}`;
       setPublishedUrl(fullUrl);

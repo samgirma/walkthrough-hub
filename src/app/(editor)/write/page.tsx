@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import { auth } from "@/lib/auth";
+import { requireOnboarded } from "@/server/auth/dal";
 import { StudioEditor } from "@/components/editor/studio-editor";
 
 export const metadata: Metadata = {
@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 };
 
 export default async function NewWriteupPage() {
-  const session = await auth();
+  const user = await requireOnboarded("/write");
 
   return (
     <StudioEditor
       initialWriteup={null}
-      authorUsername={session?.user?.username || "researcher"}
+      authorUsername={user.username}
     />
   );
 }

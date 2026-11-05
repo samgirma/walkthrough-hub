@@ -2,11 +2,12 @@ import type { NextConfig } from "next";
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://telegram.org https://*.telegram.org;
+  frame-src 'self' https://telegram.org https://oauth.telegram.org https://*.telegram.org;
+  connect-src 'self' https: https://telegram.org https://*.telegram.org;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  img-src 'self' blob: data: https:;
+  img-src 'self' blob: data: https: https://telegram.org https://*.telegram.org;
   font-src 'self' https://fonts.gstatic.com data:;
-  connect-src 'self' https:;
   frame-ancestors 'none';
   form-action 'self';
   base-uri 'self';
@@ -28,6 +29,18 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "*.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "*.gravatar.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.telegram.org",
+      },
+      {
+        protocol: "https",
+        hostname: "t.me",
       },
       {
         protocol: "https",

@@ -20,7 +20,7 @@ interface WriteupCardProps {
     readTimeMin: number;
     publishedAt?: Date | string | null;
     author: {
-      username: string;
+      username: string | null;
       avatarUrl?: string | null;
     };
     tags?: {
@@ -35,10 +35,11 @@ interface WriteupCardProps {
 export function WriteupCard({ writeup }: WriteupCardProps) {
   const categoryStyle = getCategoryColor(writeup.category);
   const difficultyStyle = getDifficultyColor(writeup.difficulty);
-  const readUrl = `/w/${writeup.author.username}/${writeup.slug}`;
+  const authorHandle = writeup.author.username || "anonymous";
+  const readUrl = `/w/${authorHandle}/${writeup.slug}`;
 
   return (
-    <article className="card-cyber relative flex flex-col justify-between p-5 rounded-xl border border-[#242936] bg-[#12151C] hover:border-[#363E52] transition-all duration-200 group">
+    <article className="card-cyber relative flex flex-col justify-between p-5 rounded-xl border border-[#242936] bg-[#12151C]/80 backdrop-blur-md hover:border-[#363E52] hover:bg-[#181C25]/85 transition-all duration-200 group">
       <div>
         {/* Top Badges Row */}
         <div className="flex items-center justify-between gap-2 mb-3">
@@ -98,21 +99,21 @@ export function WriteupCard({ writeup }: WriteupCardProps) {
       <div className="pt-3 border-t border-[#242936]/60 flex items-center justify-between text-[11px] font-mono text-[#94A3B8]">
         {/* Author Handle */}
         <Link
-          href={`/u/${writeup.author.username}`}
+          href={`/u/${authorHandle}`}
           className="flex items-center gap-2 hover:text-white transition-colors"
         >
           {writeup.author.avatarUrl ? (
             <img
               src={writeup.author.avatarUrl}
-              alt={writeup.author.username}
+              alt={authorHandle}
               className="w-5 h-5 rounded-full object-cover"
             />
           ) : (
             <div className="w-5 h-5 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-[10px]">
-              {writeup.author.username[0].toUpperCase()}
+              {authorHandle[0].toUpperCase()}
             </div>
           )}
-          <span className="truncate max-w-[100px]">@{writeup.author.username}</span>
+          <span className="truncate max-w-[100px]">@{authorHandle}</span>
         </Link>
 
         {/* Views & Read Time */}

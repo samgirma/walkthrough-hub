@@ -35,11 +35,13 @@ export async function generateMetadata({
     };
   }
 
+  const displayUsername = user.username || username;
+
   return {
-    title: `@${user.username} // CTF Researcher Profile`,
+    title: `@${displayUsername} // CTF Researcher Profile`,
     description:
       user.bio ||
-      `Explore CTF solutions and security research published by @${user.username} on WriteupHub.`,
+      `Explore CTF solutions and security research published by @${displayUsername} on WriteupHub.`,
   };
 }
 
@@ -51,10 +53,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     notFound();
   }
 
+  const displayUsername = user.username || username;
   const publishedCount = user._count.writeups;
 
   return (
-    <div className="w-full min-h-screen bg-[#0B0D12] pb-24">
+    <div className="w-full min-h-screen bg-transparent pb-24">
       {/* Top Banner / Author Header */}
       <section className="w-full bg-[#10131A] border-b border-[#242936] py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,19 +74,19 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               {user.avatarUrl ? (
                 <img
                   src={user.avatarUrl}
-                  alt={user.username}
+                  alt={displayUsername}
                   className="w-20 h-20 rounded-2xl object-cover border-2 border-[#242936] shadow-xl"
                 />
               ) : (
                 <div className="w-20 h-20 rounded-2xl bg-[#181C25] border-2 border-[#242936] text-primary flex items-center justify-center font-bold text-2xl font-mono shadow-xl">
-                  {user.username.slice(0, 2).toUpperCase()}
+                  {displayUsername.slice(0, 2).toUpperCase()}
                 </div>
               )}
 
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center gap-3">
                   <h1 className="font-sans font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
-                    @{user.username}
+                    @{displayUsername}
                   </h1>
                   <span className="px-2 py-0.5 rounded bg-primary/10 border border-primary/20 text-primary font-mono text-[10px] font-semibold uppercase">
                     VERIFIED RESEARCHER

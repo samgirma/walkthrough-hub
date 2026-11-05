@@ -319,6 +319,56 @@ export async function getWriteupByAuthorAndSlug(
 }
 
 /**
+ * Single Unified Viewer Query:
+ * Enforces visibility rules consistently across public reader, editor, and API:
+ * - DRAFT: owner only (returns null if viewer is not the author)
+ * - UNLISTED: anyone with direct link can view
+ * - PUBLIC: everyone can view
+ */
+export async function getWriteupForViewer(
+  target: { id?: string; username?: string; slug?: string },
+  viewerUserId?: string | null
+) {
+  if (target.username && target.slug) {
+    return await getWriteupByAuthorAndSlug(target.username, target.slug, viewerUserId);
+  }
+
+  if (!target.id) return null;
+
+  const writeup = await prisma.writeup.findUnique({
+    where: { id: target.id },
+    include: {
+      author: {
+        select: {
+          id: true,
+          username: true,
+          avatarUrl: true,
+          bio: true,
+          githubUrl: true,
+        },
+      },
+      tags: {
+        include: { tag: true },
+      },
+      _count: {
+        select: { bookmarks: true },
+      },
+    },
+  });
+
+  if (!writeup) return null;
+
+  // Strict visibility enforcement
+  if (writeup.status === "DRAFT") {
+    if (!viewerUserId || viewerUserId !== writeup.authorId) {
+      return null;
+    }
+  }
+
+  return writeup;
+}
+
+/**
  * Get writeup by ID for author editor
  */
 export async function getWriteupByIdForAuthor(writeupId: string, authorId: string) {

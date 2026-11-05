@@ -1,24 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-});
+import { SessionProvider } from "@/components/providers/session-provider";
+import { SiteBackground } from "@/components/layout/SiteBackground";
+import { siteConfig } from "@/config/site";
 
 export const viewport: Viewport = {
   themeColor: "#0B0D12",
-  colorScheme: "dark",
+  colorScheme: "dark light",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -26,31 +16,32 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: "WriteupHub // CTF & Security Research Publishing",
-    template: "%s | WriteupHub",
+    default: `${siteConfig.name} // ${siteConfig.tagline}`,
+    template: `%s | ${siteConfig.name}`,
   },
-  description:
-    "The open platform where cybersecurity learners, CTF players, and exploit researchers dissect challenges, publish cryptographically verified walkthroughs, and level up together.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-  ),
+  description: siteConfig.description,
+  manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: "/apple-icon.png",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "WriteupHub",
-    title: "WriteupHub // CTF & Security Research Publishing",
-    description:
-      "The open platform where cybersecurity learners, CTF players, and exploit researchers dissect challenges, publish cryptographically verified walkthroughs, and level up together.",
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: `${siteConfig.name} // ${siteConfig.tagline}`,
+    description: siteConfig.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: "WriteupHub // CTF & Security Research Publishing",
-    description:
-      "The open platform where cybersecurity learners, CTF players, and exploit researchers dissect challenges, publish cryptographically verified walkthroughs, and level up together.",
+    title: `${siteConfig.name} // ${siteConfig.tagline}`,
+    description: siteConfig.description,
   },
 };
 
@@ -62,16 +53,18 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-[#0B0D12] text-[#E0E2EC] min-h-screen selection:bg-[#22D3A0] selection:text-[#003828]`}
+        className="font-sans antialiased bg-[#0B0D12] text-[#E0E2EC] min-h-screen selection:bg-[#22D3A0] selection:text-[#003828]"
       >
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          forcedTheme="dark"
-          enableSystem={false}
+          enableSystem={true}
           disableTransitionOnChange
         >
-          <QueryProvider>{children}</QueryProvider>
+          <SessionProvider>
+            <SiteBackground />
+            <QueryProvider>{children}</QueryProvider>
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

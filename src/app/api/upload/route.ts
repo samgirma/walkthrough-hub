@@ -35,7 +35,8 @@ export async function POST(req: Request) {
     const result = await storageService.uploadImage(
       buffer,
       file.name,
-      file.type
+      file.type,
+      session.user.id
     );
 
     return NextResponse.json(result);

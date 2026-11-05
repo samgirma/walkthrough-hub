@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { Bookmark, ExternalLink } from "lucide-react";
-import { auth } from "@/lib/auth";
+import { requireOnboarded } from "@/server/auth/dal";
 import { getUserBookmarks } from "@/server/bookmark.service";
 import { WriteupCard } from "@/components/writeup/writeup-card";
 
@@ -12,13 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default async function BookmarksPage() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    redirect("/login?callbackUrl=/dashboard/bookmarks");
-  }
-
-  const userId = session.user.id;
-  const { items } = await getUserBookmarks(userId);
+  const user = await requireOnboarded("/dashboard/bookmarks");
+  const { items } = await getUserBookmarks(user.id);
 
   return (
     <div className="flex flex-col gap-6 max-w-7xl mx-auto">

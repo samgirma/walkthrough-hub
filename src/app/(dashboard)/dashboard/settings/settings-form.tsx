@@ -35,11 +35,12 @@ import { formatDate } from "@/lib/utils";
 interface SettingsFormProps {
   user: {
     id: string;
-    username: string;
-    email: string;
+    username: string | null;
+    email: string | null;
     bio: string | null;
     avatarUrl: string | null;
     githubUrl: string | null;
+    role?: string;
     createdAt: Date;
   };
 }
@@ -158,7 +159,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
                 <div className="relative">
                   <User className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                   <Input
-                    value={user.username}
+                    value={user.username || "Not set (complete onboarding)"}
                     readOnly
                     disabled
                     className="pl-9 bg-[#181C25]/50 border-[#242936] text-slate-400 cursor-not-allowed font-mono"
@@ -177,7 +178,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                   <Input
-                    value={user.email}
+                    value={user.email || "No email associated (Telegram/OAuth)"}
                     readOnly
                     disabled
                     className="pl-9 bg-[#181C25]/50 border-[#242936] text-slate-400 cursor-not-allowed font-mono"
@@ -309,7 +310,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
-                    alt={user.username}
+                    alt={user.username || "User avatar"}
                     className="w-full h-full rounded-full object-cover"
                     onError={(e) => {
                       (e.target as HTMLElement).style.display = "none";
@@ -317,15 +318,15 @@ export function SettingsForm({ user }: SettingsFormProps) {
                   />
                 ) : (
                   <div className="w-full h-full rounded-full bg-[#202532] flex items-center justify-center text-slate-400 font-bold text-xl">
-                    {user.username.slice(0, 2).toUpperCase()}
+                    {(user.username || "U").slice(0, 2).toUpperCase()}
                   </div>
                 )}
               </div>
               <h3 className="font-bold text-white text-base">
-                {user.username}
+                {user.username || "Anonymous Researcher"}
               </h3>
               <p className="font-mono text-xs text-primary mb-3">
-                @{user.username}
+                @{user.username || "user"}
               </p>
               <p className="text-xs text-slate-400 line-clamp-3 italic mb-4">
                 {bio || "No bio added yet. Add a bio to tell the community about your CTF journey."}
@@ -355,6 +356,15 @@ export function SettingsForm({ user }: SettingsFormProps) {
               <div className="flex items-center justify-between py-2 border-b border-[#242936]">
                 <span className="text-slate-400 flex items-center gap-1.5">
                   <Shield className="w-3.5 h-3.5 text-primary" />
+                  Account Role
+                </span>
+                <span className={user.role === "ADMIN" ? "px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30" : "text-slate-300 font-mono"}>
+                  {user.role || "USER"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-[#242936]">
+                <span className="text-slate-400 flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-emerald-400" />
                   Account Status
                 </span>
                 <span className="text-emerald-400 font-mono font-medium">

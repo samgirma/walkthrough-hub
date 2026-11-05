@@ -19,6 +19,7 @@ import {
   Calendar,
   LogIn,
   UserPlus,
+  ShieldAlert,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchDialog } from "@/components/layout/search-dialog";
@@ -35,18 +36,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
+import { Logo } from "@/components/brand/Logo";
 
 interface NavbarProps {
   user?: {
     id: string;
-    username: string;
+    username?: string | null;
     email?: string | null;
     avatarUrl?: string | null;
+    role?: string | null;
   } | null;
 }
 
-export function Navbar({ user }: NavbarProps) {
+export function Navbar({ user: initialUser }: NavbarProps) {
+  const { data: session, status } = useSession();
+  const user = initialUser ?? (session?.user ? {
+    id: session.user.id,
+    username: session.user.username,
+    email: session.user.email,
+    avatarUrl: session.user.image,
+    role: session.user.role,
+  } : null);
+
+  const isLoading = status === "loading" && initialUser === undefined;
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -57,6 +70,21 @@ export function Navbar({ user }: NavbarProps) {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
+
+  // Global '/' keyboard shortcut for command palette search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === "/" &&
+        !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement)?.tagName)
+      ) {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Hide navbar on scroll down, show on scroll up on mobile
   useEffect(() => {
@@ -91,23 +119,19 @@ export function Navbar({ user }: NavbarProps) {
           isVisible ? "translate-y-0" : "-translate-y-full md:translate-y-0"
         }`}
       >
-        <div className="h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+        <div className="h-16 w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           
           {/* Logo & Desktop Nav */}
           <div className="flex items-center gap-6 lg:gap-8">
-            <Link href="/" className="flex items-center gap-2.5 group tap-target">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#22D3A0] to-[#38BDF8] flex items-center justify-center text-[#0B0D12] shadow-[0_0_16px_rgba(34,211,160,0.4)] group-hover:shadow-[0_0_24px_rgba(34,211,160,0.6)] transition-all shrink-0">
-                <Terminal className="h-4 w-4 stroke-[2.5]" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-sans font-bold text-lg tracking-tight text-white group-hover:text-[#50F0BB] transition-colors leading-none">
-                  Writeup<span className="text-[#22D3A0]">Hub</span>
-                </span>
-                <span className="font-mono text-[9px] text-[#94A3B8] tracking-widest hidden sm:inline">
-                  CTF VAULT
-                </span>
-              </div>
-            </Link>
+            {/* Desktop: Horizontal Logo (height ~32px) */}
+            <div className="hidden md:flex items-center">
+              <Logo variant="horizontal" size={32} priority />
+            </div>
+
+            {/* Mobile: Icon-only Logo (height 32px) so it never crowds 360px screen */}
+            <div className="flex md:hidden items-center">
+              <Logo variant="icon" size={32} priority />
+            </div>
 
             <nav className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => {
@@ -129,48 +153,14 @@ export function Navbar({ user }: NavbarProps) {
             </nav>
           </div>
 
-          {/* Desktop Search Trigger Command Bar */}
-          <div className="flex-1 max-w-md hidden lg:block">
-            <button
-              onClick={() => setSearchOpen(true)}
-              type="button"
-              className="w-full h-10 px-3 rounded-xl bg-[#0B0D12] border border-[#242936] text-[#BACAC1] hover:border-[#363E52] transition-colors flex items-center justify-between text-xs font-sans group shadow-inner focus:outline-none focus:ring-2 focus:ring-[#22D3A0]"
-            >
-              <div className="flex items-center gap-2.5 text-[#94A3B8]">
-                <Search className="h-4 w-4 text-[#94A3B8] group-hover:text-[#22D3A0] transition-colors" />
-                <span>Search writeups, CVEs, authors, CTFs...</span>
-              </div>
-              <kbd className="px-1.5 py-0.5 rounded bg-[#181C25] border border-[#242936] text-[10px] font-mono text-[#94A3B8] select-none">
-                /
-              </kbd>
-            </button>
-          </div>
-
           {/* Actions & User Profile */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Mobile Search Button */}
-            <button
-              type="button"
-              className="lg:hidden p-2 rounded-lg text-[#94A3B8] hover:text-white hover:bg-[#181C25] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#22D3A0]"
-              onClick={() => setSearchOpen(true)}
-              aria-label="Search Writeups"
-            >
-              <Search className="h-5 w-5" />
-            </button>
-
-            {/* Desktop Write CTA */}
-            <Link href="/write" className="hidden sm:inline-flex">
-              <Button
-                size="sm"
-                className="gap-1.5 text-xs font-semibold gradient-cta text-[#0B0D12] shadow-[0_0_16px_rgba(34,211,160,0.25)] hover:shadow-[0_0_20px_rgba(34,211,160,0.4)] min-h-[40px]"
-              >
-                <PenLine className="h-3.5 w-3.5" />
-                <span>Write</span>
-              </Button>
-            </Link>
-
-            {/* Desktop User Dropdown */}
-            {user ? (
+            {/* Desktop User Dropdown / Loading Skeleton / Sign in */}
+            {isLoading ? (
+              <div className="hidden sm:flex items-center justify-center min-w-[44px] min-h-[44px]">
+                <div className="w-8 h-8 rounded-full bg-[#181C25] border border-[#242936] animate-pulse" />
+              </div>
+            ) : user ? (
               <div className="hidden sm:block">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -181,12 +171,12 @@ export function Navbar({ user }: NavbarProps) {
                       {user.avatarUrl ? (
                         <img
                           src={user.avatarUrl}
-                          alt={user.username}
+                          alt={user.username || "user"}
                           className="w-8 h-8 rounded-full object-cover"
                         />
                       ) : (
                         <div className="w-8 h-8 rounded-full bg-[#181C25] flex items-center justify-center text-primary text-xs font-mono font-bold">
-                          {user.username.slice(0, 2).toUpperCase()}
+                          {(user.username || "U").slice(0, 2).toUpperCase()}
                         </div>
                       )}
                     </button>
@@ -196,9 +186,28 @@ export function Navbar({ user }: NavbarProps) {
                     className="w-56 bg-[#12151C] border-[#242936] text-xs font-mono"
                   >
                     <div className="px-3 py-2 border-b border-[#242936]/60">
-                      <p className="font-semibold text-white">@{user.username}</p>
-                      <p className="text-[11px] text-[#94A3B8] truncate">{user.email}</p>
+                      <div className="flex items-center justify-between gap-1.5 mb-0.5">
+                        <p className="font-semibold text-white truncate">@{user.username || "anonymous"}</p>
+                        {user.role === "ADMIN" && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30 shrink-0">
+                            ADMIN
+                          </span>
+                        )}
+                      </div>
+                      {user.email ? (
+                        <p className="text-[11px] text-[#94A3B8] truncate">{user.email}</p>
+                      ) : (
+                        <p className="text-[10px] text-[#22D3A0] font-mono">Telegram Verified</p>
+                      )}
                     </div>
+                    {user.role === "ADMIN" && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/admin" className="flex items-center gap-2 cursor-pointer py-2 text-amber-400 focus:text-amber-300">
+                          <ShieldAlert className="h-3.5 w-3.5 text-amber-400" />
+                          <span>Admin Console</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem asChild>
                       <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer py-2">
                         <LayoutDashboard className="h-3.5 w-3.5 text-primary" />
@@ -206,7 +215,7 @@ export function Navbar({ user }: NavbarProps) {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href={`/u/${user.username}`} className="flex items-center gap-2 cursor-pointer py-2">
+                      <Link href={user.username ? `/u/${user.username}` : "/dashboard"} className="flex items-center gap-2 cursor-pointer py-2">
                         <User className="h-3.5 w-3.5 text-secondary" />
                         <span>Public Profile</span>
                       </Link>
@@ -269,13 +278,8 @@ export function Navbar({ user }: NavbarProps) {
         <SheetContent side="right" className="w-[85vw] max-w-xs bg-[#12151C] border-l border-[#242936] p-6 flex flex-col justify-between">
           <div className="flex flex-col gap-6">
             <SheetHeader className="text-left pb-4 border-b border-[#242936]">
-              <SheetTitle className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-[#22D3A0] to-[#38BDF8] flex items-center justify-center text-[#0B0D12]">
-                  <Terminal className="h-4 w-4 stroke-[2.5]" />
-                </div>
-                <span className="font-sans font-bold text-base text-white">
-                  Writeup<span className="text-[#22D3A0]">Hub</span>
-                </span>
+              <SheetTitle className="flex items-center">
+                <Logo variant="horizontal" size={28} />
               </SheetTitle>
             </SheetHeader>
 
@@ -319,29 +323,55 @@ export function Navbar({ user }: NavbarProps) {
 
             {/* User Links or Auth */}
             <div className="flex flex-col gap-1 font-mono text-sm pt-4 border-t border-[#242936]">
-              {user ? (
+              {isLoading ? (
+                <div className="h-12 w-full rounded-lg bg-[#0B0D12] border border-[#242936] animate-pulse mb-2" />
+              ) : user ? (
                 <>
                   <div className="flex items-center gap-3 px-3 py-2 mb-2 bg-[#0B0D12] rounded-lg border border-[#242936]">
                     {user.avatarUrl ? (
                       <img
                         src={user.avatarUrl}
-                        alt={user.username}
+                        alt={user.username || "user"}
                         className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-xs">
-                        {user.username.slice(0, 2).toUpperCase()}
+                        {(user.username || "U").slice(0, 2).toUpperCase()}
                       </div>
                     )}
-                    <div className="flex flex-col truncate">
-                      <span className="text-white font-semibold text-xs truncate">
-                        @{user.username}
-                      </span>
-                      <span className="text-[10px] text-[#475569] truncate">
-                        {user.email}
-                      </span>
+                    <div className="flex flex-col truncate flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1.5">
+                        <span className="text-white font-semibold text-xs truncate">
+                          @{user.username || "anonymous"}
+                        </span>
+                        {user.role === "ADMIN" && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30 shrink-0">
+                            ADMIN
+                          </span>
+                        )}
+                      </div>
+                      {user.email ? (
+                        <span className="text-[10px] text-[#475569] truncate">
+                          {user.email}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-[#22D3A0] font-mono">
+                          Telegram Verified
+                        </span>
+                      )}
                     </div>
                   </div>
+
+                  {user.role === "ADMIN" && (
+                    <Link
+                      href="/dashboard/admin"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 min-h-[44px] border border-amber-500/20 mb-1"
+                    >
+                      <ShieldAlert className="h-4 w-4 text-amber-400" />
+                      <span>Admin Console</span>
+                    </Link>
+                  )}
 
                   <Link
                     href="/dashboard"
@@ -353,7 +383,7 @@ export function Navbar({ user }: NavbarProps) {
                   </Link>
 
                   <Link
-                    href={`/u/${user.username}`}
+                    href={user.username ? `/u/${user.username}` : "/dashboard"}
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#BACAC1] hover:text-white hover:bg-[#181C25] min-h-[44px]"
                   >
