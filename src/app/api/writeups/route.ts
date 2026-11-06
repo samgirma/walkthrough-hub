@@ -13,11 +13,21 @@ export async function POST(req: Request) {
     const json = await req.json();
     const validated = createWriteupSchema.parse(json);
     const writeup = await createWriteup(session.user.id, validated);
-    return NextResponse.json(writeup, { status: 201 });
+    return NextResponse.json(writeup, {
+      status: 201,
+      headers: {
+        "Cache-Control": "private, no-cache, no-store, must-revalidate",
+      },
+    });
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Failed to create writeup." },
-      { status: 400 }
+      {
+        status: 400,
+        headers: {
+          "Cache-Control": "private, no-cache, no-store, must-revalidate",
+        },
+      }
     );
   }
 }
@@ -34,5 +44,9 @@ export async function GET(req: Request) {
   }
 
   const result = await getPublicWriteups(parsed.data);
-  return NextResponse.json(result);
+  return NextResponse.json(result, {
+    headers: {
+      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+    },
+  });
 }

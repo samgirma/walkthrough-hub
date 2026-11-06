@@ -13,11 +13,20 @@ export async function PUT(req: Request) {
     const json = await req.json();
     const validated = updateProfileSchema.parse(json);
     const updated = await updateUserProfile(session.user.id, validated);
-    return NextResponse.json(updated);
+    return NextResponse.json(updated, {
+      headers: {
+        "Cache-Control": "private, no-cache, no-store, must-revalidate",
+      },
+    });
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Failed to update profile." },
-      { status: 400 }
+      {
+        status: 400,
+        headers: {
+          "Cache-Control": "private, no-cache, no-store, must-revalidate",
+        },
+      }
     );
   }
 }

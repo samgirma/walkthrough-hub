@@ -126,6 +126,9 @@ model Writeup {
   @@index([slug])
   @@index([authorId])
   @@index([status, category, publishedAt])
+  @@index([status, publishedAt(sort: Desc)])
+  @@index([authorId, status, publishedAt(sort: Desc)])
+  @@index([status, viewCount(sort: Desc), publishedAt(sort: Desc)])
 }
 
 model Tag {

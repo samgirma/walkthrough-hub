@@ -16,11 +16,20 @@ export async function POST(
 
   try {
     const result = await recordWriteupView(id, clientIp);
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: {
+        "Cache-Control": "private, no-cache, no-store, must-revalidate",
+      },
+    });
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Failed to record view" },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          "Cache-Control": "private, no-cache, no-store, must-revalidate",
+        },
+      }
     );
   }
 }

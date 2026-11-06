@@ -20,13 +20,30 @@ export async function GET(
   try {
     const writeup = await getWriteupByIdForAuthor(id, session.user.id);
     if (!writeup) {
-      return NextResponse.json({ error: "Writeup not found." }, { status: 404 });
+      return NextResponse.json(
+        { error: "Writeup not found." },
+        {
+          status: 404,
+          headers: {
+            "Cache-Control": "private, no-cache, no-store, must-revalidate",
+          },
+        }
+      );
     }
-    return NextResponse.json(writeup);
+    return NextResponse.json(writeup, {
+      headers: {
+        "Cache-Control": "private, no-cache, no-store, must-revalidate",
+      },
+    });
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Failed to fetch writeup." },
-      { status: 403 }
+      {
+        status: 403,
+        headers: {
+          "Cache-Control": "private, no-cache, no-store, must-revalidate",
+        },
+      }
     );
   }
 }
@@ -37,7 +54,15 @@ export async function PUT(
 ) {
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      {
+        status: 401,
+        headers: {
+          "Cache-Control": "private, no-cache, no-store, must-revalidate",
+        },
+      }
+    );
   }
 
   const { id } = await params;
@@ -45,11 +70,20 @@ export async function PUT(
     const json = await req.json();
     const validated = updateWriteupSchema.parse({ ...json, id });
     const writeup = await updateWriteup(session.user.id, validated);
-    return NextResponse.json(writeup);
+    return NextResponse.json(writeup, {
+      headers: {
+        "Cache-Control": "private, no-cache, no-store, must-revalidate",
+      },
+    });
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Failed to update writeup." },
-      { status: 400 }
+      {
+        status: 400,
+        headers: {
+          "Cache-Control": "private, no-cache, no-store, must-revalidate",
+        },
+      }
     );
   }
 }
@@ -60,17 +94,34 @@ export async function DELETE(
 ) {
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      {
+        status: 401,
+        headers: {
+          "Cache-Control": "private, no-cache, no-store, must-revalidate",
+        },
+      }
+    );
   }
 
   const { id } = await params;
   try {
     const result = await deleteWriteup(session.user.id, id);
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: {
+        "Cache-Control": "private, no-cache, no-store, must-revalidate",
+      },
+    });
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Failed to delete writeup." },
-      { status: 403 }
+      {
+        status: 403,
+        headers: {
+          "Cache-Control": "private, no-cache, no-store, must-revalidate",
+        },
+      }
     );
   }
 }

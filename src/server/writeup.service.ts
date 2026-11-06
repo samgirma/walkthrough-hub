@@ -565,7 +565,22 @@ export async function getPublicWriteups(rawFilters: FilterWriteupInput = {}) {
       orderBy,
       skip,
       take: limit,
-      include: {
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        coverImageUrl: true,
+        ctfName: true,
+        ctfYear: true,
+        category: true,
+        difficulty: true,
+        status: true,
+        viewCount: true,
+        readTimeMin: true,
+        publishedAt: true,
+        createdAt: true,
+        updatedAt: true,
         author: {
           select: {
             id: true,
@@ -609,7 +624,29 @@ export async function getAuthorWriteups(
   const writeups = await prisma.writeup.findMany({
     where,
     orderBy: { updatedAt: "desc" },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      excerpt: true,
+      coverImageUrl: true,
+      ctfName: true,
+      ctfYear: true,
+      category: true,
+      difficulty: true,
+      status: true,
+      viewCount: true,
+      readTimeMin: true,
+      publishedAt: true,
+      createdAt: true,
+      updatedAt: true,
+      author: {
+        select: {
+          id: true,
+          username: true,
+          avatarUrl: true,
+        },
+      },
       tags: { include: { tag: true } },
       _count: { select: { bookmarks: true } },
     },
