@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { PenLine } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useIdleSession } from "@/lib/use-idle-session";
 
 interface WriteupOwnerActionsProps {
   authorId: string;
@@ -14,9 +14,9 @@ export function WriteupOwnerActions({
   authorId,
   writeupId,
 }: WriteupOwnerActionsProps) {
-  const { data: session } = useSession();
+  const { user } = useIdleSession();
 
-  if (!session?.user?.id || session.user.id !== authorId) {
+  if (!user?.id || user.id !== authorId) {
     return null;
   }
 

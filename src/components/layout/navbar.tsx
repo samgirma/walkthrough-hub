@@ -37,7 +37,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSession, signOut } from "next-auth/react";
+import { useIdleSession } from "@/lib/use-idle-session";
 import { Logo } from "@/components/brand/Logo";
 
 interface NavbarProps {
@@ -51,13 +51,13 @@ interface NavbarProps {
 }
 
 export function Navbar({ user: initialUser }: NavbarProps) {
-  const { data: session, status } = useSession();
-  const user = initialUser ?? (session?.user ? {
-    id: session.user.id,
-    username: session.user.username,
-    email: session.user.email,
-    avatarUrl: session.user.image,
-    role: session.user.role,
+  const { user: idleUser, status, signOut } = useIdleSession();
+  const user = initialUser ?? (idleUser ? {
+    id: idleUser.id,
+    username: idleUser.username,
+    email: idleUser.email,
+    avatarUrl: idleUser.image,
+    role: idleUser.role,
   } : null);
 
   const isLoading = status === "loading" && initialUser === undefined;

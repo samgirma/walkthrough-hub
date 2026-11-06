@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
+import { useIdleSession } from "@/lib/use-idle-session";
 
 interface BookmarkButtonProps {
   writeupId: string;
@@ -16,8 +16,8 @@ export function BookmarkButton({
   initialBookmarked = false,
   userId: propUserId,
 }: BookmarkButtonProps) {
-  const { data: session } = useSession();
-  const currentUserId = propUserId || session?.user?.id;
+  const { user } = useIdleSession();
+  const currentUserId = propUserId || user?.id;
   const [bookmarked, setBookmarked] = useState(initialBookmarked);
   const [loading, setLoading] = useState(false);
 
