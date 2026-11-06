@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Eye, Clock, ShieldCheck, Flag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatCompactNumber, getCategoryColor, getDifficultyColor } from "@/lib/utils";
@@ -103,10 +104,13 @@ export function WriteupCard({ writeup }: WriteupCardProps) {
           className="flex items-center gap-2 hover:text-white transition-colors"
         >
           {writeup.author.avatarUrl ? (
-            <img
+            <Image
               src={writeup.author.avatarUrl}
               alt={authorHandle}
+              width={20}
+              height={20}
               className="w-5 h-5 rounded-full object-cover"
+              unoptimized={!writeup.author.avatarUrl.includes("github") && !writeup.author.avatarUrl.includes("google") && !writeup.author.avatarUrl.includes("supabase")}
             />
           ) : (
             <div className="w-5 h-5 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-[10px]">

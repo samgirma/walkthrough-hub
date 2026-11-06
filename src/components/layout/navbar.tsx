@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Terminal,
@@ -169,10 +170,13 @@ export function Navbar({ user: initialUser }: NavbarProps) {
                       aria-label="User menu"
                     >
                       {user.avatarUrl ? (
-                        <img
+                        <Image
                           src={user.avatarUrl}
                           alt={user.username || "user"}
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-full object-cover"
+                          unoptimized={!user.avatarUrl.includes("github") && !user.avatarUrl.includes("google") && !user.avatarUrl.includes("supabase")}
                         />
                       ) : (
                         <div className="w-8 h-8 rounded-full bg-[#181C25] flex items-center justify-center text-primary text-xs font-mono font-bold">
@@ -329,10 +333,13 @@ export function Navbar({ user: initialUser }: NavbarProps) {
                 <>
                   <div className="flex items-center gap-3 px-3 py-2 mb-2 bg-[#0B0D12] rounded-lg border border-[#242936]">
                     {user.avatarUrl ? (
-                      <img
+                      <Image
                         src={user.avatarUrl}
                         alt={user.username || "user"}
+                        width={32}
+                        height={32}
                         className="w-8 h-8 rounded-full object-cover"
+                        unoptimized={!user.avatarUrl.includes("github") && !user.avatarUrl.includes("google") && !user.avatarUrl.includes("supabase")}
                       />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-xs">

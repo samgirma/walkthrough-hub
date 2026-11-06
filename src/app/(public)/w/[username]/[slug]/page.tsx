@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import {
@@ -310,10 +311,13 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                   className="flex items-center gap-2.5 group hover:text-white transition-colors"
                 >
                   {writeup.author.avatarUrl ? (
-                    <img
+                    <Image
                       src={writeup.author.avatarUrl}
                       alt={writeup.author.username || "Author"}
+                      width={28}
+                      height={28}
                       className="w-7 h-7 rounded-full object-cover"
+                      unoptimized={!writeup.author.avatarUrl.includes("github") && !writeup.author.avatarUrl.includes("google") && !writeup.author.avatarUrl.includes("supabase")}
                     />
                   ) : (
                     <div className="w-7 h-7 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-xs">
@@ -369,10 +373,13 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
             <div className="p-4 sm:p-6 rounded-xl border border-[#242936] bg-[#12151C] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 {writeup.author.avatarUrl ? (
-                  <img
+                  <Image
                     src={writeup.author.avatarUrl}
                     alt={writeup.author.username || "Author"}
+                    width={48}
+                    height={48}
                     className="w-12 h-12 rounded-full object-cover border border-[#242936]"
+                    unoptimized={!writeup.author.avatarUrl.includes("github") && !writeup.author.avatarUrl.includes("google") && !writeup.author.avatarUrl.includes("supabase")}
                   />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-sm">

@@ -11,10 +11,23 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
 import { GoogleIcon, GithubIcon, TelegramIcon } from "@/components/auth/BrandIcons";
-import { TelegramAuthButton } from "@/components/auth/TelegramAuthButton";
 import { unlinkProviderAction, linkTelegramAccountAction } from "@/server/auth.actions";
 import { Check, Link as LinkIcon, Unlink, AlertCircle, Loader2 } from "lucide-react";
+
+const TelegramAuthButton = dynamic(
+  () =>
+    import("@/components/auth/TelegramAuthButton").then(
+      (mod) => mod.TelegramAuthButton
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-10 w-28 rounded-lg bg-[#141822] animate-pulse border border-white/5" />
+    ),
+  }
+);
 
 interface ConnectedAccountsProps {
   linkedProviders: string[];

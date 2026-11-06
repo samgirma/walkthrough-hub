@@ -43,6 +43,7 @@ export default async function HomePage() {
       {/* 
         Preload critical AVIF hero images for desktop and mobile
         hoisted directly into document head by React 19 / Next.js
+        Matches responsive srcset (1x and 2x) to eliminate resource discovery delay
       */}
       <link
         rel="preload"
@@ -50,13 +51,15 @@ export default async function HomePage() {
         type="image/avif"
         media="(min-width: 768px)"
         href="/hero/hero-desktop.avif"
+        fetchPriority="high"
       />
       <link
         rel="preload"
         as="image"
         type="image/avif"
         media="(max-width: 767px)"
-        href="/hero/hero-mobile.avif"
+        imageSrcSet="/hero/hero-mobile.avif 1x, /hero/hero-mobile@2x.avif 2x"
+        fetchPriority="high"
       />
 
       {/* 

@@ -46,9 +46,6 @@ export const config = {
   matcher: [
     "/dashboard/:path*",
     "/write/:path*",
-    "/settings/:path*",
-    "/login",
-    "/register",
     "/onboarding",
   ],
 };

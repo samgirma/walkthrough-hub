@@ -61,7 +61,13 @@ export async function getUserById(userId: string) {
   });
 }
 
-export async function getUserProfile(username: string) {
+export async function getUserProfile(
+  username: string,
+  pagination?: { limit?: number; cursor?: string }
+) {
+  const limit = Math.min(Math.max(pagination?.limit ?? 12, 1), 48);
+  const cursor = pagination?.cursor;
+
   const user = await prisma.user.findUnique({
     where: { username },
     select: {
@@ -72,31 +78,6 @@ export async function getUserProfile(username: string) {
       bio: true,
       githubUrl: true,
       createdAt: true,
-      writeups: {
-        where: { status: "PUBLIC" },
-        orderBy: { publishedAt: "desc" },
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          excerpt: true,
-          category: true,
-          difficulty: true,
-          ctfName: true,
-          ctfYear: true,
-          viewCount: true,
-          readTimeMin: true,
-          publishedAt: true,
-          createdAt: true,
-          tags: {
-            select: {
-              tag: {
-                select: { id: true, name: true },
-              },
-            },
-          },
-        },
-      },
       _count: {
         select: {
           writeups: { where: { status: "PUBLIC" } },
@@ -105,7 +86,51 @@ export async function getUserProfile(username: string) {
     },
   });
 
-  return user;
+  if (!user) {
+    return null;
+  }
+
+  const writeups = await prisma.writeup.findMany({
+    where: {
+      authorId: user.id,
+      status: "PUBLIC",
+    },
+    orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
+    take: limit + 1,
+    skip: cursor ? 1 : 0,
+    cursor: cursor ? { id: cursor } : undefined,
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      excerpt: true,
+      category: true,
+      difficulty: true,
+      ctfName: true,
+      ctfYear: true,
+      viewCount: true,
+      readTimeMin: true,
+      publishedAt: true,
+      createdAt: true,
+      tags: {
+        select: {
+          tag: {
+            select: { id: true, name: true },
+          },
+        },
+      },
+    },
+  });
+
+  const hasMore = writeups.length > limit;
+  const items = hasMore ? writeups.slice(0, limit) : writeups;
+  const nextCursor = hasMore ? items[items.length - 1].id : null;
+
+  return {
+    ...user,
+    writeups: items,
+    nextCursor,
+  };
 }
 
 export async function updateUserProfile(

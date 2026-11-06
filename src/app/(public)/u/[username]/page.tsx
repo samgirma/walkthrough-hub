@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import {
@@ -12,7 +13,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { getUserProfile } from "@/server/auth.service";
-import { WriteupCard } from "@/components/writeup/writeup-card";
+import { ProfileWriteupsFeed } from "./profile-writeups-feed";
 import { formatDate } from "@/lib/utils";
 
 interface ProfilePageProps {
@@ -72,10 +73,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
               {user.avatarUrl ? (
-                <img
+                <Image
                   src={user.avatarUrl}
                   alt={displayUsername}
+                  width={80}
+                  height={80}
                   className="w-20 h-20 rounded-2xl object-cover border-2 border-[#242936] shadow-xl"
+                  unoptimized={!user.avatarUrl.includes("github") && !user.avatarUrl.includes("google") && !user.avatarUrl.includes("supabase")}
                 />
               ) : (
                 <div className="w-20 h-20 rounded-2xl bg-[#181C25] border-2 border-[#242936] text-primary flex items-center justify-center font-bold text-2xl font-mono shadow-xl">
@@ -150,30 +154,13 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           </h2>
         </div>
 
-        {user.writeups.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {user.writeups.map((w) => (
-              <WriteupCard
-                key={w.id}
-                writeup={{
-                  ...w,
-                  status: "PUBLIC",
-                  author: {
-                    username: user.username,
-                    avatarUrl: user.avatarUrl,
-                  },
-                }}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="p-12 text-center rounded-xl border border-[#242936] bg-[#12151C] text-[#94A3B8]">
-            <ShieldAlert className="h-10 w-10 text-[#475569] mx-auto mb-3" />
-            <p className="font-sans text-sm">
-              This researcher has not published any public writeups yet.
-            </p>
-          </div>
-        )}
+        <ProfileWriteupsFeed
+          initialWriteups={user.writeups}
+          initialNextCursor={user.nextCursor}
+          username={displayUsername}
+          avatarUrl={user.avatarUrl}
+          totalCount={publishedCount}
+        />
       </section>
     </div>
   );

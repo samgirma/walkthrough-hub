@@ -173,3 +173,19 @@ export async function deleteAccountAction(confirmUsername: string) {
 
   return { success: true };
 }
+
+export async function loadMoreUserWriteupsAction(
+  username: string,
+  cursor: string,
+  limit = 12
+) {
+  const { getUserProfile } = await import("@/server/auth.service");
+  const profile = await getUserProfile(username, { limit, cursor });
+  if (!profile) {
+    return { writeups: [], nextCursor: null };
+  }
+  return {
+    writeups: profile.writeups,
+    nextCursor: profile.nextCursor,
+  };
+}

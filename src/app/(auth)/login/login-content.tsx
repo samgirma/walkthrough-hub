@@ -3,14 +3,27 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { ProviderButton } from "@/components/auth/ProviderButton";
-import { TelegramAuthButton } from "@/components/auth/TelegramAuthButton";
 import { GoogleIcon, GithubIcon } from "@/components/auth/BrandIcons";
 import { sanitizeRedirectUrl } from "@/lib/validations/auth.schema";
 import { AlertCircle, Terminal, ArrowLeft } from "lucide-react";
 import type { AuthProviderName } from "@/env";
+
+const TelegramAuthButton = dynamic(
+  () =>
+    import("@/components/auth/TelegramAuthButton").then(
+      (mod) => mod.TelegramAuthButton
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-11 w-full rounded-xl bg-[#141822] animate-pulse border border-white/5" />
+    ),
+  }
+);
 
 interface LoginContentProps {
   enabledProviders: Record<AuthProviderName, boolean>;
