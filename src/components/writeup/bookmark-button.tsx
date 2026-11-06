@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 
 interface BookmarkButtonProps {
   writeupId: string;
@@ -13,13 +14,32 @@ interface BookmarkButtonProps {
 export function BookmarkButton({
   writeupId,
   initialBookmarked = false,
-  userId,
+  userId: propUserId,
 }: BookmarkButtonProps) {
+  const { data: session } = useSession();
+  const currentUserId = propUserId || session?.user?.id;
   const [bookmarked, setBookmarked] = useState(initialBookmarked);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (!currentUserId || !writeupId) return;
+    let isMounted = true;
+    fetch(`/api/bookmarks?writeupId=${encodeURIComponent(writeupId)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data && typeof data.bookmarked === "boolean") {
+          setBookmarked(data.bookmarked);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentUserId, writeupId]);
+
   const handleToggle = async () => {
-    if (!userId) {
+    if (!currentUserId) {
       window.location.href = `/login?callbackUrl=${encodeURIComponent(
         window.location.pathname
       )}`;

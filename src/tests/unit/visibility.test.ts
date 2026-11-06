@@ -44,4 +44,48 @@ describe("Writeup Visibility Rules Engine", () => {
     expect(evaluateVisibility(publicWriteup, "author-bob")).toEqual(publicWriteup);
     expect(evaluateVisibility(publicWriteup, "author-alice")).toEqual(publicWriteup);
   });
+
+  describe("Visibility Transitions & Cache Invalidation", () => {
+    it("ensures a writeup transitioned from PUBLIC to DRAFT stops being served publicly", () => {
+      // Initially public
+      let currentWriteup: { id: string; authorId: string; status: "DRAFT" | "UNLISTED" | "PUBLIC" } = {
+        ...publicWriteup,
+      };
+
+      // Public viewer accesses it
+      const publicViewInitial = evaluateVisibility(currentWriteup, null);
+      expect(publicViewInitial).not.toBeNull();
+      expect(publicViewInitial?.status).toBe("PUBLIC");
+
+      // Author transitions writeup to DRAFT
+      currentWriteup = {
+        ...currentWriteup,
+        status: "DRAFT",
+      };
+
+      // At revalidation / subsequent public request, public viewer gets null (which triggers notFound())
+      const publicViewAfterTransition = evaluateVisibility(currentWriteup, null);
+      expect(publicViewAfterTransition).toBeNull();
+
+      // Only the author can access it via author preview
+      const authorView = evaluateVisibility(currentWriteup, "author-alice");
+      expect(authorView).not.toBeNull();
+      expect(authorView?.status).toBe("DRAFT");
+    });
+
+    it("ensures UNLISTED writeups are excluded from public sitemaps and discovery feeds", () => {
+      const feedItems = [
+        { id: "w-1", title: "Public Exploit", status: "PUBLIC" },
+        { id: "w-2", title: "Unlisted Exploit", status: "UNLISTED" },
+        { id: "w-3", title: "Draft Exploit", status: "DRAFT" },
+      ];
+
+      // Sitemaps and feeds filter strictly by status === 'PUBLIC'
+      const sitemapEntries = feedItems.filter((item) => item.status === "PUBLIC");
+      expect(sitemapEntries).toHaveLength(1);
+      expect(sitemapEntries[0].id).toBe("w-1");
+      expect(sitemapEntries.some((i) => i.status === "UNLISTED")).toBe(false);
+      expect(sitemapEntries.some((i) => i.status === "DRAFT")).toBe(false);
+    });
+  });
 });

@@ -18,13 +18,13 @@ import {
   Bookmark,
   ExternalLink,
 } from "lucide-react";
-import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { getWriteupForViewer } from "@/server/writeup.service";
-import { isBookmarked } from "@/server/bookmark.service";
 import { renderMarkdown, extractTOC } from "@/lib/markdown";
 import { MarkdownViewer } from "@/components/markdown/markdown-viewer";
 import { ReadingProgress } from "@/components/writeup/reading-progress";
 import { BookmarkButton } from "@/components/writeup/bookmark-button";
+import { WriteupOwnerActions } from "@/components/writeup/writeup-owner-actions";
 import { ShareModal } from "@/components/writeup/share-modal";
 import {
   formatDate,
@@ -42,19 +42,49 @@ interface WriteupPageProps {
   }>;
 }
 
-export const dynamic = "force-dynamic";
+// Phase 1: Static/ISR with 1-hour revalidation and on-demand cache tags
+export const revalidate = 3600;
+export const dynamicParams = true;
+
+/**
+ * Pre-generate the top 20 most viewed/popular public writeups at build time
+ * Never exposes DRAFT or UNLISTED writeups to build parameters
+ */
+export async function generateStaticParams() {
+  try {
+    const topWriteups = await prisma.writeup.findMany({
+      where: { status: "PUBLIC" },
+      orderBy: [{ viewCount: "desc" }, { publishedAt: "desc" }],
+      take: 5,
+      select: {
+        slug: true,
+        author: {
+          select: { username: true },
+        },
+      },
+    });
+
+    return topWriteups
+      .filter((w) => w.author.username && w.slug)
+      .map((w) => ({
+        username: w.author.username!,
+        slug: w.slug,
+      }));
+  } catch (err) {
+    console.warn("[generateStaticParams] Could not fetch top writeups:", err);
+    return [];
+  }
+}
 
 export async function generateMetadata({
   params,
 }: WriteupPageProps): Promise<Metadata> {
   const { username, slug } = await params;
-  const session = await auth();
-  const writeup = await getWriteupForViewer(
-    { username, slug },
-    session?.user?.id
-  );
+  // Public reader metadata: no session read in metadata to ensure static ISR caching
+  const writeup = await getWriteupForViewer({ username, slug });
 
-  if (!writeup) {
+  // DRAFT status is strictly forbidden from public access
+  if (!writeup || writeup.status === "DRAFT") {
     return {
       title: "Writeup Not Found | WriteupHub",
     };
@@ -92,21 +122,14 @@ export async function generateMetadata({
 
 export default async function WriteupPage({ params }: WriteupPageProps) {
   const { username, slug } = await params;
-  const session = await auth();
 
-  const writeup = await getWriteupForViewer(
-    { username, slug },
-    session?.user?.id
-  );
+  // Zero session read in page root: reads purely public/unlisted writeup for static caching
+  const writeup = await getWriteupForViewer({ username, slug });
 
-  if (!writeup) {
+  // If writeup is not found or is a DRAFT, return notFound() immediately
+  if (!writeup || writeup.status === "DRAFT") {
     notFound();
   }
-
-  // Check if current authenticated user has bookmarked this writeup
-  const bookmarked = session?.user?.id
-    ? await isBookmarked(session.user.id, writeup.id)
-    : false;
 
   // Render markdown with Shiki & sanitize
   const htmlContent = await renderMarkdown(writeup.contentMd);
@@ -137,13 +160,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
           {writeup.status === "UNLISTED" && (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-semibold text-[11px]">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-              UNLISTED // ZERO-AUTH LINK ACCESS
-            </span>
-          )}
-
-          {writeup.status === "DRAFT" && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-purple-400 font-semibold text-[11px]">
-              DRAFT // AUTHOR ONLY
+              UNLISTED // DIRECT LINK ONLY
             </span>
           )}
         </div>
@@ -168,7 +185,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
               </div>
 
               <div className="flex flex-col gap-1 text-xs font-mono">
-                {toc.map((item, idx) => (
+                {toc.map((item) => (
                   <a
                     key={item.id}
                     href={`#${item.id}`}
@@ -265,8 +282,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
             {/* Mobile Collapsible TOC Accordion at top of article */}
             <MobileTOCAccordion toc={toc} />
 
-            {/* Header Document Area */}
-            {/* Main Article Container (/92 opacity for optimal long-form readability over ambient world map) */}
+            {/* Main Article Container */}
             <div className="p-4 sm:p-8 rounded-xl border border-[#242936] bg-[#12151C]/92 backdrop-blur-md shadow-lg">
               {/* Category & CTF Badges */}
               <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -317,7 +333,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                       width={28}
                       height={28}
                       className="w-7 h-7 rounded-full object-cover"
-                      unoptimized={!writeup.author.avatarUrl.includes("github") && !writeup.author.avatarUrl.includes("google") && !writeup.author.avatarUrl.includes("supabase")}
+                      unoptimized
                     />
                   ) : (
                     <div className="w-7 h-7 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-xs">
@@ -352,19 +368,19 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                   )}
                 </div>
 
-                {/* Action Buttons */}
+                {/* Action Buttons: Client islands */}
                 <div className="flex items-center gap-2 ml-auto sm:ml-0">
-                  <BookmarkButton
+                  <WriteupOwnerActions
+                    authorId={writeup.author.id}
                     writeupId={writeup.id}
-                    initialBookmarked={bookmarked}
-                    userId={session?.user?.id}
                   />
+                  <BookmarkButton writeupId={writeup.id} />
                   <ShareModal title={writeup.title} url={currentUrl} />
                 </div>
               </div>
             </div>
 
-            {/* Markdown Body Article (Comfortable max-w-prose, 16-18px font) */}
+            {/* Markdown Body Article */}
             <div className="p-4 sm:p-8 lg:p-10 rounded-xl border border-[#242936] bg-[#12151C] shadow-md max-w-full overflow-hidden">
               <MarkdownViewer htmlContent={htmlContent} />
             </div>
@@ -379,7 +395,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                     width={48}
                     height={48}
                     className="w-12 h-12 rounded-full object-cover border border-[#242936]"
-                    unoptimized={!writeup.author.avatarUrl.includes("github") && !writeup.author.avatarUrl.includes("google") && !writeup.author.avatarUrl.includes("supabase")}
+                    unoptimized
                   />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-sm">
@@ -408,11 +424,9 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
         </div>
       </div>
 
-      {/* Mobile Reader Interactive Experience: Fixed Bottom Bar, Floating TOC Pill & Sheet */}
+      {/* Mobile Reader Interactive Experience */}
       <WriteupReaderClient
         writeupId={writeup.id}
-        initialBookmarked={bookmarked}
-        userId={session?.user?.id}
         title={writeup.title}
         url={currentUrl}
         toc={toc}

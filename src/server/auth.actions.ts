@@ -6,6 +6,7 @@ import { sanitizeRedirectUrl, usernameSchema, sanitizeUsername } from "@/lib/val
 import { verifyTelegramAuth } from "@/lib/telegram-auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { headers } from "next/headers";
+import { revalidateTag, revalidatePath } from "next/cache";
 
 export async function signInOAuthAction(provider: "google" | "github", rawRedirectTo?: string) {
   const safeRedirect = sanitizeRedirectUrl(rawRedirectTo);
@@ -47,6 +48,15 @@ export async function completeOnboardingAction(rawUsername: string) {
       where: { id: session.user.id },
       data: { username },
     });
+
+    try {
+      revalidateTag(`user:${session.user.id}`);
+      revalidateTag("writeups");
+      revalidatePath(`/u/${username}`);
+      revalidatePath("/sitemap.xml");
+    } catch {
+      // Graceful no-op in test/offline environments
+    }
 
     return { success: true, username };
   } catch (error: any) {

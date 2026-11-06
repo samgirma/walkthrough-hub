@@ -110,7 +110,7 @@ export function WriteupCard({ writeup }: WriteupCardProps) {
               width={20}
               height={20}
               className="w-5 h-5 rounded-full object-cover"
-              unoptimized={!writeup.author.avatarUrl.includes("github") && !writeup.author.avatarUrl.includes("google") && !writeup.author.avatarUrl.includes("supabase")}
+              unoptimized
             />
           ) : (
             <div className="w-5 h-5 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-[10px]">

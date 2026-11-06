@@ -6,7 +6,7 @@ import { BookmarkButton } from "@/components/writeup/bookmark-button";
 
 interface MobileActionBarProps {
   writeupId: string;
-  initialBookmarked: boolean;
+  initialBookmarked?: boolean;
   userId?: string;
   title: string;
   url: string;
@@ -16,7 +16,7 @@ interface MobileActionBarProps {
 
 export function MobileActionBar({
   writeupId,
-  initialBookmarked,
+  initialBookmarked = false,
   userId,
   title,
   url,

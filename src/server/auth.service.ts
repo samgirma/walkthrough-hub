@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { RegisterInput, UpdateProfileInput } from "@/lib/validations/auth.schema";
+import { revalidateTag, revalidatePath } from "next/cache";
 
 export async function registerUser(input: RegisterInput) {
   const emailLower = input.email.toLowerCase().trim();
@@ -153,6 +154,15 @@ export async function updateUserProfile(
       githubUrl: true,
     },
   });
+
+  try {
+    revalidateTag(`user:${userId}`);
+    if (updated.username) {
+      revalidatePath(`/u/${updated.username}`);
+    }
+  } catch {
+    // Graceful no-op in test/offline environments
+  }
 
   return updated;
 }

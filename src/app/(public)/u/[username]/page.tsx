@@ -12,6 +12,7 @@ import {
   Flame,
   ArrowLeft,
 } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 import { getUserProfile } from "@/server/auth.service";
 import { ProfileWriteupsFeed } from "./profile-writeups-feed";
 import { formatDate } from "@/lib/utils";
@@ -22,7 +23,23 @@ interface ProfilePageProps {
   }>;
 }
 
-export const dynamic = "force-dynamic";
+// Phase 1: Static ISR with 10-minute background revalidation
+export const revalidate = 600;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  try {
+    const authors = await prisma.user.findMany({
+      where: { writeups: { some: { status: "PUBLIC" } } },
+      select: { username: true },
+      take: 3,
+    });
+    return authors.filter((a) => a.username).map((a) => ({ username: a.username! }));
+  } catch (err) {
+    console.warn("[generateStaticParams] Could not fetch profile paths:", err);
+    return [];
+  }
+}
 
 export async function generateMetadata({
   params,
@@ -79,7 +96,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                   width={80}
                   height={80}
                   className="w-20 h-20 rounded-2xl object-cover border-2 border-[#242936] shadow-xl"
-                  unoptimized={!user.avatarUrl.includes("github") && !user.avatarUrl.includes("google") && !user.avatarUrl.includes("supabase")}
+                  unoptimized
                 />
               ) : (
                 <div className="w-20 h-20 rounded-2xl bg-[#181C25] border-2 border-[#242936] text-primary flex items-center justify-center font-bold text-2xl font-mono shadow-xl">

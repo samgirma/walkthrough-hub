@@ -2,7 +2,8 @@ import { ImageResponse } from "next/og";
 import { getWriteupByAuthorAndSlug } from "@/server/writeup.service";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+// Phase 1: ISR OG image generation with 24-hour cache
+export const revalidate = 86400;
 export const alt = "WriteupHub CTF Walkthrough";
 export const size = {
   width: 1200,

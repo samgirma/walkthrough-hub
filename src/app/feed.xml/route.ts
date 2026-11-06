@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+// Phase 1: ISR RSS feed with 1-hour revalidation
+export const revalidate = 3600;
 
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";

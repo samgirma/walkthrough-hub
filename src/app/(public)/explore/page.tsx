@@ -13,7 +13,8 @@ import { ExploreFilterSheet } from "@/app/(public)/explore/explore-filter-sheet"
 import { getPublicWriteups } from "@/server/writeup.service";
 import { CategoryType, DifficultyType } from "@/types";
 
-export const dynamic = "force-dynamic";
+// Phase 1: Static/ISR with 60s background revalidation
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Explore CTF Writeups // Real-time Exploit Directory",

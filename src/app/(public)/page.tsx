@@ -7,7 +7,8 @@ import { WriteupCard } from "@/components/writeup/writeup-card";
 import { getPublicWriteups } from "@/server/writeup.service";
 import { getPopularTags } from "@/server/tag.service";
 
-export const dynamic = "force-dynamic";
+// Phase 1: Static ISR with 5-minute background revalidation
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "WriteupHub // Learn from every flag",

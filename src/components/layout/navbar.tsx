@@ -109,6 +109,7 @@ export function Navbar({ user: initialUser }: NavbarProps) {
 
   const navLinks = [
     { label: "Explore", href: "/explore", icon: Compass },
+    { label: "CVEs", href: "/cves", icon: ShieldAlert },
     { label: "Categories", href: "/explore?view=categories", icon: FolderTree },
     { label: "Events", href: "/explore?view=events", icon: Calendar },
   ];
@@ -176,7 +177,7 @@ export function Navbar({ user: initialUser }: NavbarProps) {
                           width={32}
                           height={32}
                           className="w-8 h-8 rounded-full object-cover"
-                          unoptimized={!user.avatarUrl.includes("github") && !user.avatarUrl.includes("google") && !user.avatarUrl.includes("supabase")}
+                          unoptimized
                         />
                       ) : (
                         <div className="w-8 h-8 rounded-full bg-[#181C25] flex items-center justify-center text-primary text-xs font-mono font-bold">
@@ -339,7 +340,7 @@ export function Navbar({ user: initialUser }: NavbarProps) {
                         width={32}
                         height={32}
                         className="w-8 h-8 rounded-full object-cover"
-                        unoptimized={!user.avatarUrl.includes("github") && !user.avatarUrl.includes("google") && !user.avatarUrl.includes("supabase")}
+                        unoptimized
                       />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-xs">

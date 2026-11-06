@@ -9,6 +9,58 @@ import {
   filterWriteupSchema,
 } from "@/lib/validations/writeup.schema";
 import { Prisma, Status } from "@prisma/client";
+import { revalidateTag, revalidatePath } from "next/cache";
+
+function safeRevalidateTag(tag: string) {
+  try {
+    revalidateTag(tag);
+  } catch {
+    // Graceful no-op in test/offline environments
+  }
+}
+
+function safeRevalidatePath(path: string) {
+  try {
+    revalidatePath(path);
+  } catch {
+    // Graceful no-op in test/offline environments
+  }
+}
+
+export function revalidateWriteupCaches(options: {
+  writeupId: string;
+  authorId: string;
+  authorUsername?: string | null;
+  slug?: string;
+  previousSlug?: string;
+  tags?: string[];
+}) {
+  safeRevalidateTag("writeups");
+  safeRevalidateTag(`writeup:${options.writeupId}`);
+  safeRevalidateTag(`user:${options.authorId}`);
+  safeRevalidateTag("search-index");
+
+  if (options.tags) {
+    for (const tag of options.tags) {
+      safeRevalidateTag(`tag:${tag.toLowerCase().trim()}`);
+    }
+  }
+
+  safeRevalidatePath("/");
+  safeRevalidatePath("/explore");
+  safeRevalidatePath("/sitemap.xml");
+  safeRevalidatePath("/feed.xml");
+
+  if (options.authorUsername) {
+    safeRevalidatePath(`/u/${options.authorUsername}`);
+    if (options.slug) {
+      safeRevalidatePath(`/w/${options.authorUsername}/${options.slug}`);
+    }
+    if (options.previousSlug && options.previousSlug !== options.slug) {
+      safeRevalidatePath(`/w/${options.authorUsername}/${options.previousSlug}`);
+    }
+  }
+}
 
 /**
  * Generate a unique slug for a given author.
@@ -125,6 +177,16 @@ export async function createWriteup(
     },
   });
 
+  if (writeup.status === "PUBLIC" || writeup.status === "UNLISTED") {
+    revalidateWriteupCaches({
+      writeupId: writeup.id,
+      authorId,
+      authorUsername: writeup.author?.username,
+      slug: writeup.slug,
+      tags: input.tags,
+    });
+  }
+
   return writeup;
 }
 
@@ -135,6 +197,10 @@ export async function updateWriteup(
   // Authorization check: author must own writeup
   const existing = await prisma.writeup.findUnique({
     where: { id: input.id },
+    include: {
+      author: { select: { username: true } },
+      tags: { include: { tag: true } },
+    },
   });
 
   if (!existing) {
@@ -234,12 +300,25 @@ export async function updateWriteup(
     },
   });
 
+  revalidateWriteupCaches({
+    writeupId: existing.id,
+    authorId,
+    authorUsername: updated.author?.username || existing.author?.username,
+    slug: updated.slug,
+    previousSlug: existing.slug,
+    tags: input.tags || existing.tags?.map((t) => t.tag.name) || [],
+  });
+
   return updated;
 }
 
 export async function deleteWriteup(authorId: string, writeupId: string) {
   const existing = await prisma.writeup.findUnique({
     where: { id: writeupId },
+    include: {
+      author: { select: { username: true } },
+      tags: { include: { tag: true } },
+    },
   });
 
   if (!existing) {
@@ -253,6 +332,14 @@ export async function deleteWriteup(authorId: string, writeupId: string) {
   await prisma.writeupTag.deleteMany({ where: { writeupId } });
   await prisma.bookmark.deleteMany({ where: { writeupId } });
   await prisma.writeup.delete({ where: { id: writeupId } });
+
+  revalidateWriteupCaches({
+    writeupId,
+    authorId,
+    authorUsername: existing.author?.username,
+    slug: existing.slug,
+    tags: existing.tags?.map((t) => t.tag.name) || [],
+  });
 
   return { success: true };
 }
