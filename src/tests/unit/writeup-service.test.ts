@@ -21,6 +21,12 @@ vi.mock("@/lib/prisma", () => ({
     bookmark: {
       deleteMany: vi.fn(),
     },
+    star: {
+      deleteMany: vi.fn(),
+    },
+    comment: {
+      deleteMany: vi.fn(),
+    },
     writeupTag: {
       deleteMany: vi.fn(),
       createMany: vi.fn(),

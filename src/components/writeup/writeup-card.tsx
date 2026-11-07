@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { Eye, Clock } from "lucide-react";
+import { Eye, Clock, Star } from "lucide-react";
 import { formatCompactNumber, getCategoryColor, getDifficultyColor } from "@/lib/utils";
 import { CategoryType, DifficultyType, StatusType } from "@/types";
 import { CardLink } from "./card-link";
@@ -29,6 +29,11 @@ interface WriteupCardProps {
         name: string;
       };
     }[];
+    _count?: {
+      bookmarks?: number;
+      stars?: number;
+      comments?: number;
+    };
   };
 }
 
@@ -123,6 +128,13 @@ export function WriteupCard({ writeup }: WriteupCardProps) {
         </CardLink>
 
         <div className="flex items-center gap-3">
+          {typeof writeup._count?.stars === "number" && writeup._count.stars > 0 && (
+            <span className="flex items-center gap-1 text-amber-400" title="Stars">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <span>{formatCompactNumber(writeup._count.stars)}</span>
+            </span>
+          )}
+
           <span className="flex items-center gap-1" title="Views">
             <Eye className="w-3.5 h-3.5 text-[#94A3B8]" />
             <span>{formatCompactNumber(writeup.viewCount)}</span>

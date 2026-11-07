@@ -332,6 +332,8 @@ export async function deleteWriteup(authorId: string, writeupId: string) {
 
   await prisma.writeupTag.deleteMany({ where: { writeupId } });
   await prisma.bookmark.deleteMany({ where: { writeupId } });
+  await prisma.star.deleteMany({ where: { writeupId } });
+  await prisma.comment.deleteMany({ where: { writeupId } });
   await prisma.writeup.delete({ where: { id: writeupId } });
 
   revalidateWriteupCaches({
@@ -386,7 +388,7 @@ export async function getWriteupByAuthorAndSlug(
         include: { tag: true },
       },
       _count: {
-        select: { bookmarks: true },
+        select: { bookmarks: true, stars: true, comments: true },
       },
     },
   });
@@ -439,7 +441,7 @@ export async function getWriteupForViewer(
         include: { tag: true },
       },
       _count: {
-        select: { bookmarks: true },
+        select: { bookmarks: true, stars: true, comments: true },
       },
     },
   });
@@ -594,7 +596,7 @@ export async function getPublicWriteups(rawFilters: FilterWriteupInput = {}) {
           include: { tag: true },
         },
         _count: {
-          select: { bookmarks: true },
+          select: { bookmarks: true, stars: true, comments: true },
         },
       },
     }),

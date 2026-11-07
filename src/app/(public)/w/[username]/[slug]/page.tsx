@@ -24,6 +24,8 @@ import { renderMarkdown, extractTOC } from "@/lib/markdown";
 import { MarkdownViewer } from "@/components/markdown/markdown-viewer";
 import { ReadingProgress } from "@/components/writeup/reading-progress";
 import { BookmarkButton } from "@/components/writeup/bookmark-button";
+import { StarButton } from "@/components/writeup/star-button";
+import { CommentsSection } from "@/components/writeup/comments-section";
 import { WriteupOwnerActions } from "@/components/writeup/writeup-owner-actions";
 import { ShareModal } from "@/components/writeup/share-modal";
 import {
@@ -369,10 +371,14 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                 </div>
 
                 {/* Action Buttons: Client islands */}
-                <div className="flex items-center gap-2 ml-auto sm:ml-0">
+                <div className="flex items-center gap-2 ml-auto sm:ml-0 flex-wrap">
                   <WriteupOwnerActions
                     authorId={writeup.author.id}
                     writeupId={writeup.id}
+                  />
+                  <StarButton
+                    writeupId={writeup.id}
+                    initialStarsCount={writeup._count?.stars || 0}
                   />
                   <BookmarkButton writeupId={writeup.id} />
                   <ShareModal title={writeup.title} url={currentUrl} />
@@ -420,6 +426,13 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                 <ExternalLink className="h-3.5 w-3.5" />
               </Link>
             </div>
+
+            {/* Comments & Discussion Section */}
+            <CommentsSection
+              writeupId={writeup.id}
+              writeupAuthorId={writeup.author.id}
+              initialCommentsCount={writeup._count?.comments || 0}
+            />
           </main>
         </div>
       </div>
@@ -427,6 +440,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
       {/* Mobile Reader Interactive Experience */}
       <WriteupReaderClient
         writeupId={writeup.id}
+        initialStarsCount={writeup._count?.stars || 0}
         title={writeup.title}
         url={currentUrl}
         toc={toc}

@@ -54,6 +54,8 @@ export interface WriteupSummary {
   }[];
   _count?: {
     bookmarks?: number;
+    stars?: number;
+    comments?: number;
   };
   isBookmarked?: boolean;
 }

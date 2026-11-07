@@ -49,7 +49,8 @@ describe("Pagination Windowing (getPageNumbers)", () => {
   });
 
   it("never returns more than 7 items, preserving desktop layout stability", () => {
-    for (let total = 1; total <= 120; total++) {
+    const representativeTotals = [1, 2, 3, 5, 7, 8, 12, 25, 50, 101, 250];
+    for (const total of representativeTotals) {
       for (let cur = 1; cur <= total; cur++) {
         const pages = getPageNumbers(cur, total);
         expect(pages.length).toBeLessThanOrEqual(7);

@@ -8,6 +8,7 @@ import { MobileTOCSheet, TOCItem } from "./mobile-toc-sheet";
 interface WriteupReaderClientProps {
   writeupId: string;
   initialBookmarked?: boolean;
+  initialStarsCount?: number;
   userId?: string;
   title: string;
   url: string;
@@ -17,6 +18,7 @@ interface WriteupReaderClientProps {
 export function WriteupReaderClient({
   writeupId,
   initialBookmarked = false,
+  initialStarsCount = 0,
   userId,
   title,
   url,
@@ -43,6 +45,7 @@ export function WriteupReaderClient({
       <MobileActionBar
         writeupId={writeupId}
         initialBookmarked={initialBookmarked}
+        initialStarsCount={initialStarsCount}
         userId={userId}
         title={title}
         url={url}

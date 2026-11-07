@@ -3,10 +3,12 @@
 import React, { useState } from "react";
 import { Share2, Link as LinkIcon, Check, ListTree } from "lucide-react";
 import { BookmarkButton } from "@/components/writeup/bookmark-button";
+import { StarButton } from "@/components/writeup/star-button";
 
 interface MobileActionBarProps {
   writeupId: string;
   initialBookmarked?: boolean;
+  initialStarsCount?: number;
   userId?: string;
   title: string;
   url: string;
@@ -17,6 +19,7 @@ interface MobileActionBarProps {
 export function MobileActionBar({
   writeupId,
   initialBookmarked = false,
+  initialStarsCount = 0,
   userId,
   title,
   url,
@@ -72,6 +75,14 @@ export function MobileActionBar({
             <span className="text-[10px] mt-0.5">TOC</span>
           </button>
         )}
+
+        {/* Star Button */}
+        <div className="flex flex-col items-center justify-center min-h-[44px]">
+          <StarButton
+            writeupId={writeupId}
+            initialStarsCount={initialStarsCount}
+          />
+        </div>
 
         {/* Bookmark Button */}
         <div className="flex flex-col items-center justify-center min-h-[44px]">
