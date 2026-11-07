@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { WriteupCard } from "@/components/writeup/writeup-card";
 import { ExploreFilterSheet } from "@/app/(public)/explore/explore-filter-sheet";
+import { ExploreSearchInput } from "@/app/(public)/explore/explore-search-input";
 import { getPublicWriteups } from "@/server/writeup.service";
 import { CategoryType, DifficultyType } from "@/types";
 
@@ -158,17 +159,12 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                 <Search className="h-3 w-3 text-[#22D3A0]" />
                 <span>Search Writeups</span>
               </div>
-              <form action="/explore" method="GET" className="relative">
-                <input
-                  name="search"
-                  defaultValue={currentSearch}
-                  placeholder="CVEs, authors, CTFs..."
-                  className="w-full h-9 px-3 rounded-lg bg-[#0B0D12] border border-[#242936] text-xs text-white placeholder:text-[#475569] focus:outline-none focus:border-[#22D3A0] transition-colors"
-                />
-                {currentCategory && <input type="hidden" name="category" value={currentCategory} />}
-                {currentDifficulty && <input type="hidden" name="difficulty" value={currentDifficulty} />}
-                {currentSort !== "trending" && <input type="hidden" name="sort" value={currentSort} />}
-              </form>
+              <ExploreSearchInput
+                defaultValue={currentSearch}
+                category={currentCategory}
+                difficulty={currentDifficulty}
+                sort={currentSort}
+              />
             </div>
 
             {/* 2. Categories Vertical Menu */}
@@ -304,17 +300,15 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
           
           {/* Mobile Filter Sheet Trigger & Search Bar (Visible < lg) */}
           <div className="lg:hidden flex items-center gap-2.5 w-full mb-6">
-            <form action="/explore" method="GET" className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#475569]" />
-              <input
-                name="search"
+            <div className="flex-1">
+              <ExploreSearchInput
                 defaultValue={currentSearch}
-                placeholder="Search challenges, CVEs, authors..."
-                className="w-full h-10 pl-9 pr-3 rounded-lg bg-[#0B0D12] border border-[#242936] text-xs text-white placeholder:text-[#475569] focus:outline-none focus:border-[#22D3A0]"
+                category={currentCategory}
+                difficulty={currentDifficulty}
+                sort={currentSort}
+                isMobile
               />
-              {currentCategory && <input type="hidden" name="category" value={currentCategory} />}
-              {currentDifficulty && <input type="hidden" name="difficulty" value={currentDifficulty} />}
-            </form>
+            </div>
 
             <ExploreFilterSheet
               categories={categories}

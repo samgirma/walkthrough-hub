@@ -16,6 +16,7 @@ import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { useIdleSession } from "@/lib/use-idle-session";
 import { Logo } from "@/components/brand/Logo";
+import { prefetchSearchIndex } from "@/lib/search-engine";
 
 const SearchDialog = dynamic(
   () => import("@/components/layout/search-dialog").then((m) => m.SearchDialog),
@@ -165,6 +166,8 @@ export function Navbar({ user: initialUser }: NavbarProps) {
             {/* Search Trigger (Desktop & Mobile) */}
             <button
               onClick={() => setSearchOpen(true)}
+              onMouseEnter={prefetchSearchIndex}
+              onTouchStart={prefetchSearchIndex}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#12151C] border border-[#242936] text-[#94A3B8] hover:text-[#E0E2EC] hover:border-[#363E52] transition-colors text-xs font-mono min-h-[40px] focus:outline-none focus:ring-2 focus:ring-[#22D3A0]"
               aria-label="Open search dialog"
             >

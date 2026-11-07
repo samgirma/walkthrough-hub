@@ -50,6 +50,7 @@ export function revalidateWriteupCaches(options: {
   safeRevalidatePath("/explore");
   safeRevalidatePath("/sitemap.xml");
   safeRevalidatePath("/feed.xml");
+  safeRevalidatePath("/api/search-index");
 
   if (options.authorUsername) {
     safeRevalidatePath(`/u/${options.authorUsername}`);

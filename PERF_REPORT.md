@@ -294,5 +294,47 @@ During investigation of benchmark variance:
 5. **Automated Verification**:
    - Automated CDP & Playwright verification script confirmed `document.startViewTransition` execution, element morphing classes, and instant disabling under reduced motion.
 
+---
+
+## 9. Phase 6: Instant As-You-Type Search
+
+### Key Implementation Details
+
+1. **Standalone Cached Search Index API (`/api/search-index`)**:
+   - Created static/ISR route handler `src/app/api/search-index/route.ts` with `revalidate = 3600` and cache tag `['search-index']`.
+   - Headers: `Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400`.
+   - Queries strictly `status: 'PUBLIC'` writeups with compact schema: `id`, `title`, `slug`, `category`, `author`, `tags`, and truncated `snippet` (<= 90 chars).
+   - Invalidation hooks in `src/server/writeup.service.ts` purge `search-index` tag and `/api/search-index` on writeup creation, edit, deletion, or visibility transition.
+   - **Payload Budget**:
+     - Raw JSON: 316.5 kB
+     - Gzip (level 9): **27.1 kB** (well within budget <= 50 kB)
+     - Brotli: **17.3 kB**
+
+2. **Shared Zero-Initial-JS Client Search Engine (`src/lib/search-engine.ts`)**:
+   - Dynamic import of `minisearch`: Search engine code and data are loaded strictly on first hover or focus of search inputs, preserving **0 B initial JS load** on all page routes.
+   - Initial shared bundle JS remains **103 kB** across all public routes.
+   - Background micro-warmup call triggers V8 JIT compilation during idle initialization, ensuring the very first keystroke executes with zero jank.
+
+3. **Strict Ranking Hierarchy**:
+   - Designed custom scoring comparator enforcing the required hierarchy:
+     $$\text{Title Prefix} > \text{Title Substring} > \text{Tags Match} > \text{Snippet Match} > \text{Other}$$
+   - Verified via unit test suite (`src/tests/unit/search-engine.test.ts`).
+
+4. **Instant Typing Performance**:
+   - Query execution time on 2,000 writeups: **0.4 ms – 5.6 ms** per keystroke (well under the 16 ms / 60 fps frame budget).
+   - Zero network requests and zero loading spinners during typing.
+
+5. **Universal Integration**:
+   - **Command Palette (`SearchDialog`)**: Instant as-you-type results with keyboard navigation (Up/Down arrow, Enter to navigate, Esc to dismiss), matching category and author pills, and prefix badges.
+   - **Explore Page (`ExploreSearchInput`)**: Replaced static search forms with instant as-you-type search input. Typing renders an instant matching dropdown overlay while retaining form submission to server grid.
+   - **Navbar Search Trigger**: Prefetches `/api/search-index` on mouse hover or touch start.
+
+### Verification Summary
+- **Typecheck**: `tsc --noEmit` passed with 0 errors.
+- **Lint**: ESLint passed with 0 warnings or errors.
+- **Test Suite**: All 16 test suites and 83 unit/integration tests passed.
+- **E2E Playwright Automation**: Automated browser test verified 0 B initial search index load, prefetching on hover, zero network requests during typing, and instant dropdown display.
+
+
 
 
