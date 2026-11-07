@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { SiteBackground } from "@/components/layout/SiteBackground";
+import { NavigationProgress } from "@/components/layout/navigation-progress";
 import { siteConfig } from "@/config/site";
 
 const inter = Inter({
@@ -73,6 +74,7 @@ export default function RootLayout({
           enableSystem={true}
           disableTransitionOnChange
         >
+          <NavigationProgress />
           <SiteBackground />
           <QueryProvider>{children}</QueryProvider>
         </ThemeProvider>

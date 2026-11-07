@@ -1,10 +1,9 @@
 import React from "react";
-import Link from "next/link";
 import Image from "next/image";
-import { Eye, Clock, ShieldCheck, Flag } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Eye, Clock } from "lucide-react";
 import { formatCompactNumber, getCategoryColor, getDifficultyColor } from "@/lib/utils";
 import { CategoryType, DifficultyType, StatusType } from "@/types";
+import { CardLink } from "./card-link";
 
 interface WriteupCardProps {
   writeup: {
@@ -70,36 +69,40 @@ export function WriteupCard({ writeup }: WriteupCardProps) {
         </div>
 
         {/* Title */}
-        <Link href={readUrl} className="block group-hover:text-[#50F0BB] transition-colors">
+        <CardLink href={readUrl} className="block group-hover:text-[#50F0BB] transition-colors">
           <h3 className="font-sans font-bold text-base text-white tracking-tight leading-snug line-clamp-2 mb-2">
             {writeup.title}
           </h3>
-        </Link>
+        </CardLink>
 
         {/* Excerpt */}
         <p className="font-sans text-xs text-[#94A3B8] line-clamp-2 leading-relaxed mb-3">
           {writeup.excerpt}
         </p>
 
-        {/* Horizontally scrollable tag chips */}
+        {/* Tags */}
         {writeup.tags && writeup.tags.length > 0 && (
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 mb-3">
-            {writeup.tags.map((t) => (
+          <div className="flex flex-wrap gap-1 mb-4">
+            {writeup.tags.slice(0, 3).map((item) => (
               <span
-                key={t.tag.id}
-                className="shrink-0 px-2 py-0.5 rounded bg-[#181C25] border border-[#242936] text-[10px] font-mono text-[#BACAC1]"
+                key={item.tag.id}
+                className="font-mono text-[10px] text-[#94A3B8] bg-[#181C25] px-1.5 py-0.5 rounded border border-[#242936]"
               >
-                #{t.tag.name}
+                #{item.tag.name}
               </span>
             ))}
+            {writeup.tags.length > 3 && (
+              <span className="font-mono text-[10px] text-[#94A3B8] px-1 py-0.5">
+                +{writeup.tags.length - 3}
+              </span>
+            )}
           </div>
         )}
       </div>
 
-      {/* Bottom Metadata Strip */}
-      <div className="pt-3 border-t border-[#242936]/60 flex items-center justify-between text-[11px] font-mono text-[#94A3B8]">
-        {/* Author Handle */}
-        <Link
+      {/* Footer Info Row */}
+      <div className="flex items-center justify-between pt-3 border-t border-[#242936]/60 text-xs text-[#94A3B8] font-mono">
+        <CardLink
           href={`/u/${authorHandle}`}
           className="flex items-center gap-2 hover:text-white transition-colors"
         >
@@ -109,25 +112,24 @@ export function WriteupCard({ writeup }: WriteupCardProps) {
               alt={authorHandle}
               width={20}
               height={20}
-              className="w-5 h-5 rounded-full object-cover"
-              unoptimized
+              className="w-5 h-5 rounded-full object-cover border border-[#242936]"
             />
           ) : (
-            <div className="w-5 h-5 rounded-full bg-[#181C25] text-primary flex items-center justify-center font-bold text-[10px]">
+            <div className="w-5 h-5 rounded-full bg-[#242936] text-[10px] flex items-center justify-center font-bold text-[#22D3A0]">
               {authorHandle[0].toUpperCase()}
             </div>
           )}
           <span className="truncate max-w-[100px]">@{authorHandle}</span>
-        </Link>
+        </CardLink>
 
-        {/* Views & Read Time */}
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1" title={`${writeup.viewCount} views`}>
-            <Eye className="h-3.5 w-3.5 text-[#475569]" />
+          <span className="flex items-center gap-1" title="Views">
+            <Eye className="w-3.5 h-3.5 text-[#94A3B8]" />
             <span>{formatCompactNumber(writeup.viewCount)}</span>
           </span>
-          <span className="flex items-center gap-1" title={`${writeup.readTimeMin} min read`}>
-            <Clock className="h-3.5 w-3.5 text-[#475569]" />
+
+          <span className="flex items-center gap-1" title="Read time">
+            <Clock className="w-3.5 h-3.5 text-[#94A3B8]" />
             <span>{writeup.readTimeMin}m</span>
           </span>
         </div>

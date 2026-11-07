@@ -1,31 +1,17 @@
 import React from "react";
-import { Logo } from "@/components/brand/Logo";
 
-export default function Loading() {
+export default function RootLoading() {
   return (
     <div
       role="status"
-      aria-label="Loading WriteupHub"
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0B0D12] select-none"
+      aria-label="Loading content"
+      className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-[40vh] select-none"
     >
-      <div className="relative flex flex-col items-center gap-4">
-        {/* Pulsing Icon Logo */}
-        <div className="relative flex items-center justify-center">
-          <div className="absolute -inset-4 rounded-full bg-[#22D3A0]/10 blur-xl animate-pulse motion-reduce:animate-none" />
-          <Logo
-            variant="icon"
-            size={56}
-            href={null}
-            priority
-            imageClassName="animate-pulse motion-reduce:animate-none drop-shadow-[0_0_20px_rgba(34,211,160,0.5)]"
-          />
-        </div>
-
-        {/* Cyber telemetry loading text */}
-        <div className="flex items-center gap-2 font-mono text-xs text-[#94A3B8]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#22D3A0] animate-ping motion-reduce:animate-none" />
-          <span className="tracking-widest uppercase">INITIALIZING TELEMETRY...</span>
-        </div>
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 rounded-full border-2 border-[#242936] border-t-[#22D3A0] animate-spin" />
+        <span className="font-mono text-xs text-[#94A3B8] tracking-wider uppercase">
+          Loading telemetry...
+        </span>
       </div>
     </div>
   );
