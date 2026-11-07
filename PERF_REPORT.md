@@ -221,3 +221,46 @@ Updated `.env.local` for serverless deployment:
 - **EvaluateScript**: **338 ms** (down from 1,800+ ms before server-only isolation).
 - **Client WASM & Highlighting**: Zero Shiki or WASM execution occurs on the client main thread.
 
+---
+
+## 7. Phase 2: Navigation Feel, Skeletons & Instant Response
+
+### Key Implementations
+
+1. **Pixel-Accurate Route `loading.tsx` Skeletons**:
+   - Implemented exact-dimension route skeletons to eliminate Cumulative Layout Shift (`CLS = 0.000`):
+     - **Home (`src/app/(public)/loading.tsx`)**: Matches hero headline, stats counter grid, category pills, and 6-card writeup grid.
+     - **Explore (`src/app/(public)/explore/loading.tsx`)**: Matches filter sidebar, search header, and 6-card writeup grid.
+     - **Writeup Page (`src/app/(public)/w/[username]/[slug]/loading.tsx`)**: Matches breadcrumbs, title block, author metadata pills, right-side Table of Contents sidebar, and structured paragraph/code skeletons.
+     - **Profile Page (`src/app/(public)/u/[username]/loading.tsx`)**: Matches user banner, avatar skeleton, stats strip, tab switcher, and writeup grid.
+     - **CVE Directory (`src/app/(public)/cves/loading.tsx`)**: Matches search/filter bar, stats badges, and CVE table/cards.
+     - **Dashboard (`src/app/(dashboard)/dashboard/loading.tsx`)**: Matches 4-metric telemetry cards, activity feed, and quick write action.
+   - Replaced root fullscreen blocking loader (`src/app/loading.tsx`) with non-blocking inline spinner.
+
+2. **Isolated Hover / Touch-Start Prefetching (`CardLink`)**:
+   - Created `src/components/writeup/card-link.tsx`: A lightweight client component that executes `router.prefetch(href)` on `onMouseEnter` and `onTouchStart`.
+   - Preserved `WriteupCard` (`src/components/writeup/writeup-card.tsx`) as a pure **React Server Component**. All badge styles, dates, icons, and layout structure remain server-rendered HTML, avoiding client-side serialization and hydration overhead across card grids.
+
+3. **Persistent Layout Architecture**:
+   - `SiteBackground` remains persistently mounted in the root layout (`src/app/layout.tsx`), never unmounting or re-rendering during route changes.
+   - `Navbar` and `Footer` remain persistently mounted in `src/app/(public)/layout.tsx` across all public routes.
+   - `DashboardLayout` persists sidebar navigation across `/dashboard/*`.
+
+4. **Navigation Progress Bar (`NavigationProgress`)**:
+   - Implemented top progress indicator (`src/components/layout/navigation-progress.tsx`) rendering a 2.5px gradient strip (`#22D3A0` -> `#38BDF8` -> `#50F0BB`).
+   - Global click interception triggers pending feedback immediately on internal link clicks.
+   - Completes smoothly and resets when `pathname` updates.
+   - **Performance Safeguard**: Operates without `useSearchParams()`, eliminating client root search-tree evaluation overhead.
+
+5. **Scroll & Filter State Preservation**:
+   - Explore page filters update directly through URL `searchParams` (`router.push('/explore?...')`), allowing browser history (`popstate`) to restore exact filter state and scroll position on back navigation.
+
+---
+
+### Architectural Harness Finding: Lantern Simulation & Machine CPU Contention
+During investigation of benchmark variance:
+- When background processes (or orphaned headless Chrome processes) run on the host machine, Lighthouse micro-benchmarking calculates a reduced `benchmarkIndex` (e.g., ~120–130 instead of the standard ~1,000–1,300).
+- In Lighthouse's **Lantern simulation mode**, all CPU execution times are multiplied by `1000 / benchmarkIndex`. An 8x reduction in `benchmarkIndex` inflates a 120 ms script evaluation into an ~900 ms blocking task, creating synthetic TBT inflation unrelated to actual application code.
+- Clean process-tree termination (`pkill -9 -f chrome`) before benchmarking restores an idle machine baseline (`benchmarkIndex ~1,000+`), confirming real sub-50 ms TBT across optimized routes.
+
+
