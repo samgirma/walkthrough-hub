@@ -263,4 +263,36 @@ During investigation of benchmark variance:
 - In Lighthouse's **Lantern simulation mode**, all CPU execution times are multiplied by `1000 / benchmarkIndex`. An 8x reduction in `benchmarkIndex` inflates a 120 ms script evaluation into an ~900 ms blocking task, creating synthetic TBT inflation unrelated to actual application code.
 - Clean process-tree termination (`pkill -9 -f chrome`) before benchmarking restores an idle machine baseline (`benchmarkIndex ~1,000+`), confirming real sub-50 ms TBT across optimized routes.
 
+---
+
+## 8. Phase 5: View Transitions API & Smooth Page Transitions
+
+### Implementation Architecture
+
+1. **CSS View Transitions API Integration**:
+   - Added `@view-transition { navigation: auto; }` in `src/app/globals.css` for modern browsers.
+   - Configured root page cross-fade animations:
+     - `::view-transition-old(root)`: `160ms cubic-bezier(0.4, 0, 0.2, 1)` fade out.
+     - `::view-transition-new(root)`: `180ms cubic-bezier(0.16, 1, 0.3, 1)` fade in.
+     - Enforced `background-color: #0B0D12` across root transition pseudo-elements, eliminating any dark theme white flash.
+
+2. **Element Morphing Between List and Detail Views**:
+   - **Writeup Title**: Morph transition (`writeup-title`, 250ms cubic-bezier) between card `h3` and detail `h1` (`vt-writeup-title`).
+   - **Category Badge**: Morph transition (`writeup-category`, 250ms) between card `.badge-category` and detail `.vt-writeup-category`.
+   - **Author Avatar**: Morph transition (`profile-avatar`, 250ms, circular border-radius) between card `.card-avatar` and profile `.vt-profile-avatar`.
+   - Intercepted click handler in `src/components/layout/navigation-progress.tsx` assigns `viewTransitionName` dynamically to the clicked card element and clears them on `transition.finished`.
+
+3. **Graceful Fallback for Non-Supporting Browsers**:
+   - For browsers without native View Transitions support, incoming pages mount with `.page-transition-fallback` in `src/app/(public)/layout.tsx`.
+   - `pageSubtleFadeIn` keyframe animation executes a gentle 160ms fade (`opacity: 0.88 -> 1`, `translateY: 2px -> 0`), combined with the top navigation progress bar.
+
+4. **Strict Accessibility Compliance (`prefers-reduced-motion: reduce`)**:
+   - `navigation-progress.tsx` checks `window.matchMedia("(prefers-reduced-motion: reduce)").matches` and bypasses `document.startViewTransition`.
+   - `src/app/globals.css` applies `@media (prefers-reduced-motion: reduce)` with `animation: none !important;` across all `::view-transition-group(*)`, `::view-transition-old(*)`, `::view-transition-new(*)`, and `.page-transition-fallback`.
+   - Transitions disable immediately when reduced motion is preferred.
+
+5. **Automated Verification**:
+   - Automated CDP & Playwright verification script confirmed `document.startViewTransition` execution, element morphing classes, and instant disabling under reduced motion.
+
+
 

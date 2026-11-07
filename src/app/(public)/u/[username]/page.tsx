@@ -95,11 +95,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                   alt={displayUsername}
                   width={80}
                   height={80}
-                  className="w-20 h-20 rounded-2xl object-cover border-2 border-[#242936] shadow-xl"
+                  className="vt-profile-avatar w-20 h-20 rounded-2xl object-cover border-2 border-[#242936] shadow-xl"
                   unoptimized
                 />
               ) : (
-                <div className="w-20 h-20 rounded-2xl bg-[#181C25] border-2 border-[#242936] text-primary flex items-center justify-center font-bold text-2xl font-mono shadow-xl">
+                <div className="vt-profile-avatar w-20 h-20 rounded-2xl bg-[#181C25] border-2 border-[#242936] text-primary flex items-center justify-center font-bold text-2xl font-mono shadow-xl">
                   {displayUsername.slice(0, 2).toUpperCase()}
                 </div>
               )}

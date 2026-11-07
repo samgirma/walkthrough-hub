@@ -287,7 +287,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
               {/* Category & CTF Badges */}
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 <span
-                  className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded border"
+                  className="vt-writeup-category font-mono text-xs font-semibold px-2.5 py-0.5 rounded border"
                   style={{
                     backgroundColor: categoryStyle.bg,
                     borderColor: categoryStyle.border,
@@ -310,7 +310,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
               </div>
 
               {/* Title */}
-              <h1 className="font-sans font-extrabold text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight leading-tight mb-4">
+              <h1 className="vt-writeup-title font-sans font-extrabold text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight leading-tight mb-4">
                 {writeup.title}
               </h1>
 

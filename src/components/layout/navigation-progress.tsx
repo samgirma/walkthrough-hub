@@ -1,15 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import React, { useEffect, useState, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 export function NavigationProgress() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
   const [progress, setProgress] = useState(0);
+  const transitionResolverRef = useRef<(() => void) | null>(null);
 
-  // When pathname changes, complete and reset navigation
+  // When pathname changes, complete transition and reset navigation
   useEffect(() => {
+    if (transitionResolverRef.current) {
+      transitionResolverRef.current();
+      transitionResolverRef.current = null;
+    }
+
     if (isNavigating) {
       setProgress(100);
       const timer = setTimeout(() => {
@@ -38,7 +45,7 @@ export function NavigationProgress() {
     return () => clearInterval(interval);
   }, [isNavigating]);
 
-  // Global click interception for instant link feedback
+  // Global click interception for instant link feedback and CSS View Transitions
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       // Don't intercept if modifier keys are pressed (open in new tab)
@@ -64,12 +71,53 @@ export function NavigationProgress() {
         const url = new URL(anchor.href, window.location.origin);
         if (url.origin !== window.location.origin) return;
 
-        // If clicking current page without pathname change, skip
+        // Skip if clicking same exact URL
         if (url.pathname === window.location.pathname && url.search === window.location.search) {
           return;
         }
 
+        // Start progress bar feedback
         setIsNavigating(true);
+
+        // Check if View Transitions are supported and preferred
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (typeof document.startViewTransition === "function" && !prefersReducedMotion) {
+          e.preventDefault();
+
+          // Find if click originated from a writeup card for element morphing
+          const card = target.closest("article");
+          const titleEl = card?.querySelector("h3") as HTMLElement | null;
+          const categoryEl = card?.querySelector(".badge-category") as HTMLElement | null;
+          const avatarEl = card?.querySelector(".card-avatar") as HTMLElement | null;
+
+          if (titleEl) titleEl.style.viewTransitionName = "writeup-title";
+          if (categoryEl) categoryEl.style.viewTransitionName = "writeup-category";
+          if (avatarEl) avatarEl.style.viewTransitionName = "profile-avatar";
+
+          const transitionPromise = new Promise<void>((resolve) => {
+            transitionResolverRef.current = resolve;
+          });
+
+          // Fallback safety timeout so transition never hangs
+          const safetyTimer = setTimeout(() => {
+            if (transitionResolverRef.current) {
+              transitionResolverRef.current();
+              transitionResolverRef.current = null;
+            }
+          }, 2000);
+
+          const transition = document.startViewTransition(async () => {
+            router.push(url.pathname + url.search + url.hash);
+            await transitionPromise;
+            clearTimeout(safetyTimer);
+          });
+
+          transition.finished.finally(() => {
+            if (titleEl) titleEl.style.viewTransitionName = "";
+            if (categoryEl) categoryEl.style.viewTransitionName = "";
+            if (avatarEl) avatarEl.style.viewTransitionName = "";
+          });
+        }
       } catch {
         // invalid URL, ignore
       }
@@ -77,7 +125,7 @@ export function NavigationProgress() {
 
     document.addEventListener("click", handleClick, { capture: true });
     return () => document.removeEventListener("click", handleClick, { capture: true });
-  }, []);
+  }, [router]);
 
   if (!isNavigating && progress === 0) return null;
 

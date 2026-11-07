@@ -45,7 +45,7 @@ export function WriteupCard({ writeup }: WriteupCardProps) {
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-1.5 overflow-hidden">
             <span
-              className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded border"
+              className="badge-category text-[11px] font-mono font-semibold px-2 py-0.5 rounded border"
               style={{
                 backgroundColor: categoryStyle.bg,
                 borderColor: categoryStyle.border,
@@ -112,10 +112,10 @@ export function WriteupCard({ writeup }: WriteupCardProps) {
               alt={authorHandle}
               width={20}
               height={20}
-              className="w-5 h-5 rounded-full object-cover border border-[#242936]"
+              className="card-avatar w-5 h-5 rounded-full object-cover border border-[#242936]"
             />
           ) : (
-            <div className="w-5 h-5 rounded-full bg-[#242936] text-[10px] flex items-center justify-center font-bold text-[#22D3A0]">
+            <div className="card-avatar w-5 h-5 rounded-full bg-[#242936] text-[10px] flex items-center justify-center font-bold text-[#22D3A0]">
               {authorHandle[0].toUpperCase()}
             </div>
           )}
