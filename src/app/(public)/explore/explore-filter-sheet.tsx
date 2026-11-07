@@ -68,8 +68,9 @@ export function ExploreFilterSheet({
       params.delete("sort");
     }
 
-    params.set("page", "1");
-    router.push(`/explore?${params.toString()}`);
+    params.delete("page");
+    const qs = params.toString();
+    router.push(`/explore${qs ? `?${qs}` : ""}`);
     setOpen(false);
   };
 

@@ -13,6 +13,7 @@ import { ExploreFilterSheet } from "@/app/(public)/explore/explore-filter-sheet"
 import { ExploreSearchInput } from "@/app/(public)/explore/explore-search-input";
 import { getPublicWriteups } from "@/server/writeup.service";
 import { CategoryType, DifficultyType } from "@/types";
+import { getPageNumbers } from "@/lib/pagination";
 
 // Phase 1: Static/ISR with 60s background revalidation
 export const revalidate = 60;
@@ -42,7 +43,8 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const currentCategory = (params.category?.toUpperCase() || "") as CategoryType | "";
   const currentDifficulty = (params.difficulty?.toUpperCase() || "") as DifficultyType | "";
   const currentSort = params.sort || "trending";
-  const currentPage = parseInt(params.page || "1", 10);
+  const rawPage = parseInt(params.page || "1", 10);
+  const currentPage = isNaN(rawPage) || rawPage < 1 ? 1 : rawPage;
   const currentSearch = params.search || "";
   const currentTag = params.tag || "";
   const currentCtf = params.ctfName || "";
@@ -60,6 +62,11 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
     console.error("[ExplorePage] Could not load writeups:", err.message);
     return { items: [], total: 0, page: 1, limit: 12, totalPages: 0 };
   });
+
+  const totalPages = result.totalPages;
+  const safeCurrentPage =
+    totalPages > 0 ? Math.min(Math.max(currentPage, 1), totalPages) : 1;
+  const pageNumbers = getPageNumbers(safeCurrentPage, totalPages);
 
   const categories = [
     { label: "All Categories", value: "", color: "#22D3A0" },
@@ -88,12 +95,15 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
       ctfName: currentCtf || undefined,
       tag: currentTag || undefined,
       sort: currentSort !== "trending" ? currentSort : undefined,
-      page: currentPage > 1 ? currentPage : undefined,
+      page: safeCurrentPage > 1 ? safeCurrentPage : undefined,
       ...updates,
     };
 
     for (const [k, v] of Object.entries(merged)) {
       if (v !== undefined && v !== "") {
+        if (k === "page" && Number(v) <= 1) {
+          continue; // omit page=1 for clean URLs
+        }
         q.set(k, String(v));
       }
     }
@@ -374,11 +384,15 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
           {result.totalPages > 1 && (
             <div className="mt-12 flex flex-col items-center gap-4">
               {/* Mobile Compact Pagination */}
-              <div className="flex sm:hidden items-center justify-between w-full font-mono text-xs bg-[#12151C]/80 backdrop-blur-md p-2 rounded-xl border border-[#242936]">
-                {currentPage > 1 ? (
+              <nav
+                aria-label="Mobile pagination"
+                className="flex sm:hidden items-center justify-between w-full font-mono text-xs bg-[#12151C]/80 backdrop-blur-md p-2 rounded-xl border border-[#242936]"
+              >
+                {safeCurrentPage > 1 ? (
                   <Link
-                    href={buildUrl({ page: currentPage - 1 })}
-                    className="px-4 py-2 rounded-lg bg-[#181C25] text-white hover:bg-[#1D2027] min-h-[44px] flex items-center gap-1 border border-[#242936]"
+                    href={buildUrl({ page: safeCurrentPage - 1 })}
+                    aria-label="Previous page"
+                    className="px-4 py-2 rounded-lg bg-[#181C25] text-white hover:bg-[#1D2027] min-h-[44px] flex items-center gap-1 border border-[#242936] active:scale-95 transition-transform"
                   >
                     <ChevronLeft className="h-4 w-4" />
                     <span>Prev</span>
@@ -386,21 +400,25 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                 ) : (
                   <button
                     disabled
-                    className="px-4 py-2 rounded-lg text-[#475569] min-h-[44px] flex items-center gap-1 opacity-50 cursor-not-allowed"
+                    aria-disabled="true"
+                    aria-label="Previous page (disabled)"
+                    className="px-4 py-2 rounded-lg text-[#475569] min-h-[44px] flex items-center gap-1 opacity-40 cursor-not-allowed border border-transparent"
                   >
                     <ChevronLeft className="h-4 w-4" />
                     <span>Prev</span>
                   </button>
                 )}
 
-                <span className="text-[#BACAC1] font-semibold">
-                  Page {currentPage} of {result.totalPages}
+                <span className="text-[#BACAC1] font-semibold tracking-wide">
+                  Page <span className="text-white font-bold">{safeCurrentPage}</span> of{" "}
+                  <span className="text-white font-bold">{result.totalPages}</span>
                 </span>
 
-                {currentPage < result.totalPages ? (
+                {safeCurrentPage < result.totalPages ? (
                   <Link
-                    href={buildUrl({ page: currentPage + 1 })}
-                    className="px-4 py-2 rounded-lg bg-[#181C25] text-white hover:bg-[#1D2027] min-h-[44px] flex items-center gap-1 border border-[#242936]"
+                    href={buildUrl({ page: safeCurrentPage + 1 })}
+                    aria-label="Next page"
+                    className="px-4 py-2 rounded-lg bg-[#181C25] text-white hover:bg-[#1D2027] min-h-[44px] flex items-center gap-1 border border-[#242936] active:scale-95 transition-transform"
                   >
                     <span>Next</span>
                     <ChevronRight className="h-4 w-4" />
@@ -408,30 +426,97 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                 ) : (
                   <button
                     disabled
-                    className="px-4 py-2 rounded-lg text-[#475569] min-h-[44px] flex items-center gap-1 opacity-50 cursor-not-allowed"
+                    aria-disabled="true"
+                    aria-label="Next page (disabled)"
+                    className="px-4 py-2 rounded-lg text-[#475569] min-h-[44px] flex items-center gap-1 opacity-40 cursor-not-allowed border border-transparent"
                   >
                     <span>Next</span>
                     <ChevronRight className="h-4 w-4" />
                   </button>
                 )}
-              </div>
+              </nav>
 
               {/* Desktop Full Pagination */}
-              <div className="hidden sm:flex items-center justify-center gap-2 font-mono text-xs">
-                {Array.from({ length: result.totalPages }, (_, i) => i + 1).map((p) => (
+              <nav
+                aria-label="Desktop pagination"
+                className="hidden sm:flex items-center justify-center gap-1.5 md:gap-2 font-mono text-xs select-none"
+              >
+                {/* Prev Button */}
+                {safeCurrentPage > 1 ? (
                   <Link
-                    key={p}
-                    href={buildUrl({ page: p })}
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center border transition-colors min-h-[40px] ${
-                      p === currentPage
-                        ? "bg-[#22D3A0] text-[#0B0D12] font-bold border-transparent"
-                        : "bg-[#12151C]/90 text-[#BACAC1] border-[#242936] hover:text-white"
-                    }`}
+                    href={buildUrl({ page: safeCurrentPage - 1 })}
+                    aria-label="Previous page"
+                    className="px-3 h-10 rounded-lg bg-[#12151C]/90 text-[#BACAC1] border border-[#242936] hover:bg-[#181C25] hover:text-white hover:border-[#363E52] flex items-center gap-1.5 transition-colors min-h-[40px]"
                   >
-                    {p}
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="hidden md:inline">Prev</span>
                   </Link>
-                ))}
-              </div>
+                ) : (
+                  <button
+                    disabled
+                    aria-disabled="true"
+                    aria-label="Previous page (disabled)"
+                    className="px-3 h-10 rounded-lg text-[#475569] border border-[#242936]/40 flex items-center gap-1.5 opacity-40 cursor-not-allowed min-h-[40px]"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="hidden md:inline">Prev</span>
+                  </button>
+                )}
+
+                {/* Page Numbers & Ellipses */}
+                {pageNumbers.map((item) => {
+                  if (typeof item === "string") {
+                    return (
+                      <span
+                        key={item}
+                        aria-hidden="true"
+                        className="w-10 h-10 flex items-center justify-center text-[#475569] font-mono select-none"
+                      >
+                        ...
+                      </span>
+                    );
+                  }
+
+                  const isActive = item === safeCurrentPage;
+                  return (
+                    <Link
+                      key={item}
+                      href={buildUrl({ page: item })}
+                      aria-label={isActive ? `Page ${item}, current page` : `Go to page ${item}`}
+                      aria-current={isActive ? "page" : undefined}
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center border transition-colors min-h-[40px] min-w-[40px] ${
+                        isActive
+                          ? "bg-[#22D3A0] text-[#0B0D12] font-bold border-transparent shadow-sm pointer-events-none"
+                          : "bg-[#12151C]/90 text-[#BACAC1] border-[#242936] hover:bg-[#181C25] hover:text-white hover:border-[#363E52]"
+                      }`}
+                    >
+                      {item}
+                    </Link>
+                  );
+                })}
+
+                {/* Next Button */}
+                {safeCurrentPage < totalPages ? (
+                  <Link
+                    href={buildUrl({ page: safeCurrentPage + 1 })}
+                    aria-label="Next page"
+                    className="px-3 h-10 rounded-lg bg-[#12151C]/90 text-[#BACAC1] border border-[#242936] hover:bg-[#181C25] hover:text-white hover:border-[#363E52] flex items-center gap-1.5 transition-colors min-h-[40px]"
+                  >
+                    <span className="hidden md:inline">Next</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                ) : (
+                  <button
+                    disabled
+                    aria-disabled="true"
+                    aria-label="Next page (disabled)"
+                    className="px-3 h-10 rounded-lg text-[#475569] border border-[#242936]/40 flex items-center gap-1.5 opacity-40 cursor-not-allowed min-h-[40px]"
+                  >
+                    <span className="hidden md:inline">Next</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                )}
+              </nav>
             </div>
           )}
         </main>
