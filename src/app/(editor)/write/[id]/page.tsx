@@ -2,7 +2,7 @@ import React from "react";
 import { Metadata } from "next";
 import { requireWriteupOwner } from "@/server/auth/dal";
 import { getWriteupByIdForAuthor } from "@/server/writeup.service";
-import { StudioEditor } from "@/components/editor/studio-editor";
+import { StudioEditorClient } from "@/components/editor/studio-editor-client";
 
 interface EditWriteupPageProps {
   params: Promise<{ id: string }>;
@@ -22,7 +22,7 @@ export default async function EditWriteupPage({ params }: EditWriteupPageProps) 
   }
 
   return (
-    <StudioEditor
+    <StudioEditorClient
       initialWriteup={writeup}
       authorUsername={user.username || "author"}
     />

@@ -464,3 +464,16 @@ article p, article li, article a, article code {
   border-color: #363E52;
   transform: translateY(-1px);
 }
+
+/* Disable expensive backdrop-blur filters on mobile (< 768px) to reduce compositor & GPU overhead */
+@media (max-width: 767px) {
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}

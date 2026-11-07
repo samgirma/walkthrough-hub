@@ -1,8 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { X, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
+
+const ImageLightbox = dynamic(
+  () => import("./image-lightbox").then((m) => m.ImageLightbox),
+  { ssr: false }
+);
 
 interface MarkdownViewerProps {
   htmlContent: string;
@@ -13,7 +18,6 @@ export function MarkdownViewer({ htmlContent, className }: MarkdownViewerProps) 
   const containerRef = useRef<HTMLDivElement>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [lightboxAlt, setLightboxAlt] = useState<string>("");
-  const [zoomLevel, setZoomLevel] = useState<number>(1);
 
   // Copy code button handler & image lightbox click handler
   useEffect(() => {
@@ -54,7 +58,6 @@ export function MarkdownViewer({ htmlContent, className }: MarkdownViewerProps) 
         if (img.naturalWidth > 120 || img.naturalHeight > 120) {
           setLightboxSrc(img.src);
           setLightboxAlt(img.alt || "Challenge Image");
-          setZoomLevel(1);
         }
       }
     };
@@ -67,18 +70,6 @@ export function MarkdownViewer({ htmlContent, className }: MarkdownViewerProps) 
       container.removeEventListener("click", handleImageClick);
     };
   }, [htmlContent]);
-
-  // Handle escape key to close lightbox
-  useEffect(() => {
-    if (!lightboxSrc) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setLightboxSrc(null);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxSrc]);
 
   return (
     <>
@@ -109,82 +100,13 @@ export function MarkdownViewer({ htmlContent, className }: MarkdownViewerProps) 
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
 
-      {/* Lightbox Modal with Pinch / Zoom Controls */}
+      {/* Lazy-loaded Lightbox Modal */}
       {lightboxSrc && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 bg-[#0B0D12]/95 backdrop-blur-md flex flex-col items-center justify-between p-4"
-          onClick={() => setLightboxSrc(null)}
-        >
-          {/* Header with Title & Zoom Controls */}
-          <div
-            className="w-full max-w-4xl flex items-center justify-between text-white font-mono text-xs z-10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <span className="text-[#94A3B8] truncate max-w-xs sm:max-w-md">
-              {lightboxAlt}
-            </span>
-
-            <div className="flex items-center gap-2 bg-[#12151C] p-1 rounded-xl border border-[#242936]">
-              <button
-                type="button"
-                onClick={() => setZoomLevel((z) => Math.max(0.5, z - 0.25))}
-                className="p-2 rounded hover:bg-[#181C25] text-[#BACAC1] hover:text-white transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="Zoom Out"
-              >
-                <ZoomOut className="h-4 w-4" />
-              </button>
-              <span className="px-2 font-mono text-xs text-[#22D3A0]">
-                {Math.round(zoomLevel * 100)}%
-              </span>
-              <button
-                type="button"
-                onClick={() => setZoomLevel((z) => Math.min(3, z + 0.25))}
-                className="p-2 rounded hover:bg-[#181C25] text-[#BACAC1] hover:text-white transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="Zoom In"
-              >
-                <ZoomIn className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setZoomLevel(1)}
-                className="p-2 rounded hover:bg-[#181C25] text-[#BACAC1] hover:text-white transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="Reset Zoom"
-              >
-                <RotateCcw className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setLightboxSrc(null)}
-                className="p-2 rounded hover:bg-[#181C25] text-rose-400 hover:text-rose-300 transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="Close Lightbox"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Centered Image with Zoom Scale */}
-          <div
-            className="flex-1 flex items-center justify-center w-full max-h-[85vh] overflow-auto p-2"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={lightboxSrc}
-              alt={lightboxAlt}
-              className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl transition-transform duration-200"
-              style={{
-                transform: `scale(${zoomLevel})`,
-              }}
-            />
-          </div>
-
-          {/* Tap anywhere to dismiss indicator */}
-          <div className="font-mono text-[11px] text-[#475569] text-center pb-2">
-            Tap outside or press ESC to exit preview
-          </div>
-        </div>
+        <ImageLightbox
+          src={lightboxSrc}
+          alt={lightboxAlt}
+          onClose={() => setLightboxSrc(null)}
+        />
       )}
     </>
   );

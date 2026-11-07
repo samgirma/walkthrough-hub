@@ -1,7 +1,7 @@
 import React from "react";
 import { Metadata } from "next";
 import { requireOnboarded } from "@/server/auth/dal";
-import { StudioEditor } from "@/components/editor/studio-editor";
+import { StudioEditorClient } from "@/components/editor/studio-editor-client";
 
 export const metadata: Metadata = {
   title: "WriteupHub Studio // Composer",
@@ -12,7 +12,7 @@ export default async function NewWriteupPage() {
   const user = await requireOnboarded("/write");
 
   return (
-    <StudioEditor
+    <StudioEditorClient
       initialWriteup={null}
       authorUsername={user.username}
     />

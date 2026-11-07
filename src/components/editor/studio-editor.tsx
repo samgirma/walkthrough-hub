@@ -161,22 +161,49 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
   const wordsCount = contentMd.trim().split(/\s+/).filter(Boolean).length;
   const readTimeMin = calculateReadingTime(contentMd);
 
-  // Render markdown for preview (simple debounce)
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Render markdown for preview via authenticated server API route (350ms debounce + request cancellation)
   useEffect(() => {
-    let active = true;
+    // Cancel any previous in-flight preview request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     const timer = setTimeout(async () => {
+      setIsPreviewLoading(true);
       try {
-        const { renderMarkdown } = await import("@/lib/markdown");
-        const html = await renderMarkdown(contentMd);
-        if (active) setRenderedHtml(html);
-      } catch (err) {
-        console.error("Preview render error:", err);
+        const res = await fetch("/api/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contentMd }),
+          signal: controller.signal,
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.html) {
+            setRenderedHtml(data.html);
+          }
+        }
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          console.error("Preview render error:", err);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsPreviewLoading(false);
+        }
       }
-    }, 200);
+    }, 350);
 
     return () => {
-      active = false;
       clearTimeout(timer);
+      controller.abort();
     };
   }, [contentMd]);
 
@@ -563,8 +590,11 @@ WHUB{slub_fr33l1st_p01s0n_2_r00t}
               <span className="font-mono text-xs uppercase tracking-wider text-primary font-bold">
                 Target Render View
               </span>
-              <span className="font-mono text-[11px] text-[#475569]">
-                Live Compiled HAST
+              <span className="font-mono text-[11px] text-[#475569] flex items-center gap-1.5">
+                {isPreviewLoading && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+                )}
+                <span>{isPreviewLoading ? "Compiling AST..." : "Live Compiled HAST"}</span>
               </span>
             </div>
 

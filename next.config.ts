@@ -16,6 +16,9 @@ const cspHeader = `
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  experimental: {
+    optimizePackageImports: ["lucide-react", "date-fns"],
+  },
   images: {
     remotePatterns: [
       {

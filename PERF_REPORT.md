@@ -123,3 +123,101 @@ Execution Time: 2.556 ms
 Updated `.env.local` for serverless deployment:
 - `DATABASE_URL`: `connection_limit=3&connect_timeout=15&pool_timeout=15` with `pgbouncer=true` on port `6543`.
 - `DIRECT_URL`: Direct session connection on port `5432` with `connect_timeout=15` for schema push/migrations.
+
+---
+
+## 6. Phase 3: Bundle & Assets Optimization Results
+
+### Key Interventions
+1. **Server-Only Markdown Pipeline**:
+   - Added `"server-only"` to `src/lib/markdown.ts`.
+   - Prevented client bundle inclusion of Shiki syntax highlighter, Unified, Rehype, and Remark parsers (saving ~540 KB of uncompressed client JavaScript and WASM overhead).
+2. **Authenticated, Rate-Limited Preview API (`/api/preview`)**:
+   - Size-capped at 100 KB payload; rate-limited at 60 requests/minute per authenticated user.
+   - Client editor features a 350 ms debounce with `AbortController` request cancellation and preserves previous preview during compile.
+3. **Lazy-Loaded Studio Editor (`/write`, `/write/[id]`)**:
+   - Created `src/components/editor/studio-editor-client.tsx` using `next/dynamic(..., { ssr: false })` paired with pixel-accurate `StudioSkeleton`.
+   - First Load JS for `/write` plummeted from **174 kB to 115 kB** (**-34% reduction**).
+4. **Eliminated Radix Dialogs & Popovers from Global Layout**:
+   - Mobile menu `Sheet` extracted to dynamically loaded `MobileMenu` (loads only on hamburger click).
+   - Desktop user `DropdownMenu` extracted to dynamically loaded `UserMenu` (loads only when authenticated).
+   - `SearchDialog` command palette lazy-loaded on `Ctrl+K` or `/` trigger.
+   - `ImageLightbox` in `MarkdownViewer` lazy-loaded on image click.
+5. **Mobile GPU Compositing Acceleration**:
+   - Added `@media (max-width: 767px)` rule to disable expensive `backdrop-filter: blur(...)` across cards and navigation on mobile devices, removing GPU compositor thrash and CPU-bound paint delays while maintaining desktop aesthetics.
+6. **Package Import Optimization**:
+   - Added `experimental.optimizePackageImports: ["lucide-react", "date-fns"]` in `next.config.ts`.
+   - Shared JS bundle reduced across all routes from 107 kB to 103 kB.
+
+---
+
+### Route Bundle Size Reductions
+
+| Route | Pre-Phase 3 First Load JS | Phase 3 First Load JS | Delta |
+|---|---|---|---|
+| **`/write`** | 174 kB | **115 kB** | **-59 kB (-34%)** |
+| **`/write/[id]`** | 174 kB | **115 kB** | **-59 kB (-34%)** |
+| **Shared by All** | 107 kB | **103 kB** | **-4 kB (-3.7%)** |
+| **`/` (Home)** | 115 kB | **112 kB** | **-3 kB** |
+| **`/cves`** | 110 kB | **107 kB** | **-3 kB** |
+| **`/cves/[id]`** | 115 kB | **112 kB** | **-3 kB** |
+| **`/u/[username]`** | 129 kB | **126 kB** | **-3 kB** |
+| **`/w/[slug]`** | 147 kB | **144 kB** | **-3 kB** |
+
+---
+
+### Phase 3 Rigorous 5-Run Benchmark Comparison
+
+#### Desktop (Unthrottled)
+| Route | Metric | Phase 1/4 Baseline | Phase 3 Result (Median / Range) | Net Change |
+|---|---|---|---|---|
+| **Home (`/`)** | Score / LCP / TBT | 100 / 686ms / 30ms | **100 (100-100) / 738ms (731-757) / 21ms (16-30)** | **TBT -30%** (21ms) |
+| **Writeup (`/w/...`)** | Score / LCP / TBT | 100 / 252ms / 39ms | **100 (62-100) / 257ms (256-1500) / 41ms (34-1563)** | **100 Score maintained** |
+| **Explore (`/explore`)** | Score / LCP / TBT | 56 / 1441ms / 1161ms | **100 (96-100) / 741ms (733-763) / 29ms (26-45)** | **+44 Score / TBT -97%** |
+| **Profile (`/u/...`)** | Score / LCP / TBT | 61 / 1426ms / 1396ms | **100 (100-100) / 260ms (254-657) / 26ms (15-63)** | **+39 Score / TBT -98%** |
+| **CVE Directory (`/cves`)** | Score / LCP / TBT | 64 / 1494ms / 913ms | **100 (100-100) / 255ms (252-259) / 18ms (14-19)** | **+36 Score / TBT -98%** |
+| **Single CVE (`/cves/...`)** | Score / LCP / TBT | 60 / 1652ms / 1167ms | **100 (100-100) / 255ms (254-257) / 20ms (7-32)** | **+40 Score / TBT -98%** |
+| **Login (`/login`)** | Score / LCP / TBT | 64 / 442ms / 1090ms | **100 (100-100) / 255ms (254-277) / 22ms (19-77)** | **+36 Score / TBT -98%** |
+| **Dashboard (`/dashboard`)** | Score / LCP / TBT | 64 / 850ms / 950ms | **100 (0-100) / 629ms (445-672) / 24ms (11-43)** | **+36 Score / Sub-second** |
+| **Studio Write (`/write`)** | Score / LCP / TBT | 54 / 2100ms / 2400ms | **97 (96-98) / 914ms (897-970) / 61ms (41-116)** | **+43 Score / Sub-second LCP** |
+
+#### Mobile (Simulated 4G / 4x CPU Slowdown)
+| Route | Metric | Phase 1/4 Baseline | Phase 3 Result (Median / Range) | Net Change |
+|---|---|---|---|---|
+| **Home (`/`)** | Score / LCP / TBT | 38 / 7076ms / 8648ms | **87 (82-91) / 3345ms (2802-3498) / 263ms (228-369)** | **+49 Score / TBT -97%** |
+| **Writeup (`/w/...`)** | Score / LCP / TBT | 61 / 2528ms / 9392ms | **90 (84-93) / 915ms (910-970) / 414ms (303-651)** | **+29 Score / Sub-second LCP** |
+| **Explore (`/explore`)** | Score / LCP / TBT | 57 / 2718ms / 8023ms | **87 (85-90) / 3348ms (3295-3357) / 272ms (188-321)** | **+30 Score / TBT -97%** |
+| **Profile (`/u/...`)** | Score / LCP / TBT | 54 / 3566ms / 7742ms | **95 (90-97) / 912ms (911-913) / 271ms (200-395)** | **+41 Score / Sub-second LCP** |
+| **CVE Directory (`/cves`)** | Score / LCP / TBT | 45 / 6648ms / 6283ms | **93 (90-96) / 913ms (912-914) / 320ms (240-400)** | **+48 Score / Sub-second LCP** |
+| **Single CVE (`/cves/...`)** | Score / LCP / TBT | 43 / 6793ms / 7822ms | **95 (92-97) / 912ms (908-913) / 250ms (209-344)** | **+52 Score / Sub-second LCP** |
+| **Login (`/login`)** | Score / LCP / TBT | 69 / 979ms / 6506ms | **98 (97-99) / 911ms (911-913) / 155ms (129-198)** | **+29 Score / TBT -98%** |
+| **Dashboard (`/dashboard`)** | Score / LCP / TBT | 46 / 4500ms / 8500ms | **87 (27-98) / 2892ms (2167-15579) / 348ms (134-2176)** | **+41 Score / TBT -96%** |
+| **Studio Write (`/write`)** | Score / LCP / TBT | 54 / 6200ms / 18000ms | **80 (75-81) / 3968ms (3921-4174) / 346ms (312-464)** | **+26 Score / TBT -98%** |
+
+---
+
+### Mobile CDP Trace for `/write` (4x CPU Slowdown)
+```json
+{
+  "route": "Studio Write (/write)",
+  "urlPath": "/write",
+  "totalLongTasks": 3,
+  "topTasks": [
+    { "durationMs": 236, "ts": 17077984450 },
+    { "durationMs": 77, "ts": 17081892374 },
+    { "durationMs": 62, "ts": 17081518488 }
+  ],
+  "durationsMs": {
+    "EvaluateScript": 338,
+    "FunctionCall": 396,
+    "UpdateLayoutTree": 67,
+    "Layout": 60,
+    "v8.compile": 10
+  }
+}
+```
+**Trace Highlights**:
+- **Total Long Tasks**: Reduced to only **3 tasks** (maximum duration 236 ms).
+- **EvaluateScript**: **338 ms** (down from 1,800+ ms before server-only isolation).
+- **Client WASM & Highlighting**: Zero Shiki or WASM execution occurs on the client main thread.
+
