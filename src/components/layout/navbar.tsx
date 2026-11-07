@@ -7,8 +7,9 @@ import {
   Search,
   PenLine,
   Menu,
+  Home,
   Compass,
-  FolderTree,
+  Globe,
   Calendar,
   ShieldAlert,
 } from "lucide-react";
@@ -115,10 +116,11 @@ export function Navbar({ user: initialUser }: NavbarProps) {
   }, [lastScrollY]);
 
   const navLinks = [
+    { label: "Home", href: "/", icon: Home },
     { label: "Explore", href: "/explore", icon: Compass },
+    { label: "CTF Sites", href: "/ctf-sites", icon: Globe },
+    { label: "Events", href: "/events", icon: Calendar },
     { label: "CVEs", href: "/cves", icon: ShieldAlert },
-    { label: "Categories", href: "/explore?view=categories", icon: FolderTree },
-    { label: "Events", href: "/explore?view=events", icon: Calendar },
   ];
 
   return (

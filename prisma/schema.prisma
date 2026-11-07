@@ -57,6 +57,7 @@ model User {
   bookmarks     Bookmark[]
   stars         Star[]
   comments      Comment[]
+  events        Event[]
 
   @@index([username])
   @@index([email])
@@ -192,5 +193,43 @@ model Comment {
   writeup   Writeup @relation(fields: [writeupId], references: [id], onDelete: Cascade)
 
   @@index([writeupId, createdAt(sort: Desc)])
+  @@index([userId])
+}
+
+enum EventFormat {
+  JEOPARDY
+  ATTACK_DEFENSE
+  HACKATHON
+  WARGAME
+  MIXED
+}
+
+enum EventLocationType {
+  ONLINE
+  ONSITE
+  HYBRID
+}
+
+model Event {
+  id           String            @id @default(cuid())
+  title        String
+  organizer    String
+  description  String            @db.Text
+  url          String
+  format       EventFormat       @default(JEOPARDY)
+  locationType EventLocationType @default(ONLINE)
+  location     String?
+  startDate    DateTime
+  endDate      DateTime
+  weight       Float?
+  prizePool    String?
+  userId       String
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([endDate(sort: Asc)])
+  @@index([startDate(sort: Asc)])
   @@index([userId])
 }
