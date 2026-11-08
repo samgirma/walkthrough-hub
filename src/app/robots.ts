@@ -20,6 +20,8 @@ export default function robots(): MetadataRoute.Robots {
         "/tag/",
         "/feed.xml",
         "/sitemap.xml",
+        "/sitemap/",
+        "/robots.txt",
         "/login",
         "/register",
       ],

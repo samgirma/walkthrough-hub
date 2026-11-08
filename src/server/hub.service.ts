@@ -295,49 +295,58 @@ export async function getRelatedWriteups(params: {
 }
 
 export async function getAllHubSummaries() {
-  const [categories, topCtfs, topTags] = await Promise.all([
-    prisma.writeup.groupBy({
-      by: ["category"],
-      where: { status: "PUBLIC" },
-      _count: { id: true },
-    }),
-    prisma.writeup.groupBy({
-      by: ["ctfName", "ctfYear"],
-      where: { status: "PUBLIC" },
-      _count: { id: true },
-      orderBy: { _count: { id: "desc" } },
-      take: 12,
-    }),
-    prisma.writeupTag.groupBy({
-      by: ["tagId"],
-      _count: { writeupId: true },
-      orderBy: { _count: { writeupId: "desc" } },
-      take: 20,
-    }),
-  ]);
+  try {
+    const [categories, topCtfs, topTags] = await Promise.all([
+      prisma.writeup.groupBy({
+        by: ["category"],
+        where: { status: "PUBLIC" },
+        _count: { id: true },
+      }),
+      prisma.writeup.groupBy({
+        by: ["ctfName", "ctfYear"],
+        where: { status: "PUBLIC" },
+        _count: { id: true },
+        orderBy: { _count: { id: "desc" } },
+        take: 12,
+      }),
+      prisma.writeupTag.groupBy({
+        by: ["tagId"],
+        _count: { writeupId: true },
+        orderBy: { _count: { writeupId: "desc" } },
+        take: 20,
+      }),
+    ]);
 
-  const tagIds = topTags.map((t) => t.tagId);
-  const tagNames = await prisma.tag.findMany({
-    where: { id: { in: tagIds } },
-    select: { id: true, name: true },
-  });
+    const tagIds = topTags.map((t) => t.tagId);
+    const tagNames = await prisma.tag.findMany({
+      where: { id: { in: tagIds } },
+      select: { id: true, name: true },
+    });
 
-  const tagMap = new Map(tagNames.map((t) => [t.id, t.name]));
+    const tagMap = new Map(tagNames.map((t) => [t.id, t.name]));
 
-  return {
-    categories: categories.map((c) => ({
-      category: c.category,
-      count: c._count.id,
-    })),
-    ctfs: topCtfs.map((c) => ({
-      name: c.ctfName,
-      year: c.ctfYear,
-      count: c._count.id,
-      slug: `${c.ctfName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${c.ctfYear}`,
-    })),
-    tags: topTags.map((t) => ({
-      name: tagMap.get(t.tagId) || "tag",
-      count: t._count.writeupId,
-    })),
-  };
+    return {
+      categories: categories.map((c) => ({
+        category: c.category,
+        count: c._count.id,
+      })),
+      ctfs: topCtfs.map((c) => ({
+        name: c.ctfName,
+        year: c.ctfYear,
+        count: c._count.id,
+        slug: `${c.ctfName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${c.ctfYear}`,
+      })),
+      tags: topTags.map((t) => ({
+        name: tagMap.get(t.tagId) || "tag",
+        count: t._count.writeupId,
+      })),
+    };
+  } catch (err) {
+    console.warn("[hub.service] getAllHubSummaries failed:", err);
+    return {
+      categories: [],
+      ctfs: [],
+      tags: [],
+    };
+  }
 }

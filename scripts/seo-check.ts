@@ -23,7 +23,7 @@ async function runSeoCheck() {
 
   // 1. Sitemap Verification
   console.log("TEST 1: SITEMAP INTEGRITY & CHUNKING");
-  const sitemapEntries = await sitemap({ id: 0 });
+  const sitemapEntries = await sitemap();
   assert(sitemapEntries.length > 0, `Sitemap generated ${sitemapEntries.length} routes`);
 
   const sitemapUrls = new Set(sitemapEntries.map((e) => e.url));

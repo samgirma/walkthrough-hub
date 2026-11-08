@@ -1,8 +1,18 @@
 // Single source of truth for Site Configuration, URLs, and SEO Thresholds
 
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, "") ||
-  "https://walkthrough-by.samgirma.app";
+export const CANONICAL_HOST = "https://walkthrough-by.samgirma.app";
+
+export const SITE_URL = (() => {
+  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, "");
+  // Enforce production canonical domain in production builds or when env points to localhost
+  if (process.env.NODE_ENV === "production" || !envUrl || envUrl.includes("localhost") || envUrl.includes("127.0.0.1")) {
+    if (process.env.NODE_ENV === "development" && envUrl && (envUrl.includes("localhost") || envUrl.includes("127.0.0.1"))) {
+      return envUrl;
+    }
+    return CANONICAL_HOST;
+  }
+  return envUrl;
+})();
 
 export const SITE_NAME = "WriteupHub";
 export const SITE_TAGLINE = "CTF & Security Research Vault";
