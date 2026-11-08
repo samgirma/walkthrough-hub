@@ -59,14 +59,14 @@ export function TypewriterHeading() {
   }, [displayText, isDeleting, currentTarget]);
 
   return (
-    <div className="w-full flex items-center select-none overflow-hidden py-2">
-      <h1 className="font-mono text-2xl min-[360px]:text-[1.65rem] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tight text-white flex items-center whitespace-nowrap overflow-hidden drop-shadow-[0_0_35px_rgba(34,211,160,0.35)]">
-        <span className="bg-gradient-to-r from-white via-[#E0E2EC] to-[#50F0BB] bg-clip-text text-transparent truncate">
+    <div className="w-full flex items-center select-none py-2">
+      <h1 className="font-mono text-[clamp(1.35rem,4.5vw,4.75rem)] font-black tracking-tight text-white flex items-center whitespace-nowrap drop-shadow-[0_0_35px_rgba(34,211,160,0.35)]">
+        <span className="bg-gradient-to-r from-white via-[#E0E2EC] to-[#50F0BB] bg-clip-text text-transparent">
           {displayText}
         </span>
         <span
           aria-hidden="true"
-          className="inline-block w-2 sm:w-3 md:w-4 lg:w-5 h-[0.82em] bg-[#22D3A0] ml-1.5 sm:ml-2.5 md:ml-3 shrink-0 animate-pulse shadow-[0_0_15px_#22D3A0] align-middle"
+          className="inline-block w-[0.25em] h-[0.82em] bg-[#22D3A0] ml-2 shrink-0 animate-pulse shadow-[0_0_15px_#22D3A0] align-middle"
         />
       </h1>
     </div>

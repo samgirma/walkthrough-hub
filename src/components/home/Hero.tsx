@@ -23,7 +23,7 @@ export function Hero({}: HeroProps) {
 
       {/* Main Content: Edge-to-Edge Container with Animated Typewriter Heading */}
       <div className="relative z-10 w-full px-4 sm:px-8 lg:px-12 xl:px-16 my-auto py-8">
-        <div className="max-w-5xl flex flex-col items-start">
+        <div className="w-full max-w-7xl flex flex-col items-start">
           {/* Animated "CTF Walkthrough" Typewriter (writes, pauses, clears, repeats continuously) */}
           <TypewriterHeading />
         </div>
