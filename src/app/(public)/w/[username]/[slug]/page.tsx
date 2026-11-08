@@ -37,6 +37,9 @@ import {
 import { MobileTOCAccordion } from "./mobile-toc-sheet";
 import { WriteupReaderClient } from "./writeup-reader-client";
 
+import { buildMetadata, isIndexable, stripMarkdown } from "@/lib/seo";
+import { SITE_URL, SITE_NAME } from "@/config/site";
+
 interface WriteupPageProps {
   params: Promise<{
     username: string;
@@ -87,39 +90,39 @@ export async function generateMetadata({
 
   // DRAFT status is strictly forbidden from public access
   if (!writeup || writeup.status === "DRAFT") {
-    return {
-      title: "Writeup Not Found | WriteupHub",
-    };
+    return buildMetadata({
+      title: "Writeup Not Found",
+      noindex: true,
+      nofollow: true,
+    });
   }
 
   const isUnlisted = writeup.status === "UNLISTED";
-  const url = `${
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-  }/w/${username}/${slug}`;
+  const indexEligible = isUnlisted
+    ? false
+    : isIndexable({
+        status: writeup.status,
+        contentMd: writeup.contentMd,
+        authorCreatedAt: writeup.author.createdAt,
+      });
 
-  return {
-    title: `${writeup.title} // ${writeup.ctfName} Writeup`,
-    description: writeup.excerpt,
-    alternates: {
-      canonical: url,
-    },
-    robots: isUnlisted
-      ? { index: false, follow: false }
-      : { index: true, follow: true },
-    openGraph: {
-      type: "article",
-      title: `${writeup.title} | WriteupHub`,
-      description: writeup.excerpt,
-      url,
-      publishedTime: writeup.publishedAt?.toISOString(),
-      authors: [username],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: writeup.title,
-      description: writeup.excerpt,
-    },
-  };
+  const rawTitle = `${writeup.title} - ${writeup.ctfName} writeup`;
+  const cleanDesc = writeup.excerpt || stripMarkdown(writeup.contentMd);
+  const tags = writeup.tags?.map((t) => t.tag.name) || [];
+
+  return buildMetadata({
+    title: rawTitle,
+    description: cleanDesc,
+    canonicalPath: `/w/${username}/${slug}`,
+    noindex: !indexEligible,
+    nofollow: false,
+    ogType: "article",
+    ogImage: `/w/${username}/${slug}/opengraph-image`,
+    publishedTime: writeup.publishedAt?.toISOString(),
+    modifiedTime: writeup.updatedAt.toISOString(),
+    authors: [username],
+    tags: [writeup.category, ...tags],
+  });
 }
 
 export default async function WriteupPage({ params }: WriteupPageProps) {
@@ -133,31 +136,112 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
     notFound();
   }
 
-  // Render markdown with Shiki & sanitize
+  // Render markdown with Shiki & sanitize (shifts markdown headings to h2 so the title is the single h1)
   const htmlContent = await renderMarkdown(writeup.contentMd);
   const toc = extractTOC(writeup.contentMd);
 
   const categoryStyle = getCategoryColor(writeup.category);
   const difficultyStyle = getDifficultyColor(writeup.difficulty);
-  const currentUrl = `${
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-  }/w/${username}/${slug}`;
+  const canonicalUrl = `${SITE_URL}/w/${username}/${slug}`;
+  const ogImageUrl = `${SITE_URL}/w/${username}/${slug}/opengraph-image`;
+  const cleanDesc = writeup.excerpt || stripMarkdown(writeup.contentMd).slice(0, 155);
+
+  // Server-rendered structured data (JSON-LD)
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: writeup.title,
+    description: cleanDesc,
+    image: [ogImageUrl],
+    datePublished: writeup.publishedAt
+      ? writeup.publishedAt.toISOString()
+      : writeup.createdAt.toISOString(),
+    dateModified: writeup.updatedAt.toISOString(),
+    author: {
+      "@type": "Person",
+      name: writeup.author.username || "anonymous",
+      url: `${SITE_URL}/u/${writeup.author.username || "anonymous"}`,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/icon.svg`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: SITE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Explore",
+        item: `${SITE_URL}/explore`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: writeup.ctfName,
+        item: `${SITE_URL}/explore?q=${encodeURIComponent(writeup.ctfName)}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: writeup.title,
+        item: canonicalUrl,
+      },
+    ],
+  };
 
   return (
     <div className="relative w-full min-h-screen bg-transparent pb-32 lg:pb-24">
+      {/* Structured Data: Article & BreadcrumbList */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([articleJsonLd, breadcrumbJsonLd]).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
+
       {/* Top Reading Progress Bar */}
       <ReadingProgress />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {/* Navigation Breadcrumb */}
-        <div className="flex items-center justify-between gap-4 mb-6 text-xs font-mono text-[#94A3B8]">
-          <Link
-            href="/explore"
-            className="flex items-center gap-1.5 hover:text-white transition-colors min-h-[36px]"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Back to Explorer</span>
-          </Link>
+        <nav
+          aria-label="Breadcrumb"
+          className="flex items-center justify-between gap-4 mb-6 text-xs font-mono text-[#94A3B8]"
+        >
+          <div className="flex items-center gap-2">
+            <Link
+              href="/explore"
+              className="flex items-center gap-1.5 hover:text-white transition-colors min-h-[36px]"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span>Back to Explorer</span>
+            </Link>
+            <span className="text-[#3A4252]">/</span>
+            <span className="text-white truncate max-w-[200px] sm:max-w-none">
+              {writeup.ctfName}
+            </span>
+          </div>
 
           {writeup.status === "UNLISTED" && (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-semibold text-[11px]">
@@ -165,7 +249,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
               UNLISTED // DIRECT LINK ONLY
             </span>
           )}
-        </div>
+        </nav>
 
         {/* Layout Grid: Sticky TOC on lg+, single column on mobile */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
@@ -280,12 +364,12 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
           </aside>
 
           {/* MAIN ARTICLE & CONTENT (lg:col-span-8 xl:col-span-9) */}
-          <main className="lg:col-span-8 xl:col-span-9 flex flex-col gap-6 min-w-0 w-full">
+          <article className="lg:col-span-8 xl:col-span-9 flex flex-col gap-6 min-w-0 w-full">
             {/* Mobile Collapsible TOC Accordion at top of article */}
             <MobileTOCAccordion toc={toc} />
 
-            {/* Main Article Container */}
-            <div className="p-4 sm:p-8 rounded-xl border border-[#242936] bg-[#12151C]/92 backdrop-blur-md shadow-lg">
+            {/* Main Article Header Card */}
+            <header className="p-4 sm:p-8 rounded-xl border border-[#242936] bg-[#12151C]/92 backdrop-blur-md shadow-lg">
               {/* Category & CTF Badges */}
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 <span
@@ -311,7 +395,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                 </span>
               </div>
 
-              {/* Title */}
+              {/* Title (Single H1 on page) */}
               <h1 className="vt-writeup-title font-sans font-extrabold text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight leading-tight mb-4">
                 {writeup.title}
               </h1>
@@ -362,12 +446,18 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                     <Eye className="h-3.5 w-3.5 text-[#475569]" />
                     <span>{formatCompactNumber(writeup.viewCount)} views</span>
                   </span>
-                  {writeup.publishedAt && (
-                    <span className="hidden sm:flex items-center gap-1">
-                      <Calendar className="h-3.5 w-3.5 text-[#475569]" />
-                      <span>{formatDate(writeup.publishedAt)}</span>
-                    </span>
-                  )}
+                  <span className="hidden sm:flex items-center gap-1">
+                    <Calendar className="h-3.5 w-3.5 text-[#475569]" />
+                    <time
+                      dateTime={
+                        writeup.publishedAt
+                          ? writeup.publishedAt.toISOString()
+                          : writeup.createdAt.toISOString()
+                      }
+                    >
+                      {formatDate(writeup.publishedAt || writeup.createdAt)}
+                    </time>
+                  </span>
                 </div>
 
                 {/* Action Buttons: Client islands */}
@@ -381,18 +471,24 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                     initialStarsCount={writeup._count?.stars || 0}
                   />
                   <BookmarkButton writeupId={writeup.id} />
-                  <ShareModal title={writeup.title} url={currentUrl} />
+                  <ShareModal title={writeup.title} url={canonicalUrl} />
                 </div>
               </div>
-            </div>
+            </header>
 
-            {/* Markdown Body Article */}
-            <div className="p-4 sm:p-8 lg:p-10 rounded-xl border border-[#242936] bg-[#12151C] shadow-md max-w-full overflow-hidden">
+            {/* Markdown Body Article Section */}
+            <section
+              aria-label="Writeup Content"
+              className="p-4 sm:p-8 lg:p-10 rounded-xl border border-[#242936] bg-[#12151C] shadow-md max-w-full overflow-hidden"
+            >
               <MarkdownViewer htmlContent={htmlContent} />
-            </div>
+            </section>
 
-            {/* Author Footer Bio Card */}
-            <div className="p-4 sm:p-6 rounded-xl border border-[#242936] bg-[#12151C] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            {/* Author Footer Bio Card Section */}
+            <section
+              aria-label="Author Profile"
+              className="p-4 sm:p-6 rounded-xl border border-[#242936] bg-[#12151C] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+            >
               <div className="flex items-center gap-3">
                 {writeup.author.avatarUrl ? (
                   <Image
@@ -425,7 +521,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                 <span>View Researcher Profile</span>
                 <ExternalLink className="h-3.5 w-3.5" />
               </Link>
-            </div>
+            </section>
 
             {/* Comments & Discussion Section */}
             <CommentsSection
@@ -433,7 +529,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
               writeupAuthorId={writeup.author.id}
               initialCommentsCount={writeup._count?.comments || 0}
             />
-          </main>
+          </article>
         </div>
       </div>
 
@@ -442,7 +538,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
         writeupId={writeup.id}
         initialStarsCount={writeup._count?.stars || 0}
         title={writeup.title}
-        url={currentUrl}
+        url={canonicalUrl}
         toc={toc}
       />
     </div>

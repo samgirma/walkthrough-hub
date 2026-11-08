@@ -82,4 +82,41 @@ WHUB{slub_fr33l1st_p01s0n}
     expect(html).toContain("copy-code-button");
     expect(html).toContain("shiki");
   });
+
+  it("shifts markdown headings down so h1 becomes h2 for single-h1 semantic document hierarchy", async () => {
+    const markdown = "# Primary Section\n## Secondary Subsection\n### Deep Subsection";
+    const html = await renderMarkdown(markdown);
+
+    expect(html).not.toContain("<h1");
+    expect(html).toContain("<h2 id=\"primary-section\">Primary Section</h2>");
+    expect(html).toContain("<h3 id=\"secondary-subsection\">Secondary Subsection</h3>");
+    expect(html).toContain("<h4 id=\"deep-subsection\">Deep Subsection</h4>");
+  });
+
+  it("adds rel='ugc nofollow noopener' and target='_blank' to external links, keeping internal links clean", async () => {
+    const markdown = `
+[External Exploit](https://github.com/torvalds/linux)
+[Internal Writeup](/w/sam/heap-overflow)
+[Relative Anchor](#summary)
+`;
+    const html = await renderMarkdown(markdown);
+
+    expect(html).toContain('href="https://github.com/torvalds/linux"');
+    expect(html).toContain('rel="ugc nofollow noopener"');
+    expect(html).toContain('target="_blank"');
+
+    // Internal links should not have ugc nofollow
+    expect(html).toContain('href="/w/sam/heap-overflow"');
+    expect(html).toContain('href="#summary"');
+  });
+
+  it("applies lazy loading and fallback alt text to images", async () => {
+    const markdown = "![Exploit Diagram](https://example.com/overflow.png)\n![](https://example.com/memory.png)";
+    const html = await renderMarkdown(markdown);
+
+    expect(html).toContain('loading="lazy"');
+    expect(html).toContain('decoding="async"');
+    expect(html).toContain('alt="Exploit Diagram"');
+    expect(html).toContain('alt="Security writeup demonstration figure"');
+  });
 });

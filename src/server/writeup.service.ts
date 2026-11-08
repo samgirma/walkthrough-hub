@@ -382,6 +382,7 @@ export async function getWriteupByAuthorAndSlug(
           avatarUrl: true,
           bio: true,
           githubUrl: true,
+          createdAt: true,
         },
       },
       tags: {
@@ -435,6 +436,7 @@ export async function getWriteupForViewer(
           avatarUrl: true,
           bio: true,
           githubUrl: true,
+          createdAt: true,
         },
       },
       tags: {

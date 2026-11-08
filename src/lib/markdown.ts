@@ -247,6 +247,59 @@ function rehypeShikiPlugin() {
 }
 
 /**
+ * Remark plugin to shift headings down by 1 level (# -> h2, ## -> h3, etc.)
+ * so the page template's title is the sole <h1> for valid semantic hierarchy and SEO.
+ */
+function remarkShiftHeadings() {
+  return (tree: any) => {
+    visit(tree, "heading", (node: any) => {
+      node.depth = Math.min(6, node.depth + 1);
+    });
+  };
+}
+
+/**
+ * Rehype plugin to:
+ * 1. Add rel="ugc nofollow noopener" and target="_blank" to external links (keeping internal links normal).
+ * 2. Add loading="lazy" and decoding="async" to images, ensuring safe alt text exists.
+ */
+function rehypeSeoEnhancements() {
+  return (tree: any) => {
+    visit(tree, "element", (node: any) => {
+      // 1. External links
+      if (node.tagName === "a" && node.properties?.href) {
+        const href = String(node.properties.href);
+        const isExternal =
+          href.startsWith("http://") ||
+          href.startsWith("https://") ||
+          href.startsWith("//");
+
+        const isInternalHost =
+          href.includes("walkthrough-by.samgirma.app") ||
+          href.startsWith("/") ||
+          href.startsWith("#") ||
+          href.startsWith("mailto:");
+
+        if (isExternal && !isInternalHost) {
+          node.properties.rel = "ugc nofollow noopener";
+          node.properties.target = "_blank";
+        }
+      }
+
+      // 2. Images
+      if (node.tagName === "img") {
+        node.properties = node.properties || {};
+        node.properties.loading = "lazy";
+        node.properties.decoding = "async";
+        if (!node.properties.alt || String(node.properties.alt).trim() === "") {
+          node.properties.alt = "Security writeup demonstration figure";
+        }
+      }
+    });
+  };
+}
+
+/**
  * Strict sanitizer schema allowing only safe CTF elements & classes
  */
 const customSanitizeSchema = {
@@ -277,6 +330,7 @@ const customSanitizeSchema = {
     summary: ["className", "class"],
     button: ["type", "className", "class", "dataCode", "title"],
     a: ["href", "title", "target", "rel", "className", "class"],
+    img: ["src", "alt", "title", "width", "height", "loading", "decoding", "className", "class"],
   },
   protocols: {
     ...defaultSchema.protocols,
@@ -295,10 +349,12 @@ export async function renderMarkdown(contentMd: string): Promise<string> {
   const file = await unified()
     .use(remarkParse)
     .use(remarkGfm)
+    .use(remarkShiftHeadings)
     .use(remarkCtfDirectives)
     .use(remarkRehype)
     .use(rehypeSlug)
     .use(rehypeShikiPlugin)
+    .use(rehypeSeoEnhancements)
     .use(rehypeSanitize, customSanitizeSchema as any)
     .use(rehypeStringify)
     .process(contentMd);

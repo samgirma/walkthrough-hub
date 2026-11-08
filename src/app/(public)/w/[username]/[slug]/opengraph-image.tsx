@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import fs from "node:fs";
+import path from "node:path";
 import { getWriteupByAuthorAndSlug } from "@/server/writeup.service";
 
 export const runtime = "nodejs";
@@ -24,6 +26,13 @@ export default async function Image({
   const category = writeup?.category || "SECURITY";
   const difficulty = writeup?.difficulty || "MEDIUM";
 
+  const fontNotoSans = fs.readFileSync(
+    path.join(process.cwd(), "src/assets/fonts/NotoSans-Bold.ttf")
+  );
+  const fontEthiopic = fs.readFileSync(
+    path.join(process.cwd(), "src/assets/fonts/NotoSansEthiopic-Bold.ttf")
+  );
+
   return new ImageResponse(
     (
       <div
@@ -39,7 +48,7 @@ export default async function Image({
           backgroundSize: "100px 100px",
           padding: "60px",
           color: "#E0E2EC",
-          fontFamily: "sans-serif",
+          fontFamily: "NotoSans, NotoSansEthiopic, sans-serif",
           border: "8px solid #242936",
         }}
       >
@@ -138,6 +147,20 @@ export default async function Image({
     ),
     {
       ...size,
+      fonts: [
+        {
+          name: "NotoSans",
+          data: fontNotoSans,
+          weight: 700,
+          style: "normal",
+        },
+        {
+          name: "NotoSansEthiopic",
+          data: fontEthiopic,
+          weight: 700,
+          style: "normal",
+        },
+      ],
     }
   );
 }
