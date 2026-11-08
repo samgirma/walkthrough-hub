@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
-import { SITE_URL } from "@/config/site";
+import { SITE_URL, SEO_THRESHOLDS } from "@/config/site";
 import { isIndexable } from "@/lib/seo";
 import { getKevVulnerabilities } from "@/server/cve.service";
 
@@ -61,8 +61,62 @@ export default async function sitemap({
           changeFrequency: "weekly",
           priority: 0.8,
         },
+        {
+          url: `${SITE_URL}/browse`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.8,
+        },
       ]
     : [];
+
+  // Hub routes and author profile routes for chunk 0
+  let hubRoutes: MetadataRoute.Sitemap = [];
+  if (chunkId === 0) {
+    try {
+      // 1. Category Hubs with at least SEO_THRESHOLDS.MIN_HUB_WRITEUPS public writeups
+      const categories = ["web", "pwn", "crypto", "reverse", "forensics", "misc", "osint"];
+      const categoryCounts = await prisma.writeup.groupBy({
+        by: ["category"],
+        where: { status: "PUBLIC" },
+        _count: { id: true },
+      });
+      const catCountMap = new Map(categoryCounts.map((c) => [c.category.toLowerCase(), c._count.id]));
+
+      for (const cat of categories) {
+        if ((catCountMap.get(cat) || 0) >= SEO_THRESHOLDS.MIN_HUB_WRITEUPS) {
+          hubRoutes.push({
+            url: `${SITE_URL}/category/${cat}`,
+            lastModified: new Date(),
+            changeFrequency: "daily",
+            priority: 0.8,
+          });
+        }
+      }
+
+      // 2. Author profiles with at least 1 public writeup
+      const activeAuthors = await prisma.user.findMany({
+        where: {
+          writeups: { some: { status: "PUBLIC" } },
+        },
+        select: { username: true, updatedAt: true },
+        take: 100,
+      });
+
+      for (const author of activeAuthors) {
+        if (author.username) {
+          hubRoutes.push({
+            url: `${SITE_URL}/u/${author.username}`,
+            lastModified: author.updatedAt,
+            changeFrequency: "weekly",
+            priority: 0.7,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("[sitemap] Could not fetch hubs for sitemap:", err);
+    }
+  }
 
   // Dynamic public indexable writeups
   let writeupRoutes: MetadataRoute.Sitemap = [];
@@ -118,5 +172,5 @@ export default async function sitemap({
     }
   }
 
-  return [...staticRoutes, ...writeupRoutes, ...cveRoutes];
+  return [...staticRoutes, ...hubRoutes, ...writeupRoutes, ...cveRoutes];
 }

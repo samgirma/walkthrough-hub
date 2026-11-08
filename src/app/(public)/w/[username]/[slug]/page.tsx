@@ -14,12 +14,14 @@ import {
   Cpu,
   Layers,
   ArrowLeft,
+  ArrowRight,
   Share2,
   Bookmark,
   ExternalLink,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getWriteupForViewer } from "@/server/writeup.service";
+import { getRelatedWriteups } from "@/server/hub.service";
 import { renderMarkdown, extractTOC } from "@/lib/markdown";
 import { MarkdownViewer } from "@/components/markdown/markdown-viewer";
 import { ReadingProgress } from "@/components/writeup/reading-progress";
@@ -202,6 +204,14 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
   const htmlContent = await renderMarkdown(writeup.contentMd);
   const toc = extractTOC(writeup.contentMd);
 
+  // Fetch internal linking targets: same CTF challenges, related category solutions, and author writeups
+  const related = await getRelatedWriteups({
+    writeupId: writeup.id,
+    category: writeup.category,
+    ctfName: writeup.ctfName,
+    authorId: writeup.author.id,
+  });
+
   const categoryStyle = getCategoryColor(writeup.category);
   const difficultyStyle = getDifficultyColor(writeup.difficulty);
   const canonicalUrl = `${SITE_URL}/w/${username}/${slug}`;
@@ -251,8 +261,8 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
       {
         "@type": "ListItem",
         position: 2,
-        name: "Explore",
-        item: `${SITE_URL}/explore`,
+        name: writeup.category,
+        item: `${SITE_URL}/category/${writeup.category.toLowerCase()}`,
       },
       {
         "@type": "ListItem",
@@ -291,18 +301,28 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
           aria-label="Breadcrumb"
           className="flex items-center justify-between gap-4 mb-6 text-xs font-mono text-[#94A3B8]"
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Link
-              href="/explore"
+              href="/"
               className="flex items-center gap-1.5 hover:text-white transition-colors min-h-[36px]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Back to Explorer</span>
+              <span>Home</span>
             </Link>
             <span className="text-[#3A4252]">/</span>
-            <span className="text-white truncate max-w-[200px] sm:max-w-none">
+            <Link
+              href={`/category/${writeup.category.toLowerCase()}`}
+              className="hover:text-white transition-colors uppercase font-bold text-[#22D3A0]"
+            >
+              {writeup.category}
+            </Link>
+            <span className="text-[#3A4252]">/</span>
+            <Link
+              href={`/explore?ctfName=${encodeURIComponent(writeup.ctfName)}`}
+              className="text-[#BACAC1] hover:text-white transition-colors truncate max-w-[200px] sm:max-w-none"
+            >
               {writeup.ctfName}
-            </span>
+            </Link>
           </div>
 
           {writeup.status === "UNLISTED" && (
@@ -584,6 +604,118 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                 <ExternalLink className="h-3.5 w-3.5" />
               </Link>
             </section>
+
+            {/* CTF Challenge Step Navigation (Previous / Next in same CTF) */}
+            {(related.prevChallenge || related.nextChallenge) && (
+              <nav
+                aria-label="Tournament Challenge Navigation"
+                className="p-4 rounded-xl border border-[#242936] bg-[#12151C] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs"
+              >
+                {related.prevChallenge ? (
+                  <Link
+                    href={`/w/${related.prevChallenge.author.username}/${related.prevChallenge.slug}`}
+                    className="flex items-center gap-2 text-[#BACAC1] hover:text-[#22D3A0] transition-colors truncate max-w-full sm:max-w-[48%]"
+                  >
+                    <ArrowLeft className="h-4 w-4 shrink-0 text-[#22D3A0]" />
+                    <div className="flex flex-col truncate">
+                      <span className="text-[10px] text-[#475569] uppercase">
+                        Previous in {writeup.ctfName}
+                      </span>
+                      <span className="truncate text-white font-semibold">
+                        {related.prevChallenge.title}
+                      </span>
+                    </div>
+                  </Link>
+                ) : (
+                  <div />
+                )}
+
+                {related.nextChallenge && (
+                  <Link
+                    href={`/w/${related.nextChallenge.author.username}/${related.nextChallenge.slug}`}
+                    className="flex items-center gap-2 text-[#BACAC1] hover:text-[#22D3A0] transition-colors truncate max-w-full sm:max-w-[48%] sm:ml-auto text-left sm:text-right"
+                  >
+                    <div className="flex flex-col truncate">
+                      <span className="text-[10px] text-[#475569] uppercase">
+                        Next in {writeup.ctfName}
+                      </span>
+                      <span className="truncate text-white font-semibold">
+                        {related.nextChallenge.title}
+                      </span>
+                    </div>
+                    <ArrowRight className="h-4 w-4 shrink-0 text-[#22D3A0]" />
+                  </Link>
+                )}
+              </nav>
+            )}
+
+            {/* Related Writeups in Category & CTF */}
+            {related.related.length > 0 && (
+              <section aria-label="Related Walkthroughs" className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-sans font-bold text-base text-white">
+                    Related Solutions in {writeup.category}
+                  </h2>
+                  <Link
+                    href={`/category/${writeup.category.toLowerCase()}`}
+                    className="text-xs font-mono text-[#22D3A0] hover:underline"
+                  >
+                    Explore Hub →
+                  </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {related.related.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={`/w/${item.author.username}/${item.slug}`}
+                      className="group p-3.5 rounded-xl border border-[#242936] bg-[#12151C] hover:border-[#22D3A0]/60 transition-colors flex flex-col justify-between gap-2.5 shadow-sm"
+                    >
+                      <span className="font-sans font-semibold text-xs text-white group-hover:text-[#22D3A0] line-clamp-2 leading-snug">
+                        {item.title}
+                      </span>
+                      <div className="flex items-center justify-between text-[10px] font-mono text-[#94A3B8] pt-1 border-t border-[#242936]/40">
+                        <span className="text-[#38BDF8]">{item.ctfName}</span>
+                        <span>{item.readTimeMin} min read</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* More Solutions From Author */}
+            {related.moreFromAuthor.length > 0 && (
+              <section aria-label="Author Walkthroughs" className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-sans font-bold text-base text-white">
+                    More from @{writeup.author.username}
+                  </h2>
+                  <Link
+                    href={`/u/${writeup.author.username}`}
+                    className="text-xs font-mono text-[#22D3A0] hover:underline"
+                  >
+                    All Research →
+                  </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {related.moreFromAuthor.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={`/w/${item.author.username}/${item.slug}`}
+                      className="group p-3.5 rounded-xl border border-[#242936] bg-[#12151C] hover:border-[#22D3A0]/60 transition-colors flex flex-col justify-between gap-2.5 shadow-sm"
+                    >
+                      <span className="font-sans font-semibold text-xs text-white group-hover:text-[#22D3A0] line-clamp-2 leading-snug">
+                        {item.title}
+                      </span>
+                      <div className="flex items-center justify-between text-[10px] font-mono text-[#94A3B8] pt-1 border-t border-[#242936]/40">
+                        <span className="text-[#22D3A0]">{item.category}</span>
+                        <span>{item.readTimeMin} min read</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Comments & Discussion Section */}
             <CommentsSection
