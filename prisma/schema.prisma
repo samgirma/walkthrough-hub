@@ -36,6 +36,19 @@ enum Role {
   ADMIN
 }
 
+enum IndexOverride {
+  AUTO
+  FORCE_INDEX
+  FORCE_NOINDEX
+}
+
+enum ModerationStatus {
+  APPROVED
+  FLAGGED
+  SPAM
+  REMOVED
+}
+
 model User {
   id            String     @id @default(cuid())
   name          String?
@@ -48,6 +61,7 @@ model User {
   avatarUrl     String?
   bio           String?
   githubUrl     String?
+  lastUsernameChange DateTime?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
@@ -58,6 +72,7 @@ model User {
   stars         Star[]
   comments      Comment[]
   events        Event[]
+  usernameHistory UsernameHistory[]
 
   @@index([username])
   @@index([email])
@@ -115,6 +130,12 @@ model Writeup {
   viewCount     Int         @default(0)
   readTimeMin   Int         @default(1)
   publishedAt   DateTime?
+  indexOverride    IndexOverride    @default(AUTO)
+  moderationStatus ModerationStatus @default(APPROVED)
+  isFlagged        Boolean          @default(false)
+  canonicalUrl     String?
+  socialTitle      String?
+  socialDescription String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
@@ -123,6 +144,7 @@ model Writeup {
   bookmarks     Bookmark[]
   stars         Star[]
   comments      Comment[]
+  slugHistory   SlugHistory[]
 
   @@unique([authorId, slug])
   @@index([status])
@@ -231,5 +253,29 @@ model Event {
 
   @@index([endDate(sort: Asc)])
   @@index([startDate(sort: Asc)])
+  @@index([userId])
+}
+
+model SlugHistory {
+  id        String   @id @default(cuid())
+  writeupId String
+  oldSlug   String
+  createdAt DateTime @default(now())
+
+  writeup   Writeup  @relation(fields: [writeupId], references: [id], onDelete: Cascade)
+
+  @@index([oldSlug])
+  @@index([writeupId])
+}
+
+model UsernameHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  oldUsername String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([oldUsername])
   @@index([userId])
 }

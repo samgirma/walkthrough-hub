@@ -268,6 +268,16 @@ export async function updateWriteup(
     }
   }
 
+  // If slug has changed, record old slug in SlugHistory for 301 redirects
+  if (slug !== existing.slug) {
+    await prisma.slugHistory.create({
+      data: {
+        writeupId: existing.id,
+        oldSlug: existing.slug,
+      },
+    });
+  }
+
   const updated = await prisma.writeup.update({
     where: { id: existing.id },
     data: {

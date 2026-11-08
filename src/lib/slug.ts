@@ -26,6 +26,6 @@ export function generateSlug(title: string): string {
     return `writeup-${Math.random().toString(36).substring(2, 8)}`;
   }
 
-  // Max 80 characters for clean URLs
-  return cleaned.substring(0, 80).replace(/-+$/, "");
+  // Max 60 characters for clean URLs
+  return cleaned.substring(0, 60).replace(/-+$/, "");
 }

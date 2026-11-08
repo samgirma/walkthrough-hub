@@ -26,4 +26,10 @@ describe("generateSlug", () => {
     const slug = generateSlug("???!!!");
     expect(slug).toMatch(/^writeup-[a-z0-9]+$/);
   });
+
+  it("truncates long titles to at most 60 characters", () => {
+    const longTitle = "A".repeat(100);
+    const slug = generateSlug(longTitle);
+    expect(slug.length).toBeLessThanOrEqual(60);
+  });
 });

@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Metadata } from "next";
 import {
   User,
@@ -16,6 +16,8 @@ import { prisma } from "@/lib/prisma";
 import { getUserProfile } from "@/server/auth.service";
 import { ProfileWriteupsFeed } from "./profile-writeups-feed";
 import { formatDate } from "@/lib/utils";
+import { buildMetadata } from "@/lib/seo";
+import { SITE_URL, SITE_NAME } from "@/config/site";
 
 interface ProfilePageProps {
   params: Promise<{
@@ -48,19 +50,36 @@ export async function generateMetadata({
   const user = await getUserProfile(username);
 
   if (!user) {
-    return {
-      title: "Researcher Not Found | WriteupHub",
-    };
+    // Check if user changed username
+    const usernameHist = await prisma.usernameHistory.findFirst({
+      where: { oldUsername: username },
+      include: { user: { select: { username: true } } },
+    });
+    if (usernameHist?.user.username) {
+      permanentRedirect(`/u/${usernameHist.user.username}`);
+    }
+
+    return buildMetadata({
+      title: "Researcher Not Found",
+      noindex: true,
+      nofollow: true,
+    });
   }
 
   const displayUsername = user.username || username;
+  const publishedCount = user._count?.writeups || 0;
+  const isIndexable = publishedCount >= 1;
 
-  return {
+  return buildMetadata({
     title: `@${displayUsername} // CTF Researcher Profile`,
     description:
       user.bio ||
-      `Explore CTF solutions and security research published by @${displayUsername} on WriteupHub.`,
-  };
+      `Explore verified CTF solutions, offensive security walkthroughs, and research published by @${displayUsername} on WriteupHub.`,
+    canonicalPath: `/u/${displayUsername}`,
+    noindex: !isIndexable,
+    nofollow: false,
+    ogType: "profile",
+  });
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
@@ -68,14 +87,48 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const user = await getUserProfile(username);
 
   if (!user) {
+    // Check if user changed username
+    const usernameHist = await prisma.usernameHistory.findFirst({
+      where: { oldUsername: username },
+      include: { user: { select: { username: true } } },
+    });
+    if (usernameHist?.user.username) {
+      permanentRedirect(`/u/${usernameHist.user.username}`);
+    }
+
     notFound();
   }
 
   const displayUsername = user.username || username;
   const publishedCount = user._count.writeups;
+  const canonicalUrl = `${SITE_URL}/u/${displayUsername}`;
+
+  // Server-rendered structured data (ProfilePage + Person)
+  const profileJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    dateCreated: user.createdAt.toISOString(),
+    mainEntity: {
+      "@type": "Person",
+      name: displayUsername,
+      alternateName: user.name || displayUsername,
+      description: user.bio || `Security researcher @${displayUsername} on WriteupHub.`,
+      url: canonicalUrl,
+      image: user.avatarUrl || `${SITE_URL}/icon.svg`,
+      sameAs: user.githubUrl ? [user.githubUrl] : [],
+    },
+  };
 
   return (
     <div className="w-full min-h-screen bg-transparent pb-24">
+      {/* Structured Data: ProfilePage + Person */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(profileJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+
       {/* Top Banner / Author Header */}
       <section className="w-full bg-[#10131A] border-b border-[#242936] py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -128,7 +181,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                     <a
                       href={user.githubUrl}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="ugc nofollow noopener"
                       className="flex items-center gap-1 text-[#38BDF8] hover:underline"
                     >
                       <Github className="h-3.5 w-3.5" />

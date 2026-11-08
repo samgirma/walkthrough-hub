@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Metadata } from "next";
 import {
   Clock,
@@ -90,6 +90,37 @@ export async function generateMetadata({
 
   // DRAFT status is strictly forbidden from public access
   if (!writeup || writeup.status === "DRAFT") {
+    // 1. Check if the author's username changed
+    const usernameHist = await prisma.usernameHistory.findFirst({
+      where: { oldUsername: username },
+      include: { user: { select: { username: true } } },
+    });
+    if (usernameHist?.user.username) {
+      permanentRedirect(`/w/${usernameHist.user.username}/${slug}`);
+    }
+
+    // 2. Check if this writeup's slug was updated
+    const authorUser = await prisma.user.findUnique({
+      where: { username },
+      select: { id: true },
+    });
+    if (authorUser) {
+      const slugHist = await prisma.slugHistory.findFirst({
+        where: {
+          oldSlug: slug,
+          writeup: { authorId: authorUser.id },
+        },
+        include: {
+          writeup: { select: { slug: true, status: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+
+      if (slugHist?.writeup && slugHist.writeup.status !== "DRAFT") {
+        permanentRedirect(`/w/${username}/${slugHist.writeup.slug}`);
+      }
+    }
+
     return buildMetadata({
       title: "Writeup Not Found",
       noindex: true,
@@ -131,8 +162,39 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
   // Zero session read in page root: reads purely public/unlisted writeup for static caching
   const writeup = await getWriteupForViewer({ username, slug });
 
-  // If writeup is not found or is a DRAFT, return notFound() immediately
+  // If writeup is not found or is a DRAFT, check history redirects before 404
   if (!writeup || writeup.status === "DRAFT") {
+    // 1. Check if the author's username changed
+    const usernameHist = await prisma.usernameHistory.findFirst({
+      where: { oldUsername: username },
+      include: { user: { select: { username: true } } },
+    });
+    if (usernameHist?.user.username) {
+      permanentRedirect(`/w/${usernameHist.user.username}/${slug}`);
+    }
+
+    // 2. Check if this writeup's slug was updated
+    const authorUser = await prisma.user.findUnique({
+      where: { username },
+      select: { id: true },
+    });
+    if (authorUser) {
+      const slugHist = await prisma.slugHistory.findFirst({
+        where: {
+          oldSlug: slug,
+          writeup: { authorId: authorUser.id },
+        },
+        include: {
+          writeup: { select: { slug: true, status: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+
+      if (slugHist?.writeup && slugHist.writeup.status !== "DRAFT") {
+        permanentRedirect(`/w/${username}/${slugHist.writeup.slug}`);
+      }
+    }
+
     notFound();
   }
 

@@ -44,9 +44,42 @@ export async function completeOnboardingAction(rawUsername: string) {
       return { success: false, error: "This username is already taken. Please choose another." };
     }
 
+    // Check current user state and enforce 30-day change limit
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { username: true, lastUsernameChange: true },
+    });
+
+    if (currentUser?.username && currentUser.username !== username) {
+      if (currentUser.lastUsernameChange) {
+        const daysSinceChange =
+          (Date.now() - currentUser.lastUsernameChange.getTime()) /
+          (1000 * 60 * 60 * 24);
+        if (daysSinceChange < 30) {
+          return {
+            success: false,
+            error: `Usernames can only be changed once every 30 days. Please wait ${Math.ceil(
+              30 - daysSinceChange
+            )} more day(s).`,
+          };
+        }
+      }
+
+      // Record in UsernameHistory for 301 permanent redirects
+      await prisma.usernameHistory.create({
+        data: {
+          userId: session.user.id,
+          oldUsername: currentUser.username,
+        },
+      });
+    }
+
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { username },
+      data: {
+        username,
+        lastUsernameChange: currentUser?.username ? new Date() : undefined,
+      },
     });
 
     try {

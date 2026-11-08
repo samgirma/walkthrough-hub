@@ -36,6 +36,7 @@ export async function registerUser(input: RegisterInput) {
     },
     select: {
       id: true,
+      name: true,
       username: true,
       email: true,
       avatarUrl: true,
@@ -73,6 +74,7 @@ export async function getUserProfile(
     where: { username },
     select: {
       id: true,
+      name: true,
       username: true,
       email: true,
       avatarUrl: true,

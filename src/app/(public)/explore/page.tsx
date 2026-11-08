@@ -14,15 +14,10 @@ import { ExploreSearchInput } from "@/app/(public)/explore/explore-search-input"
 import { getPublicWriteups } from "@/server/writeup.service";
 import { CategoryType, DifficultyType } from "@/types";
 import { getPageNumbers } from "@/lib/pagination";
+import { buildMetadata } from "@/lib/seo";
 
 // Phase 1: Static/ISR with 60s background revalidation
 export const revalidate = 60;
-
-export const metadata: Metadata = {
-  title: "Explore CTF Writeups // Real-time Exploit Directory",
-  description:
-    "Search, filter, and dissect real-world capture-the-flag solutions, zero-day research, and offensive engineering writeups.",
-};
 
 interface ExplorePageProps {
   searchParams: Promise<{
@@ -35,6 +30,52 @@ interface ExplorePageProps {
     sort?: "trending" | "latest" | "views" | "alphabetical";
     page?: string;
   }>;
+}
+
+export async function generateMetadata({
+  searchParams,
+}: ExplorePageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const hasSearch = Boolean(params.search?.trim());
+  const hasFilters = Boolean(
+    params.difficulty ||
+      params.ctfName ||
+      params.ctfYear ||
+      params.tag ||
+      (params.sort && params.sort !== "trending")
+  );
+  const category = params.category?.toLowerCase();
+
+  // If only a single category filter is supplied without query or extra filters, canonicalize to its dedicated hub page
+  if (category && !hasSearch && !hasFilters && (!params.page || params.page === "1")) {
+    return buildMetadata({
+      title: `${params.category?.toUpperCase()} CTF Walkthroughs & Solutions`,
+      description: `Explore verified ${params.category?.toUpperCase()} CTF challenges, exploit walkthroughs, and solutions.`,
+      canonicalPath: `/category/${category}`,
+      noindex: false,
+      nofollow: false,
+    });
+  }
+
+  // Any search query or combination of filters creates noindex, follow to prevent duplicate indexing
+  const isNoindex = hasSearch || hasFilters || (Boolean(category) && hasFilters);
+
+  const rawTitle =
+    params.page && parseInt(params.page, 10) > 1
+      ? `Explore CTF Writeups - Page ${params.page}`
+      : "Explore CTF Writeups // Real-time Exploit Directory";
+
+  return buildMetadata({
+    title: rawTitle,
+    description:
+      "Search, filter, and dissect real-world capture-the-flag solutions, zero-day research, and offensive engineering writeups.",
+    canonicalPath:
+      params.page && parseInt(params.page, 10) > 1
+        ? `/explore?page=${params.page}`
+        : "/explore",
+    noindex: isNoindex,
+    nofollow: false,
+  });
 }
 
 export default async function ExplorePage({ searchParams }: ExplorePageProps) {
