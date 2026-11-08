@@ -1,4 +1,13 @@
 import { redirect } from "next/navigation";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata = buildMetadata({
+  title: "Register",
+  description: "Create an account on WriteupHub.",
+  canonicalPath: "/register",
+  noindex: true,
+  nofollow: false,
+});
 
 export default async function RegisterPage({
   searchParams,

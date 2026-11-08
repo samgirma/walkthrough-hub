@@ -5,7 +5,14 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { SiteBackground } from "@/components/layout/SiteBackground";
 import { NavigationProgress } from "@/components/layout/navigation-progress";
-import { siteConfig } from "@/config/site";
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_TAGLINE,
+  SITE_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+  SOCIAL_HANDLES,
+} from "@/config/site";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,12 +36,22 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: `${siteConfig.name} // ${siteConfig.tagline}`,
-    template: `%s | ${siteConfig.name}`,
+    default: `${SITE_NAME} // ${SITE_TAGLINE}`,
+    template: `%s | ${SITE_NAME}`,
   },
-  description: siteConfig.description,
+  description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: SITE_URL,
+  },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || "01e9c885c93ef48b",
+    yandex: process.env.YANDEX_VERIFICATION,
+    other: {
+      ...(process.env.BING_VERIFICATION ? { "msvalidate.01": process.env.BING_VERIFICATION } : {}),
+    },
+  },
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
@@ -46,15 +63,26 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    title: `${siteConfig.name} // ${siteConfig.tagline}`,
-    description: siteConfig.description,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} // ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: `${SITE_URL}${DEFAULT_OG_IMAGE}`,
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME} - ${SITE_TAGLINE}`,
+        type: "image/jpeg",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} // ${siteConfig.tagline}`,
-    description: siteConfig.description,
+    title: `${SITE_NAME} // ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    images: [`${SITE_URL}${DEFAULT_OG_IMAGE}`],
+    site: SOCIAL_HANDLES.twitter,
   },
 };
 

@@ -1,47 +1,70 @@
 import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { SITE_URL } from "@/config/site";
+import { isIndexable } from "@/lib/seo";
+import { getKevVulnerabilities } from "@/server/cve.service";
 
 // Phase 1: ISR sitemap with 1-hour revalidation and on-demand revalidation
 export const revalidate = 3600;
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+export async function generateSitemaps() {
+  // Support sitemap chunking up to 10,000 URLs per file
+  try {
+    const totalCount = await prisma.writeup.count({
+      where: { status: "PUBLIC" },
+    });
+    const chunks = Math.max(1, Math.ceil(totalCount / 10000));
+    return Array.from({ length: chunks }, (_, i) => ({ id: i }));
+  } catch {
+    return [{ id: 0 }];
+  }
+}
 
-  // Static public routes
-  const staticRoutes: MetadataRoute.Sitemap = [
-    {
-      url: `${baseUrl}`,
-      lastModified: new Date(),
-      changeFrequency: "hourly",
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/explore`,
-      lastModified: new Date(),
-      changeFrequency: "hourly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/cves`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/login`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/register`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.3,
-    },
-  ];
+export default async function sitemap({
+  id,
+}: {
+  id?: number;
+}): Promise<MetadataRoute.Sitemap> {
+  const chunkId = Number(id || 0);
+  const pageSize = 10000;
 
-  // Dynamic public writeups (only PUBLIC status!)
+  // Static indexable public routes (never include /login, /register, or private areas)
+  const staticRoutes: MetadataRoute.Sitemap = chunkId === 0
+    ? [
+        {
+          url: `${SITE_URL}`,
+          lastModified: new Date(),
+          changeFrequency: "hourly",
+          priority: 1.0,
+        },
+        {
+          url: `${SITE_URL}/explore`,
+          lastModified: new Date(),
+          changeFrequency: "hourly",
+          priority: 0.9,
+        },
+        {
+          url: `${SITE_URL}/cves`,
+          lastModified: new Date(),
+          changeFrequency: "daily",
+          priority: 0.8,
+        },
+        {
+          url: `${SITE_URL}/events`,
+          lastModified: new Date(),
+          changeFrequency: "daily",
+          priority: 0.8,
+        },
+        {
+          url: `${SITE_URL}/ctf-sites`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.8,
+        },
+      ]
+    : [];
+
+  // Dynamic public indexable writeups
   let writeupRoutes: MetadataRoute.Sitemap = [];
   try {
     const publicWriteups = await prisma.writeup.findMany({
@@ -49,24 +72,51 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       select: {
         slug: true,
         updatedAt: true,
+        contentMd: true,
+        status: true,
         author: {
-          select: { username: true },
+          select: { username: true, createdAt: true },
         },
       },
       orderBy: { updatedAt: "desc" },
-      take: 5000,
+      skip: chunkId * pageSize,
+      take: pageSize,
     });
 
-    writeupRoutes = publicWriteups.map((w) => ({
-      url: `${baseUrl}/w/${w.author.username}/${w.slug}`,
-      lastModified: w.updatedAt,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    }));
+    writeupRoutes = publicWriteups
+      .filter((w) =>
+        w.author.username &&
+        isIndexable({
+          status: w.status,
+          contentMd: w.contentMd,
+          authorCreatedAt: w.author.createdAt,
+        })
+      )
+      .map((w) => ({
+        url: `${SITE_URL}/w/${w.author.username}/${w.slug}`,
+        lastModified: w.updatedAt,
+        changeFrequency: "weekly",
+        priority: 0.8,
+      }));
   } catch (err) {
-    // If DB is unreachable during build or cold start, proceed with static routes
-    console.warn("Could not fetch writeups for sitemap:", err);
+    console.warn("[sitemap] Could not fetch writeups for sitemap:", err);
   }
 
-  return [...staticRoutes, ...writeupRoutes];
+  // Include indexable CVEs (only KEV-listed or community-researched vulnerabilities)
+  let cveRoutes: MetadataRoute.Sitemap = [];
+  if (chunkId === 0) {
+    try {
+      const kevList = await getKevVulnerabilities();
+      cveRoutes = kevList.slice(0, 50).map((cve) => ({
+        url: `${SITE_URL}/cves/${cve.cveID}`,
+        lastModified: cve.dateAdded ? new Date(cve.dateAdded) : new Date(),
+        changeFrequency: "weekly",
+        priority: 0.7,
+      }));
+    } catch (err) {
+      console.warn("[sitemap] Could not fetch KEV list for sitemap:", err);
+    }
+  }
+
+  return [...staticRoutes, ...writeupRoutes, ...cveRoutes];
 }
