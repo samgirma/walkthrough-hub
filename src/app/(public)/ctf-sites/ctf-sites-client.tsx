@@ -128,12 +128,20 @@ export function CtfSitesClient() {
                 </div>
               )}
 
-              {/* REST STATE: Platform Icon / Logo Image Only */}
-              <div className="flex flex-col items-center justify-center h-full p-6 transition-transform duration-300 group-hover:scale-105">
+              {/* REST STATE: Platform Icon / Logo Image + Name */}
+              <div className="flex flex-col items-center justify-center h-full p-5 gap-3 transition-transform duration-300 group-hover:scale-105">
                 <PlatformLogo
                   id={site.id}
-                  className="w-24 h-24 sm:w-28 sm:h-28 drop-shadow-[0_0_20px_rgba(0,0,0,0.8)]"
+                  className="w-20 h-20 sm:w-22 sm:h-22 drop-shadow-[0_0_20px_rgba(0,0,0,0.8)]"
                 />
+                <div className="flex flex-col items-center text-center px-2">
+                  <h2 className="font-mono text-sm sm:text-base font-bold text-white group-hover:text-[#22D3A0] transition-colors tracking-tight truncate max-w-full">
+                    {site.name}
+                  </h2>
+                  <span className="font-mono text-[10px] text-[#475569] mt-0.5">
+                    {site.category}
+                  </span>
+                </div>
               </div>
 
               {/* HOVER / FOCUS / TOUCH STATE: Texts Revealed with Smooth Blur Overlay */}
