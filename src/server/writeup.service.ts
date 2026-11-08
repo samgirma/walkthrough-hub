@@ -10,6 +10,7 @@ import {
 } from "@/lib/validations/writeup.schema";
 import { Prisma, Status } from "@prisma/client";
 import { revalidateTag, revalidatePath } from "next/cache";
+import { notifyIndexNow } from "@/server/indexnow.service";
 
 function safeRevalidateTag(tag: string) {
   try {
@@ -56,6 +57,7 @@ export function revalidateWriteupCaches(options: {
     safeRevalidatePath(`/u/${options.authorUsername}`);
     if (options.slug) {
       safeRevalidatePath(`/w/${options.authorUsername}/${options.slug}`);
+      notifyIndexNow([`/w/${options.authorUsername}/${options.slug}`]).catch(() => {});
     }
     if (options.previousSlug && options.previousSlug !== options.slug) {
       safeRevalidatePath(`/w/${options.authorUsername}/${options.previousSlug}`);

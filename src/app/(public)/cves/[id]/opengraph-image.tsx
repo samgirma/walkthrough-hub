@@ -1,0 +1,161 @@
+import { ImageResponse } from "next/og";
+import fs from "node:fs";
+import path from "node:path";
+import { getCveDetails } from "@/server/cve.service";
+
+export const runtime = "nodejs";
+export const revalidate = 86400;
+export const size = {
+  width: 1200,
+  height: 630,
+};
+export const contentType = "image/png";
+
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const cve = await getCveDetails(id);
+
+  const cveId = cve?.cveId || id;
+  const title = cve?.title || "Vulnerability Analysis";
+  const severity = cve?.severity || "HIGH";
+  const cvssScore = cve?.cvssScore ?? 7.5;
+  const isKev = cve?.isKev ?? false;
+
+  const fontNotoSans = fs.readFileSync(
+    path.join(process.cwd(), "src/assets/fonts/NotoSans-Bold.ttf")
+  );
+  const fontEthiopic = fs.readFileSync(
+    path.join(process.cwd(), "src/assets/fonts/NotoSansEthiopic-Bold.ttf")
+  );
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          width: "100%",
+          height: "100%",
+          backgroundColor: "#0B0D12",
+          backgroundImage:
+            "radial-gradient(circle at 25px 25px, #181C25 2%, transparent 0%), radial-gradient(circle at 75px 75px, #181C25 2%, transparent 0%)",
+          backgroundSize: "100px 100px",
+          padding: "60px",
+          color: "#E0E2EC",
+          fontFamily: "NotoSans, NotoSansEthiopic, sans-serif",
+          border: "8px solid #242936",
+        }}
+      >
+        {/* Top Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                background: "linear-gradient(135deg, #22D3A0 0%, #38BDF8 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#0B0D12",
+                fontWeight: "bold",
+                fontSize: "22px",
+              }}
+            >
+              &gt;_
+            </div>
+            <span style={{ fontSize: "28px", fontWeight: "bold", color: "#FFFFFF" }}>
+              Writeup<span style={{ color: "#22D3A0" }}>Hub</span>
+            </span>
+          </div>
+
+          <div style={{ display: "flex", gap: "12px" }}>
+            {isKev && (
+              <span
+                style={{
+                  fontSize: "14px",
+                  padding: "6px 14px",
+                  borderRadius: "6px",
+                  backgroundColor: "rgba(244, 63, 94, 0.15)",
+                  color: "#F43F5E",
+                  border: "1px solid rgba(244, 63, 94, 0.3)",
+                  fontWeight: "bold",
+                }}
+              >
+                CISA KEV EXPLOITED
+              </span>
+            )}
+            <span
+              style={{
+                fontSize: "14px",
+                padding: "6px 14px",
+                borderRadius: "6px",
+                backgroundColor: "#181C25",
+                color: "#22D3A0",
+                border: "1px solid #242936",
+                fontWeight: "bold",
+              }}
+            >
+              CVSS {cvssScore.toFixed(1)} {"//"} {severity}
+            </span>
+          </div>
+        </div>
+
+        {/* CVE Center Info */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px", maxWidth: "1000px" }}>
+          <div style={{ fontSize: "52px", fontWeight: "bold", color: "#38BDF8", letterSpacing: "0.02em" }}>
+            {cveId}
+          </div>
+          <div style={{ fontSize: "28px", fontWeight: "600", color: "#FFFFFF", lineHeight: "1.2" }}>
+            {title}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingTop: "24px",
+            borderTop: "2px solid #242936",
+            fontSize: "18px",
+            color: "#94A3B8",
+          }}
+        >
+          <div style={{ display: "flex", gap: "24px" }}>
+            <span>NIST NVD</span>
+            <span>•</span>
+            <span>MITRE CVE</span>
+            <span>•</span>
+            <span>FIRST EPSS</span>
+          </div>
+          <div style={{ color: "#22D3A0" }}>walkthrough-by.samgirma.app/cves/{cveId}</div>
+        </div>
+      </div>
+    ),
+    {
+      ...size,
+      fonts: [
+        {
+          name: "NotoSans",
+          data: fontNotoSans,
+          weight: 700,
+          style: "normal",
+        },
+        {
+          name: "NotoSansEthiopic",
+          data: fontEthiopic,
+          weight: 700,
+          style: "normal",
+        },
+      ],
+    }
+  );
+}

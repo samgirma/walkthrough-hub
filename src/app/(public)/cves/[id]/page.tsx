@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { getCveDetails } from "@/server/cve.service";
 import { WriteupCard } from "@/components/writeup/writeup-card";
+import { buildMetadata } from "@/lib/seo";
+import { SITE_URL } from "@/config/site";
 
 interface CveDetailPageProps {
   params: Promise<{ id: string }>;
@@ -41,13 +43,22 @@ export async function generateMetadata({
   const cve = await getCveDetails(id);
 
   if (!cve) {
-    return { title: "CVE Not Found | WriteupHub" };
+    return buildMetadata({ title: "CVE Not Found", noindex: true });
   }
 
-  return {
-    title: `${cve.cveId} // Vulnerability Analysis & Exploit Research`,
+  // Phase 7 rule: Only index if in CISA KEV or has >= 1 community writeup; otherwise noindex, follow
+  const isIndexable = Boolean(
+    cve.isKev || (cve.relatedWriteups && cve.relatedWriteups.length >= 1)
+  );
+
+  return buildMetadata({
+    title: `${cve.cveId} - Vulnerability Analysis & Exploit Research`,
     description: cve.description,
-  };
+    canonicalPath: `/cves/${cve.cveId}`,
+    noindex: !isIndexable,
+    nofollow: false,
+    ogType: "article",
+  });
 }
 
 export default async function CveDetailPage({ params }: CveDetailPageProps) {
@@ -59,18 +70,56 @@ export default async function CveDetailPage({ params }: CveDetailPageProps) {
   }
 
   const isCritical = cve.severity === "CRITICAL";
+  const canonicalUrl = `${SITE_URL}/cves/${cve.cveId}`;
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: SITE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "CVE Intelligence",
+        item: `${SITE_URL}/cves`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: cve.cveId,
+        item: canonicalUrl,
+      },
+    ],
+  };
 
   return (
     <div className="w-full min-h-screen bg-transparent pb-24">
+      {/* Breadcrumb JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+
       {/* Top Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-        <Link
-          href="/cves"
-          className="inline-flex items-center gap-1.5 text-xs font-mono text-[#94A3B8] hover:text-white transition-colors min-h-[36px]"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          <span>Back to CVE Directory</span>
-        </Link>
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-mono text-[#94A3B8]">
+          <Link
+            href="/cves"
+            className="inline-flex items-center gap-1.5 hover:text-white transition-colors min-h-[36px]"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to CVE Directory</span>
+          </Link>
+          <span className="text-[#3A4252]">/</span>
+          <span className="text-white font-semibold">{cve.cveId}</span>
+        </nav>
       </div>
 
       {/* Main Container */}

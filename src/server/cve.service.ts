@@ -93,69 +93,90 @@ const FALLBACK_CVES: CveSummary[] = [
  * IMPORTANT: Keeps the raw 3MB+ JSON completely out of Next.js fetch cache
  * by extracting and returning only trimmed fields.
  */
-export const getKevVulnerabilities = unstable_cache(
-  async (): Promise<KevVulnerability[]> => {
-    try {
-      const res = await fetch(
-        "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
-        {
-          headers: { Accept: "application/json" },
-          signal: AbortSignal.timeout(5000),
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error(`CISA KEV returned HTTP ${res.status}`);
+async function fetchKevVulnerabilitiesInternal(): Promise<KevVulnerability[]> {
+  try {
+    const res = await fetch(
+      "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+      {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(5000),
       }
+    );
 
-      const json = await res.json();
-      const rawList = Array.isArray(json?.vulnerabilities)
-        ? json.vulnerabilities
-        : [];
-
-      // Trim down to essential fields and take the top 100 recent additions
-      const trimmed: KevVulnerability[] = rawList
-        .slice(0, 100)
-        .map((item: any) => ({
-          cveID: String(item.cveID || "").toUpperCase(),
-          vendorProject: String(item.vendorProject || ""),
-          product: String(item.product || ""),
-          vulnerabilityName: String(item.vulnerabilityName || ""),
-          dateAdded: String(item.dateAdded || ""),
-          shortDescription: String(item.shortDescription || "").slice(0, 300),
-          knownRansomwareCampaignUse: String(
-            item.knownRansomwareCampaignUse || "Unknown"
-          ),
-        }));
-
-      return trimmed.length > 0 ? trimmed : FALLBACK_CVES.map((f) => ({
-        cveID: f.cveId,
-        vendorProject: f.title.split(" ")[0],
-        product: f.title.split(" ")[1] || "Core",
-        vulnerabilityName: f.title,
-        dateAdded: f.publishedDate,
-        shortDescription: f.description,
-        knownRansomwareCampaignUse: "Known",
-      }));
-    } catch (err: any) {
-      console.warn("[getKevVulnerabilities] Using fallback KEV entries:", err.message);
-      return FALLBACK_CVES.map((f) => ({
-        cveID: f.cveId,
-        vendorProject: f.title.split(" ")[0],
-        product: f.title.split(" ")[1] || "Core",
-        vulnerabilityName: f.title,
-        dateAdded: f.publishedDate,
-        shortDescription: f.description,
-        knownRansomwareCampaignUse: "Known",
-      }));
+    if (!res.ok) {
+      throw new Error(`CISA KEV returned HTTP ${res.status}`);
     }
-  },
+
+    const json = await res.json();
+    const rawList = Array.isArray(json?.vulnerabilities)
+      ? json.vulnerabilities
+      : [];
+
+    // Trim down to essential fields and take the top 100 recent additions
+    const trimmed: KevVulnerability[] = rawList
+      .slice(0, 100)
+      .map((item: any) => ({
+        cveID: String(item.cveID || "").toUpperCase(),
+        vendorProject: String(item.vendorProject || ""),
+        product: String(item.product || ""),
+        vulnerabilityName: String(item.vulnerabilityName || ""),
+        dateAdded: String(item.dateAdded || ""),
+        shortDescription: String(item.shortDescription || "").slice(0, 300),
+        knownRansomwareCampaignUse: String(
+          item.knownRansomwareCampaignUse || "Unknown"
+        ),
+      }));
+
+    return trimmed.length > 0 ? trimmed : FALLBACK_CVES.map((f) => ({
+      cveID: f.cveId,
+      vendorProject: f.title.split(" ")[0],
+      product: f.title.split(" ")[1] || "Core",
+      vulnerabilityName: f.title,
+      dateAdded: f.publishedDate,
+      shortDescription: f.description,
+      knownRansomwareCampaignUse: "Known",
+    }));
+  } catch (err: any) {
+    console.warn("[getKevVulnerabilities] Using fallback KEV entries:", err.message);
+    return FALLBACK_CVES.map((f) => ({
+      cveID: f.cveId,
+      vendorProject: f.title.split(" ")[0],
+      product: f.title.split(" ")[1] || "Core",
+      vulnerabilityName: f.title,
+      dateAdded: f.publishedDate,
+      shortDescription: f.description,
+      knownRansomwareCampaignUse: "Known",
+    }));
+  }
+}
+
+const cachedKev = unstable_cache(
+  fetchKevVulnerabilitiesInternal,
   ["cisa-kev-trimmed"],
   {
     revalidate: 3600, // 1 hour
     tags: ["cves", "cve-kev"],
   }
 );
+
+export async function getKevVulnerabilities(): Promise<KevVulnerability[]> {
+  try {
+    return await cachedKev();
+  } catch (err: any) {
+    if (err?.message?.includes("incrementalCache missing") || err?.message?.includes("Invariant")) {
+      return await fetchKevVulnerabilitiesInternal();
+    }
+    return FALLBACK_CVES.map((f) => ({
+      cveID: f.cveId,
+      vendorProject: f.title.split(" ")[0],
+      product: f.title.split(" ")[1] || "Core",
+      vulnerabilityName: f.title,
+      dateAdded: f.publishedDate,
+      shortDescription: f.description,
+      knownRansomwareCampaignUse: "Known",
+    }));
+  }
+}
 
 /**
  * Fetch recent CVEs from NVD with stable time-bucket rounding.

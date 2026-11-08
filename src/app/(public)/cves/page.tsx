@@ -12,15 +12,20 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { getRecentCves, getKevVulnerabilities } from "@/server/cve.service";
+import { buildMetadata } from "@/lib/seo";
+import { SITE_URL } from "@/config/site";
 
 // Phase 1: Static ISR with 30-minute background revalidation
 export const revalidate = 1800;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "CVE Directory // Exploited Vulnerabilities & PoC Archive",
   description:
     "Track active zero-day vulnerabilities, CISA KEV catalog exploits, EPSS threat scores, and verified community CTF walkthroughs.",
-};
+  canonicalPath: "/cves",
+  noindex: false,
+  nofollow: false,
+});
 
 export default async function CvesDirectoryPage() {
   const [cves, kevList] = await Promise.all([
@@ -30,8 +35,34 @@ export default async function CvesDirectoryPage() {
 
   const kevCount = kevList.length;
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: SITE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "CVE Intelligence",
+        item: `${SITE_URL}/cves`,
+      },
+    ],
+  };
+
   return (
     <div className="w-full min-h-screen bg-transparent pb-24">
+      {/* Breadcrumb JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* Header Banner */}
       <section className="w-full bg-[#10131A] border-b border-[#242936] py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
