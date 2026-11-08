@@ -64,6 +64,7 @@ export async function generateStaticParams() {
       orderBy: [{ viewCount: "desc" }, { publishedAt: "desc" }],
       take: 5,
       select: {
+        id: true,
         slug: true,
         author: {
           select: { username: true },
@@ -72,10 +73,10 @@ export async function generateStaticParams() {
     });
 
     return topWriteups
-      .filter((w) => w.author.username && w.slug)
+      .filter((w) => w.author.username && w.id)
       .map((w) => ({
         username: w.author.username!,
-        slug: w.slug,
+        slug: w.id,
       }));
   } catch (err) {
     console.warn("[generateStaticParams] Could not fetch top writeups:", err);
@@ -113,13 +114,13 @@ export async function generateMetadata({
           writeup: { authorId: authorUser.id },
         },
         include: {
-          writeup: { select: { slug: true, status: true } },
+          writeup: { select: { id: true, slug: true, status: true } },
         },
         orderBy: { createdAt: "desc" },
       });
 
       if (slugHist?.writeup && slugHist.writeup.status !== "DRAFT") {
-        permanentRedirect(`/w/${username}/${slugHist.writeup.slug}`);
+        permanentRedirect(`/w/${username}/${slugHist.writeup.id}`);
       }
     }
 
@@ -128,6 +129,11 @@ export async function generateMetadata({
       noindex: true,
       nofollow: true,
     });
+  }
+
+  // If accessed using title slug, permanently redirect to writeup ID URL
+  if (slug !== writeup.id && writeup.author.username) {
+    permanentRedirect(`/w/${writeup.author.username}/${writeup.id}`);
   }
 
   const isUnlisted = writeup.status === "UNLISTED";
@@ -146,11 +152,11 @@ export async function generateMetadata({
   return buildMetadata({
     title: rawTitle,
     description: cleanDesc,
-    canonicalPath: `/w/${username}/${slug}`,
+    canonicalPath: `/w/${username}/${writeup.id}`,
     noindex: !indexEligible,
     nofollow: false,
     ogType: "article",
-    ogImage: `/w/${username}/${slug}/opengraph-image`,
+    ogImage: `/w/${username}/${writeup.id}/opengraph-image`,
     publishedTime: writeup.publishedAt?.toISOString(),
     modifiedTime: writeup.updatedAt.toISOString(),
     authors: [username],
@@ -187,17 +193,22 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
           writeup: { authorId: authorUser.id },
         },
         include: {
-          writeup: { select: { slug: true, status: true } },
+          writeup: { select: { id: true, slug: true, status: true } },
         },
         orderBy: { createdAt: "desc" },
       });
 
       if (slugHist?.writeup && slugHist.writeup.status !== "DRAFT") {
-        permanentRedirect(`/w/${username}/${slugHist.writeup.slug}`);
+        permanentRedirect(`/w/${username}/${slugHist.writeup.id}`);
       }
     }
 
     notFound();
+  }
+
+  // If accessed using title slug, permanently redirect to writeup ID URL
+  if (slug !== writeup.id && writeup.author.username) {
+    permanentRedirect(`/w/${writeup.author.username}/${writeup.id}`);
   }
 
   // Render markdown with Shiki & sanitize (shifts markdown headings to h2 so the title is the single h1)
@@ -214,8 +225,8 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
 
   const categoryStyle = getCategoryColor(writeup.category);
   const difficultyStyle = getDifficultyColor(writeup.difficulty);
-  const canonicalUrl = `${SITE_URL}/w/${username}/${slug}`;
-  const ogImageUrl = `${SITE_URL}/w/${username}/${slug}/opengraph-image`;
+  const canonicalUrl = `${SITE_URL}/w/${username}/${writeup.id}`;
+  const ogImageUrl = `${SITE_URL}/w/${username}/${writeup.id}/opengraph-image`;
   const cleanDesc = writeup.excerpt || stripMarkdown(writeup.contentMd).slice(0, 155);
 
   // Server-rendered structured data (JSON-LD)
@@ -613,7 +624,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
               >
                 {related.prevChallenge ? (
                   <Link
-                    href={`/w/${related.prevChallenge.author.username}/${related.prevChallenge.slug}`}
+                    href={`/w/${related.prevChallenge.author.username}/${related.prevChallenge.id}`}
                     className="flex items-center gap-2 text-[#BACAC1] hover:text-[#22D3A0] transition-colors truncate max-w-full sm:max-w-[48%]"
                   >
                     <ArrowLeft className="h-4 w-4 shrink-0 text-[#22D3A0]" />
@@ -632,7 +643,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
 
                 {related.nextChallenge && (
                   <Link
-                    href={`/w/${related.nextChallenge.author.username}/${related.nextChallenge.slug}`}
+                    href={`/w/${related.nextChallenge.author.username}/${related.nextChallenge.id}`}
                     className="flex items-center gap-2 text-[#BACAC1] hover:text-[#22D3A0] transition-colors truncate max-w-full sm:max-w-[48%] sm:ml-auto text-left sm:text-right"
                   >
                     <div className="flex flex-col truncate">
@@ -667,7 +678,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                   {related.related.map((item) => (
                     <Link
                       key={item.id}
-                      href={`/w/${item.author.username}/${item.slug}`}
+                      href={`/w/${item.author.username}/${item.id}`}
                       className="group p-3.5 rounded-xl border border-[#242936] bg-[#12151C] hover:border-[#22D3A0]/60 transition-colors flex flex-col justify-between gap-2.5 shadow-sm"
                     >
                       <span className="font-sans font-semibold text-xs text-white group-hover:text-[#22D3A0] line-clamp-2 leading-snug">
@@ -701,7 +712,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
                   {related.moreFromAuthor.map((item) => (
                     <Link
                       key={item.id}
-                      href={`/w/${item.author.username}/${item.slug}`}
+                      href={`/w/${item.author.username}/${item.id}`}
                       className="group p-3.5 rounded-xl border border-[#242936] bg-[#12151C] hover:border-[#22D3A0]/60 transition-colors flex flex-col justify-between gap-2.5 shadow-sm"
                     >
                       <span className="font-sans font-semibold text-xs text-white group-hover:text-[#22D3A0] line-clamp-2 leading-snug">

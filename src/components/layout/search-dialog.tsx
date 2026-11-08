@@ -71,7 +71,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
 
   const handleSelectResult = (item: SearchResultItem) => {
     onOpenChange(false);
-    router.push(`/w/${item.author}/${item.slug}`);
+    router.push(`/w/${item.author}/${item.id || item.slug}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

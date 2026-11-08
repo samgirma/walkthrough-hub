@@ -101,6 +101,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const publicWriteups = await prisma.writeup.findMany({
       where: { status: "PUBLIC" },
       select: {
+        id: true,
         slug: true,
         updatedAt: true,
         contentMd: true,
@@ -123,7 +124,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         })
       )
       .map((w) => ({
-        url: `${SITE_URL}/w/${w.author.username}/${w.slug}`,
+        url: `${SITE_URL}/w/${w.author.username}/${w.id}`,
         lastModified: w.updatedAt,
         changeFrequency: "weekly",
         priority: 0.8,

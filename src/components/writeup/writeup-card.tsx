@@ -41,7 +41,7 @@ export function WriteupCard({ writeup }: WriteupCardProps) {
   const categoryStyle = getCategoryColor(writeup.category);
   const difficultyStyle = getDifficultyColor(writeup.difficulty);
   const authorHandle = writeup.author.username || "anonymous";
-  const readUrl = `/w/${authorHandle}/${writeup.slug}`;
+  const readUrl = `/w/${authorHandle}/${writeup.id || writeup.slug}`;
 
   return (
     <article className="card-cyber relative flex flex-col justify-between p-5 rounded-xl border border-[#242936] bg-[#12151C]/80 backdrop-blur-md hover:border-[#363E52] hover:bg-[#181C25]/85 transition-all duration-200 group">

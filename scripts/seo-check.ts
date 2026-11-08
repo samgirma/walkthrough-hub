@@ -62,7 +62,7 @@ async function runSeoCheck() {
 
   for (const w of publicWriteups) {
     if (!w.author.username) continue;
-    const url = `${SITE_URL}/w/${w.author.username}/${w.slug}`;
+    const url = `${SITE_URL}/w/${w.author.username}/${w.id}`;
     const qualified = isIndexable({
       status: w.status,
       contentMd: w.contentMd,

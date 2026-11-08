@@ -78,7 +78,7 @@ export function ExploreSearchInput({
 
   const handleSelectResult = (item: SearchResultItem) => {
     setIsOpen(false);
-    router.push(`/w/${item.author}/${item.slug}`);
+    router.push(`/w/${item.author}/${item.id || item.slug}`);
   };
 
   const handleSubmit = (e: React.FormEvent) => {

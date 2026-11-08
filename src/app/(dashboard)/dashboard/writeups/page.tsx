@@ -86,7 +86,7 @@ export default async function WriteupsPage({ searchParams }: WriteupsPageProps) 
           <div className="divide-y divide-[#242936]">
             {writeups.map((w) => {
               const cat = getCategoryColor(w.category);
-              const readUrl = `/w/${username}/${w.slug}`;
+              const readUrl = `/w/${username}/${w.id || w.slug}`;
 
               return (
                 <div

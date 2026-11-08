@@ -138,7 +138,7 @@ export function PublishModal({
 
       const data = await res.json();
 
-      const fullUrl = `${window.location.origin}/w/${authorUsername}/${data.slug}`;
+      const fullUrl = `${window.location.origin}/w/${authorUsername}/${data.id || data.slug}`;
       setPublishedUrl(fullUrl);
       if (onSaveSuccess) onSaveSuccess(data);
     } catch (err: any) {

@@ -839,7 +839,7 @@ export function AdminConsoleClient({
                           <div className="flex items-center justify-end gap-2">
                             {w.author.username && (
                               <Link
-                                href={`/w/${w.author.username}/${w.slug}`}
+                                href={`/w/${w.author.username}/${w.id || w.slug}`}
                                 target="_blank"
                                 className="p-1 rounded text-[#94A3B8] hover:text-white hover:bg-[#181C25] transition-colors"
                                 title="View Public Page"

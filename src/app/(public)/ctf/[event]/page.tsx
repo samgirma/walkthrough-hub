@@ -1,12 +1,13 @@
 import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ChevronLeft, ChevronRight, Trophy } from "lucide-react";
 import { WriteupCard } from "@/components/writeup/writeup-card";
 import { getCtfHub } from "@/server/hub.service";
 import { buildMetadata } from "@/lib/seo";
 import { SITE_URL, SITE_NAME, SEO_THRESHOLDS } from "@/config/site";
+import { prisma } from "@/lib/prisma";
 
 interface CtfPageProps {
   params: Promise<{ event: string }>;
@@ -26,6 +27,14 @@ export async function generateMetadata({
 
   const data = await getCtfHub(event, page, 12);
   if (data.totalCount === 0) {
+    // Check if event is a writeup ID
+    const writeup = await prisma.writeup.findUnique({
+      where: { id: event },
+      select: { id: true, status: true, author: { select: { username: true } } },
+    });
+    if (writeup && writeup.status !== "DRAFT" && writeup.author.username) {
+      permanentRedirect(`/w/${writeup.author.username}/${writeup.id}`);
+    }
     return buildMetadata({ title: "CTF Event Not Found", noindex: true });
   }
 
@@ -57,6 +66,14 @@ export default async function CtfEventPage({ params, searchParams }: CtfPageProp
 
   const data = await getCtfHub(event, page, 12);
   if (data.totalCount === 0) {
+    // Check if event is a writeup ID
+    const writeup = await prisma.writeup.findUnique({
+      where: { id: event },
+      select: { id: true, status: true, author: { select: { username: true } } },
+    });
+    if (writeup && writeup.status !== "DRAFT" && writeup.author.username) {
+      permanentRedirect(`/w/${writeup.author.username}/${writeup.id}`);
+    }
     notFound();
   }
 

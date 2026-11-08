@@ -24,7 +24,7 @@ export async function GET() {
 
   const rssItems = writeups
     .map((w) => {
-      const link = `${baseUrl}/w/${w.author.username}/${w.slug}`;
+      const link = `${baseUrl}/w/${w.author.username}/${w.id || w.slug}`;
       const pubDate = w.publishedAt ? new Date(w.publishedAt).toUTCString() : new Date().toUTCString();
       const escapedTitle = w.title
         .replace(/&/g, "&amp;")

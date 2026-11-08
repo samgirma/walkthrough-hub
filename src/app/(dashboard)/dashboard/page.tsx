@@ -186,7 +186,7 @@ export default async function DashboardPage() {
           <div className="flex flex-col divide-y divide-[#242936]">
             {writeups.map((w) => {
               const categoryStyle = getCategoryColor(w.category);
-              const readUrl = `/w/${username}/${w.slug}`;
+              const readUrl = `/w/${username}/${w.id || w.slug}`;
 
               return (
                 <div

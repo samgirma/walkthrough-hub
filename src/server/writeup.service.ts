@@ -49,15 +49,18 @@ export function revalidateWriteupCaches(options: {
 
   safeRevalidatePath("/");
   safeRevalidatePath("/explore");
+  safeRevalidatePath("/browse");
   safeRevalidatePath("/sitemap.xml");
   safeRevalidatePath("/feed.xml");
   safeRevalidatePath("/api/search-index");
 
   if (options.authorUsername) {
     safeRevalidatePath(`/u/${options.authorUsername}`);
+    safeRevalidatePath(`/w/${options.authorUsername}/${options.writeupId}`);
+    safeRevalidatePath(`/w/${options.writeupId}`);
+    notifyIndexNow([`/w/${options.authorUsername}/${options.writeupId}`]).catch(() => {});
     if (options.slug) {
       safeRevalidatePath(`/w/${options.authorUsername}/${options.slug}`);
-      notifyIndexNow([`/w/${options.authorUsername}/${options.slug}`]).catch(() => {});
     }
     if (options.previousSlug && options.previousSlug !== options.slug) {
       safeRevalidatePath(`/w/${options.authorUsername}/${options.previousSlug}`);
@@ -367,7 +370,7 @@ export async function deleteWriteup(authorId: string, writeupId: string) {
  */
 export async function getWriteupByAuthorAndSlug(
   username: string,
-  slug: string,
+  slugOrId: string,
   currentUserId?: string | null
 ) {
   const author = await prisma.user.findUnique({
@@ -375,36 +378,64 @@ export async function getWriteupByAuthorAndSlug(
     select: { id: true },
   });
 
+  const includeFields = {
+    author: {
+      select: {
+        id: true,
+        username: true,
+        avatarUrl: true,
+        bio: true,
+        githubUrl: true,
+        createdAt: true,
+      },
+    },
+    tags: {
+      include: { tag: true },
+    },
+    _count: {
+      select: { bookmarks: true, stars: true, comments: true },
+    },
+  };
+
   if (!author) {
+    // If username segment matches a writeup ID, retrieve it directly
+    const writeupById = await prisma.writeup.findUnique({
+      where: { id: username },
+      include: includeFields,
+    });
+    if (writeupById) {
+      if (writeupById.status === "DRAFT" && (!currentUserId || currentUserId !== writeupById.authorId)) {
+        return null;
+      }
+      return writeupById;
+    }
     return null;
   }
 
-  const writeup = await prisma.writeup.findUnique({
+  // 1. Primary lookup by writeup ID (cuid / base32 string)
+  let writeup = await prisma.writeup.findUnique({
     where: {
-      authorId_slug: {
-        authorId: author.id,
-        slug,
-      },
+      id: slugOrId,
     },
-    include: {
-      author: {
-        select: {
-          id: true,
-          username: true,
-          avatarUrl: true,
-          bio: true,
-          githubUrl: true,
-          createdAt: true,
+    include: includeFields,
+  });
+
+  if (writeup && writeup.authorId !== author.id) {
+    writeup = null;
+  }
+
+  // 2. Fallback lookup by title slug (for backward compatibility and redirects)
+  if (!writeup) {
+    writeup = await prisma.writeup.findUnique({
+      where: {
+        authorId_slug: {
+          authorId: author.id,
+          slug: slugOrId,
         },
       },
-      tags: {
-        include: { tag: true },
-      },
-      _count: {
-        select: { bookmarks: true, stars: true, comments: true },
-      },
-    },
-  });
+      include: includeFields,
+    });
+  }
 
   if (!writeup) {
     return null;

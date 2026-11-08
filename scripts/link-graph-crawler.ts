@@ -75,7 +75,7 @@ async function auditLinkGraph() {
   // - Author profile (depth 2 -> writeup is depth 2/3)
   for (const w of writeups) {
     if (!w.author.username) continue;
-    const writeupUrl = `/w/${w.author.username}/${w.slug}`;
+    const writeupUrl = `/w/${w.author.username}/${w.id}`;
     const categoryHub = `/category/${w.category.toLowerCase()}`;
 
     // Increments inbound links from category hub and explore
