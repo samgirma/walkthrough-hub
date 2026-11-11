@@ -37,11 +37,49 @@ interface WriteupCardProps {
   };
 }
 
+interface NormalizedCardTag {
+  key: string;
+  name: string;
+}
+
+/**
+ * Normalizes tag relations safely so malformed or plain-string tag inputs never crash SSR.
+ */
+function normalizeWriteupTags(tags?: WriteupCardProps["writeup"]["tags"]): NormalizedCardTag[] {
+  if (!Array.isArray(tags)) return [];
+  const normalized: NormalizedCardTag[] = [];
+
+  for (const entry of tags as unknown[]) {
+    if (typeof entry === "string") {
+      const trimmed = entry.trim();
+      if (trimmed) normalized.push({ key: trimmed, name: trimmed });
+      continue;
+    }
+
+    if (entry && typeof entry === "object") {
+      const record = entry as {
+        id?: unknown;
+        name?: unknown;
+        tag?: { id?: unknown; name?: unknown } | null;
+      };
+      const tagData = record.tag && typeof record.tag === "object" ? record.tag : record;
+      if (typeof tagData.name === "string" && tagData.name.trim()) {
+        const key =
+          typeof tagData.id === "string" && tagData.id ? tagData.id : tagData.name.trim();
+        normalized.push({ key, name: tagData.name });
+      }
+    }
+  }
+
+  return normalized;
+}
+
 export function WriteupCard({ writeup }: WriteupCardProps) {
   const categoryStyle = getCategoryColor(writeup.category);
   const difficultyStyle = getDifficultyColor(writeup.difficulty);
   const authorHandle = writeup.author.username || "anonymous";
   const readUrl = `/w/${authorHandle}/${writeup.id || writeup.slug}`;
+  const cardTags = normalizeWriteupTags(writeup.tags);
 
   return (
     <article className="card-cyber relative flex flex-col justify-between p-5 rounded-xl border border-[#242936] bg-[#12151C]/80 backdrop-blur-md hover:border-[#363E52] hover:bg-[#181C25]/85 transition-all duration-200 group">
@@ -86,19 +124,19 @@ export function WriteupCard({ writeup }: WriteupCardProps) {
         </p>
 
         {/* Tags */}
-        {writeup.tags && writeup.tags.length > 0 && (
+        {cardTags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
-            {writeup.tags.slice(0, 3).map((item) => (
+            {cardTags.slice(0, 3).map((item) => (
               <span
-                key={item.tag.id}
+                key={item.key}
                 className="font-mono text-[10px] text-[#94A3B8] bg-[#181C25] px-1.5 py-0.5 rounded border border-[#242936]"
               >
-                #{item.tag.name}
+                #{item.name}
               </span>
             ))}
-            {writeup.tags.length > 3 && (
+            {cardTags.length > 3 && (
               <span className="font-mono text-[10px] text-[#94A3B8] px-1 py-0.5">
-                +{writeup.tags.length - 3}
+                +{cardTags.length - 3}
               </span>
             )}
           </div>

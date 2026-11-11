@@ -1,9 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { isIndexable, SYNTHETIC_WRITEUP_EXCLUSION_WHERE } from "@/lib/seo";
-import { Category } from "@prisma/client";
+import { Category, Prisma } from "@prisma/client";
+
+const HUB_WRITEUP_INCLUDE = {
+  author: {
+    select: { id: true, username: true, avatarUrl: true, createdAt: true },
+  },
+  tags: { include: { tag: true } },
+} satisfies Prisma.WriteupInclude;
+
+export type HubWriteupItem = Prisma.WriteupGetPayload<{
+  include: typeof HUB_WRITEUP_INCLUDE;
+}>;
 
 export interface HubResult {
-  writeups: any[];
+  writeups: HubWriteupItem[];
   totalCount: number;
   indexableCount: number;
   page: number;
@@ -71,12 +82,7 @@ export async function getCategoryHub(
       orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
       skip,
       take: limit,
-      include: {
-        author: {
-          select: { id: true, username: true, avatarUrl: true, createdAt: true },
-        },
-        tags: { include: { tag: true } },
-      },
+      include: HUB_WRITEUP_INCLUDE,
     }),
     prisma.writeup.count({ where: whereClause }),
     prisma.writeup.findMany({
@@ -129,12 +135,7 @@ export async function getCtfHub(
       orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
       skip,
       take: limit,
-      include: {
-        author: {
-          select: { id: true, username: true, avatarUrl: true, createdAt: true },
-        },
-        tags: { include: { tag: true } },
-      },
+      include: HUB_WRITEUP_INCLUDE,
     }),
     prisma.writeup.count({ where: whereClause }),
     prisma.writeup.findMany({
@@ -186,12 +187,7 @@ export async function getTagHub(
       orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
       skip,
       take: limit,
-      include: {
-        author: {
-          select: { id: true, username: true, avatarUrl: true, createdAt: true },
-        },
-        tags: { include: { tag: true } },
-      },
+      include: HUB_WRITEUP_INCLUDE,
     }),
     prisma.writeup.count({ where: whereClause }),
     prisma.writeup.findMany({

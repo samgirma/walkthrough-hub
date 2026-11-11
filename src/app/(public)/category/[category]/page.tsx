@@ -157,28 +157,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.writeups.map((writeup) => (
-              <WriteupCard
-                key={writeup.id}
-                writeup={{
-                  id: writeup.id,
-                  title: writeup.title,
-                  slug: writeup.slug,
-                  excerpt: writeup.excerpt,
-                  category: writeup.category,
-                  difficulty: writeup.difficulty,
-                  status: "PUBLIC",
-                  ctfName: writeup.ctfName,
-                  ctfYear: writeup.ctfYear,
-                  readTimeMin: writeup.readTimeMin,
-                  viewCount: writeup.viewCount,
-                  publishedAt: writeup.publishedAt ? new Date(writeup.publishedAt) : new Date(),
-                  author: {
-                    username: writeup.author.username || "anonymous",
-                    avatarUrl: writeup.author.avatarUrl,
-                  },
-                  tags: writeup.tags?.map((t: any) => t.tag.name) || [],
-                }}
-              />
+              <WriteupCard key={writeup.id} writeup={writeup} />
             ))}
           </div>
         )}
