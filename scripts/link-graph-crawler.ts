@@ -23,6 +23,7 @@ async function auditLinkGraph() {
   // Core hub and landing routes directly linked from header/footer
   const headerFooterRoutes = [
     "/explore",
+    "/categories",
     "/browse",
     "/ctf-sites",
     "/events",

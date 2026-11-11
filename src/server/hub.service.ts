@@ -360,3 +360,107 @@ export async function getAllHubSummaries() {
     };
   }
 }
+
+export interface CategoryOverviewItem {
+  category: Category;
+  count: number;
+  totalViews: number;
+  recentWriteups: {
+    id: string;
+    title: string;
+    ctfName: string;
+    ctfYear: number;
+    difficulty: string;
+    readTimeMin: number;
+    authorUsername: string;
+  }[];
+}
+
+const ORDERED_CATEGORIES: Category[] = [
+  "WEB",
+  "PWN",
+  "CRYPTO",
+  "REVERSE",
+  "FORENSICS",
+  "MISC",
+  "OSINT",
+];
+
+export async function getCategoriesOverview(): Promise<{
+  categories: CategoryOverviewItem[];
+  totalPublic: number;
+}> {
+  try {
+    const [grouped, recentAll] = await Promise.all([
+      prisma.writeup.groupBy({
+        by: ["category"],
+        where: { status: "PUBLIC", NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE },
+        _count: { id: true },
+        _sum: { viewCount: true },
+      }),
+      prisma.writeup.findMany({
+        where: { status: "PUBLIC", NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE },
+        orderBy: [{ viewCount: "desc" }, { publishedAt: "desc" }],
+        take: 42,
+        select: {
+          id: true,
+          title: true,
+          category: true,
+          ctfName: true,
+          ctfYear: true,
+          difficulty: true,
+          readTimeMin: true,
+          author: { select: { username: true } },
+        },
+      }),
+    ]);
+
+    const statsMap = new Map(
+      grouped.map((g) => [
+        g.category,
+        { count: g._count.id, views: g._sum.viewCount || 0 },
+      ])
+    );
+
+    const byCategory = new Map<Category, CategoryOverviewItem["recentWriteups"]>();
+    for (const w of recentAll) {
+      const list = byCategory.get(w.category) || [];
+      if (list.length < 3) {
+        list.push({
+          id: w.id,
+          title: w.title,
+          ctfName: w.ctfName,
+          ctfYear: w.ctfYear,
+          difficulty: w.difficulty,
+          readTimeMin: w.readTimeMin,
+          authorUsername: w.author.username || "anonymous",
+        });
+        byCategory.set(w.category, list);
+      }
+    }
+
+    const categories: CategoryOverviewItem[] = ORDERED_CATEGORIES.map((cat) => {
+      const stats = statsMap.get(cat);
+      return {
+        category: cat,
+        count: stats?.count || 0,
+        totalViews: stats?.views || 0,
+        recentWriteups: byCategory.get(cat) || [],
+      };
+    });
+
+    const totalPublic = categories.reduce((sum, item) => sum + item.count, 0);
+    return { categories, totalPublic };
+  } catch (err) {
+    console.warn("[hub.service] getCategoriesOverview failed:", err);
+    return {
+      categories: ORDERED_CATEGORIES.map((cat) => ({
+        category: cat,
+        count: 0,
+        totalViews: 0,
+        recentWriteups: [],
+      })),
+      totalPublic: 0,
+    };
+  }
+}

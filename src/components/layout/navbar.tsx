@@ -9,6 +9,7 @@ import {
   Menu,
   Home,
   Compass,
+  FolderTree,
   Globe,
   Calendar,
   ShieldAlert,
@@ -118,6 +119,7 @@ export function Navbar({ user: initialUser }: NavbarProps) {
   const navLinks = [
     { label: "Home", href: "/", icon: Home },
     { label: "Explore", href: "/explore", icon: Compass },
+    { label: "Categories", href: "/categories", icon: FolderTree },
     { label: "CTF Sites", href: "/ctf-sites", icon: Globe },
     { label: "Events", href: "/events", icon: Calendar },
     { label: "CVEs", href: "/cves", icon: ShieldAlert },
@@ -130,9 +132,9 @@ export function Navbar({ user: initialUser }: NavbarProps) {
           isVisible ? "translate-y-0" : "-translate-y-full md:translate-y-0"
         }`}
       >
-        <div className="h-16 w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+        <div className="h-16 w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-2 lg:gap-4">
           {/* Logo & Desktop Nav */}
-          <div className="flex items-center gap-6 lg:gap-8">
+          <div className="flex items-center gap-3 lg:gap-6">
             {/* Desktop: Horizontal Logo (height ~32px) */}
             <div className="hidden md:flex items-center">
               <Logo variant="horizontal" size={32} priority />
@@ -143,14 +145,19 @@ export function Navbar({ user: initialUser }: NavbarProps) {
               <Logo variant="icon" size={32} priority decorative />
             </div>
 
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1">
               {navLinks.map((link) => {
-                const isActive = pathname === link.href;
+                const isActive =
+                  link.href === "/"
+                    ? pathname === "/"
+                    : pathname === link.href ||
+                      pathname.startsWith(`${link.href}/`) ||
+                      (link.href === "/categories" && pathname.startsWith("/category"));
                 return (
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors min-h-[36px] flex items-center ${
+                    className={`px-2.5 lg:px-3 py-1.5 rounded-lg text-xs font-mono whitespace-nowrap transition-colors min-h-[36px] flex items-center ${
                       isActive
                         ? "bg-[#181C25] text-white font-semibold"
                         : "text-[#94A3B8] hover:bg-[#181C25] hover:text-[#E0E2EC]"
@@ -170,12 +177,12 @@ export function Navbar({ user: initialUser }: NavbarProps) {
               onClick={() => setSearchOpen(true)}
               onMouseEnter={prefetchSearchIndex}
               onTouchStart={prefetchSearchIndex}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#12151C] border border-[#242936] text-[#94A3B8] hover:text-[#E0E2EC] hover:border-[#363E52] transition-colors text-xs font-mono min-h-[40px] focus:outline-none focus:ring-2 focus:ring-[#22D3A0]"
+              className="flex items-center gap-2 px-2.5 lg:px-3 py-1.5 rounded-lg bg-[#12151C] border border-[#242936] text-[#94A3B8] hover:text-[#E0E2EC] hover:border-[#363E52] transition-colors text-xs font-mono min-h-[40px] focus:outline-none focus:ring-2 focus:ring-[#22D3A0]"
               aria-label="Open search dialog"
             >
               <Search className="h-4 w-4 text-[#22D3A0]" />
-              <span className="hidden sm:inline">Search writeups...</span>
-              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-[#181C25] border border-[#242936] text-[10px] text-[#475569]">
+              <span className="hidden xl:inline">Search writeups...</span>
+              <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-[#181C25] border border-[#242936] text-[10px] text-[#475569]">
                 ⌘K
               </kbd>
             </button>

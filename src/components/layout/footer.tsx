@@ -24,6 +24,7 @@ export function Footer() {
 
   const platformLinks = [
     { name: "Explore Writeups", href: "/explore" },
+    { name: "CTF Categories", href: "/categories" },
     { name: "Browse Directory", href: "/browse" },
     { name: "CTF Platforms", href: "/ctf-sites" },
     { name: "Live Events", href: "/events" },
