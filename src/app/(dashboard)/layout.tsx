@@ -47,7 +47,7 @@ export default async function DashboardLayout({
         <div className="flex flex-col gap-4">
           {/* Logo Brand Header */}
           <div className="h-14 px-6 flex items-center">
-            <Logo variant="horizontal" size={28} priority />
+            <Logo variant="horizontal" size={28} priority decorative />
           </div>
 
           {/* Navigation Links */}

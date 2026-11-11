@@ -11,6 +11,7 @@ import {
 import { Prisma, Status } from "@prisma/client";
 import { revalidateTag, revalidatePath } from "next/cache";
 import { notifyIndexNow } from "@/server/indexnow.service";
+import { SYNTHETIC_WRITEUP_EXCLUSION_WHERE } from "@/lib/seo";
 
 function safeRevalidateTag(tag: string) {
   try {
@@ -549,6 +550,7 @@ export async function getPublicWriteups(rawFilters: FilterWriteupInput = {}) {
   // Build where conditions
   const where: Prisma.WriteupWhereInput = {
     status: Status.PUBLIC, // Strictly PUBLIC only
+    NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE,
   };
 
   if (category) {

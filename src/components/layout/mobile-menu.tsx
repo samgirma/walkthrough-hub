@@ -59,7 +59,7 @@ export function MobileMenu({
         <div className="flex flex-col gap-6">
           <SheetHeader className="text-left pb-4 border-b border-[#242936]">
             <SheetTitle className="flex items-center">
-              <Logo variant="horizontal" size={28} />
+              <Logo variant="horizontal" size={28} decorative />
             </SheetTitle>
           </SheetHeader>
 

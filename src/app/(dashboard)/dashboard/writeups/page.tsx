@@ -8,10 +8,14 @@ import { getAuthorWriteups } from "@/server/writeup.service";
 import { Button } from "@/components/ui/button";
 import { formatDate, getCategoryColor } from "@/lib/utils";
 import { Status } from "@prisma/client";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "My Writeups // WriteupHub Studio",
-};
+export const metadata: Metadata = buildMetadata({
+  title: "My Writeups Studio",
+  canonicalPath: "/dashboard/writeups",
+  noindex: true,
+  nofollow: true,
+});
 
 interface WriteupsPageProps {
   searchParams: Promise<{ status?: string }>;

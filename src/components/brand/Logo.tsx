@@ -14,6 +14,8 @@ export interface LogoProps {
   href?: string | null;
   priority?: boolean;
   theme?: "auto" | "dark" | "light";
+  /** Marks duplicate/decorative SVG instances with alt="" and aria-hidden="true" */
+  decorative?: boolean;
   "aria-label"?: string;
 }
 
@@ -31,13 +33,15 @@ export function Logo({
   href = "/",
   priority = false,
   theme = "auto",
+  decorative = false,
   "aria-label": customAriaLabel,
 }: LogoProps) {
   const { ratio, defaultHeight } = DIMENSIONS[variant];
   const height = size ?? defaultHeight;
   const width = Math.round(height * ratio);
 
-  const alt = `${siteConfig.name} logo`;
+  const imgAlt = decorative ? "" : `${siteConfig.name} logo`;
+  const hiddenProps = decorative ? { "aria-hidden": true as const } : {};
   const ariaLabel = customAriaLabel || `${siteConfig.name} home`;
 
   const renderContent = () => {
@@ -46,7 +50,8 @@ export function Logo({
         return (
           <Image
             src="/brand/logo/logo-horizontal.svg"
-            alt={alt}
+            alt={imgAlt}
+            {...hiddenProps}
             width={width}
             height={height}
             priority={priority}
@@ -60,7 +65,8 @@ export function Logo({
         return (
           <Image
             src="/brand/logo/logo-horizontal-light.svg"
-            alt={alt}
+            alt={imgAlt}
+            {...hiddenProps}
             width={width}
             height={height}
             priority={priority}
@@ -70,12 +76,13 @@ export function Logo({
           />
         );
       }
-      // Zero-flicker theme toggle: render both dark & light SVGs and toggle via CSS classes
+      // Zero-flicker theme toggle: render dark & light SVGs and mark the CSS-hidden twin decorative
       return (
         <span className="relative inline-flex items-center">
           <Image
             src="/brand/logo/logo-horizontal.svg"
-            alt={alt}
+            alt={imgAlt}
+            {...hiddenProps}
             width={width}
             height={height}
             priority={priority}
@@ -85,7 +92,8 @@ export function Logo({
           />
           <Image
             src="/brand/logo/logo-horizontal-light.svg"
-            alt={alt}
+            alt=""
+            aria-hidden={true}
             width={width}
             height={height}
             priority={priority}
@@ -101,7 +109,8 @@ export function Logo({
       return (
         <Image
           src="/brand/logo/logo-stacked.svg"
-          alt={alt}
+          alt={imgAlt}
+          {...hiddenProps}
           width={width}
           height={height}
           priority={priority}
@@ -116,7 +125,8 @@ export function Logo({
     return (
       <Image
         src="/brand/logo/logo-icon.svg"
-        alt={alt}
+        alt={imgAlt}
+        {...hiddenProps}
         width={width}
         height={height}
         priority={priority}

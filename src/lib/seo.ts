@@ -10,7 +10,8 @@ import {
 
 export interface BuildMetadataOptions {
   title?: string;
-  rawTitle?: string; // If provided, used without suffix template
+  rawTitle?: string; // If provided, used without truncation
+  absoluteTitle?: string; // If provided, bypasses root layout title template
   description?: string;
   canonicalPath?: string;
   noindex?: boolean;
@@ -63,14 +64,16 @@ export function buildMetadata(opts: BuildMetadataOptions = {}): Metadata {
   const isNoindex = opts.noindex ?? false;
   const isNofollow = opts.nofollow ?? false;
 
-  const rawTitle = opts.rawTitle || opts.title || SITE_NAME;
-  const cleanTitle = truncateAtWordBoundary(rawTitle, SEO_THRESHOLDS.MAX_TITLE_CHARS);
+  const rawTitle = opts.absoluteTitle || opts.rawTitle || opts.title || SITE_NAME;
+  const cleanTitle = opts.absoluteTitle
+    ? opts.absoluteTitle
+    : truncateAtWordBoundary(rawTitle, SEO_THRESHOLDS.MAX_TITLE_CHARS);
 
   const rawDesc = opts.description || SITE_DESCRIPTION;
   const cleanDesc = truncateAtWordBoundary(stripMarkdown(rawDesc), SEO_THRESHOLDS.MAX_DESC_CHARS);
 
   const canonicalUrl = opts.canonicalPath
-    ? `${SITE_URL}${opts.canonicalPath.startsWith("/") ? "" : "/"}${opts.canonicalPath}`
+    ? `${SITE_URL}${opts.canonicalPath === "/" ? "" : opts.canonicalPath.startsWith("/") ? opts.canonicalPath : `/${opts.canonicalPath}`}`
     : SITE_URL;
 
   // Resolve absolute OG image URL
@@ -79,10 +82,19 @@ export function buildMetadata(opts: BuildMetadataOptions = {}): Metadata {
     ? rawImage
     : `${SITE_URL}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
 
+  const imageType =
+    absoluteOgImage.endsWith(".jpg") || absoluteOgImage.endsWith(".jpeg")
+      ? "image/jpeg"
+      : "image/png";
+
   const imageAlt = opts.ogImageAlt || `${cleanTitle} - ${SITE_NAME}`;
 
   const metadata: Metadata = {
-    title: opts.rawTitle ? opts.rawTitle : cleanTitle,
+    title: opts.absoluteTitle
+      ? { absolute: opts.absoluteTitle }
+      : opts.rawTitle
+        ? opts.rawTitle
+        : cleanTitle,
     description: cleanDesc,
     alternates: {
       canonical: canonicalUrl,
@@ -121,7 +133,7 @@ export function buildMetadata(opts: BuildMetadataOptions = {}): Metadata {
           width: 1200,
           height: 630,
           alt: imageAlt,
-          type: "image/png",
+          type: imageType,
         },
       ],
       ...(opts.publishedTime ? { publishedTime: opts.publishedTime } : {}),
@@ -143,38 +155,93 @@ export function buildMetadata(opts: BuildMetadataOptions = {}): Metadata {
 }
 
 /**
+ * Extract unique normalized CVE IDs (e.g., CVE-2024-21626) from arbitrary text.
+ */
+export function extractCveIds(text: string): string[] {
+  if (!text) return [];
+  const matches = text.match(/\bCVE-\d{4}-\d{4,7}\b/gi);
+  if (!matches) return [];
+  return Array.from(new Set(matches.map((id) => id.toUpperCase())));
+}
+
+/**
+ * Detect synthetic/perf-test placeholder writeups so they are never indexed or exposed in sitemaps.
+ */
+export function isSyntheticPlaceholder(writeup: {
+  title?: string | null;
+  ctfName?: string | null;
+  slug?: string | null;
+  contentMd?: string | null;
+}): boolean {
+  const title = writeup.title || "";
+  const ctfName = writeup.ctfName || "";
+  const slug = writeup.slug || "";
+  const contentMd = writeup.contentMd || "";
+
+  if (/^synthetic\s+vulnerability\s+research/i.test(title)) return true;
+  if (/^syntheticctf\b/i.test(ctfName)) return true;
+  if (/^perf-test-writeup-/i.test(slug)) return true;
+  if (contentMd.includes("testing database overfetching and memory overhead")) return true;
+
+  return false;
+}
+
+/**
+ * Reusable Prisma NOT condition excluding synthetic/perf-test writeups from public listings.
+ */
+export const SYNTHETIC_WRITEUP_EXCLUSION_WHERE = [
+  { title: { startsWith: "Synthetic Vulnerability Research", mode: "insensitive" as const } },
+  { ctfName: { startsWith: "SyntheticCTF", mode: "insensitive" as const } },
+  { slug: { startsWith: "perf-test-writeup-", mode: "insensitive" as const } },
+];
+
+/**
  * UGC Quality & Index Gate evaluator.
  * Determines whether a writeup qualifies for search engine indexation.
  */
 export interface WriteupIndexCriteria {
   status: "DRAFT" | "UNLISTED" | "PUBLIC";
   contentMd: string;
+  title?: string | null;
+  ctfName?: string | null;
+  slug?: string | null;
   isFlagged?: boolean;
+  moderationStatus?: "APPROVED" | "FLAGGED" | "SPAM" | "REMOVED";
   indexOverride?: "AUTO" | "FORCE_INDEX" | "FORCE_NOINDEX";
   authorCreatedAt?: Date;
 }
 
 export function isIndexable(writeup: WriteupIndexCriteria): boolean {
-  // 1. Explicit admin overrides take absolute precedence
-  if (writeup.indexOverride === "FORCE_NOINDEX") return false;
-  if (writeup.indexOverride === "FORCE_INDEX") return true;
+  // 0. Never index synthetic or placeholder benchmark data
+  if (isSyntheticPlaceholder(writeup)) return false;
 
-  // 2. Only PUBLIC writeups are indexable
+  // 1. Never index removed/spam writeups or non-public entities under override
+  if (writeup.moderationStatus === "SPAM" || writeup.moderationStatus === "REMOVED") {
+    return false;
+  }
+
+  // 2. Explicit admin overrides take precedence
+  if (writeup.indexOverride === "FORCE_NOINDEX") return false;
+  if (writeup.indexOverride === "FORCE_INDEX") {
+    return writeup.status === "PUBLIC";
+  }
+
+  // 3. Only PUBLIC writeups are indexable
   if (writeup.status !== "PUBLIC") return false;
 
-  // 3. Must not be flagged by moderation or spam detection
+  // 4. Must not be flagged by moderation or spam detection
   if (writeup.isFlagged) return false;
 
-  // 4. Word count check (minimum 300 words)
+  // 5. Word count check (minimum 300 words)
   const plainText = stripMarkdown(writeup.contentMd || "");
   const wordCount = plainText.split(/\s+/).filter(Boolean).length;
   if (wordCount < SEO_THRESHOLDS.MIN_WORDS) return false;
 
-  // 5. Heading structure check (must have at least one heading)
+  // 6. Heading structure check (must have at least one heading)
   const hasHeading = /^(#{1,6})\s+.+$/m.test(writeup.contentMd || "");
   if (!hasHeading) return false;
 
-  // 6. Author trust check (account age >= 3 days)
+  // 7. Author trust check (account age >= 3 days)
   if (writeup.authorCreatedAt) {
     const ageMs = Date.now() - new Date(writeup.authorCreatedAt).getTime();
     const ageDays = ageMs / (1000 * 60 * 60 * 24);

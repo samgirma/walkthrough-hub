@@ -1,15 +1,20 @@
 import { prisma } from "@/lib/prisma";
+import { SITE_URL } from "@/config/site";
+import { SYNTHETIC_WRITEUP_EXCLUSION_WHERE } from "@/lib/seo";
 
 // Phase 1: ISR RSS feed with 1-hour revalidation
 export const revalidate = 3600;
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl = SITE_URL;
 
   let writeups: any[] = [];
   try {
     writeups = await prisma.writeup.findMany({
-      where: { status: "PUBLIC" },
+      where: {
+        status: "PUBLIC",
+        NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE,
+      },
       orderBy: { publishedAt: "desc" },
       take: 50,
       include: {

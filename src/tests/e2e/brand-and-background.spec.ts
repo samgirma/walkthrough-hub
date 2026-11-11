@@ -49,9 +49,11 @@ test.describe("Brand Assets & Global World-Map Background Audits", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/", { waitUntil: "domcontentloaded" });
 
-    // Navbar icon-only logo should be visible
-    const mobileLogo = page.locator("header .md\\:hidden img[alt='WriteupHub logo']");
+    // Navbar icon-only logo should be visible (decorative img inside aria-labeled link)
+    const mobileLogo = page.locator("header .md\\:hidden img");
     await expect(mobileLogo).toBeVisible();
+    await expect(mobileLogo).toHaveAttribute("alt", "");
+    await expect(mobileLogo).toHaveAttribute("aria-hidden", "true");
 
     // Horizontal logo container should not be visible on mobile
     const desktopLogoContainer = page.locator("header .hidden.md\\:flex");

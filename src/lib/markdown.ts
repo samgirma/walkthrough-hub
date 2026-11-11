@@ -262,8 +262,12 @@ function remarkShiftHeadings() {
  * Rehype plugin to:
  * 1. Add rel="ugc nofollow noopener" and target="_blank" to external links (keeping internal links normal).
  * 2. Add loading="lazy" and decoding="async" to images, ensuring safe alt text exists.
+ * 3. Automatically link mentioned CVE IDs (e.g., CVE-2024-21626) to internal /cves/[cveId] pages.
  */
 function rehypeSeoEnhancements() {
+  const cveRegex = /\b(CVE-\d{4}-\d{4,7})\b/gi;
+  const skipTags = new Set(["a", "code", "pre", "h1", "h2", "h3", "h4", "h5", "h6", "button", "summary"]);
+
   return (tree: any) => {
     visit(tree, "element", (node: any) => {
       // 1. External links
@@ -293,6 +297,43 @@ function rehypeSeoEnhancements() {
         node.properties.decoding = "async";
         if (!node.properties.alt || String(node.properties.alt).trim() === "") {
           node.properties.alt = "Security writeup demonstration figure";
+        }
+      }
+
+      // 3. Auto-link CVE IDs inside normal prose nodes
+      if (node.children && !skipTags.has(node.tagName)) {
+        const nextChildren: any[] = [];
+        let changed = false;
+
+        for (const child of node.children) {
+          if (child.type === "text" && typeof child.value === "string" && cveRegex.test(child.value)) {
+            cveRegex.lastIndex = 0;
+            changed = true;
+            const parts = child.value.split(cveRegex);
+            for (const part of parts) {
+              if (!part) continue;
+              if (/^CVE-\d{4}-\d{4,7}$/i.test(part)) {
+                const normalized = part.toUpperCase();
+                nextChildren.push({
+                  type: "element",
+                  tagName: "a",
+                  properties: {
+                    href: `/cves/${normalized}`,
+                    className: ["text-[#22D3A0]", "font-mono", "hover:underline"],
+                  },
+                  children: [{ type: "text", value: normalized }],
+                });
+              } else {
+                nextChildren.push({ type: "text", value: part });
+              }
+            }
+          } else {
+            nextChildren.push(child);
+          }
+        }
+
+        if (changed) {
+          node.children = nextChildren;
         }
       }
     });

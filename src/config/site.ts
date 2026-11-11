@@ -15,11 +15,12 @@ export const SITE_URL = (() => {
 })();
 
 export const SITE_NAME = "WriteupHub";
-export const SITE_TAGLINE = "CTF & Security Research Vault";
+export const SITE_TAGLINE = "Verified CTF Writeups, CVE Exploits & Security Research";
+export const SITE_TITLE = `${SITE_NAME} — ${SITE_TAGLINE}`;
 export const SITE_DESCRIPTION =
-  "The open platform where cybersecurity researchers, CTF players, and exploit analysts dissect challenges, publish verified walkthroughs, and level up together.";
+  "Explore verified CTF writeups, zero-day CVE exploit guides, and vulnerability research built for CTF players, bug bounty hunters, and security analysts.";
 
-export const DEFAULT_OG_IMAGE = "/og/og-default.jpg";
+export const DEFAULT_OG_IMAGE = "/og/og-default.png";
 
 export const SOCIAL_HANDLES = {
   twitter: "@writeuphub",

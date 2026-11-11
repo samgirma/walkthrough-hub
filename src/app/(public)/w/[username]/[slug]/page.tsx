@@ -39,7 +39,15 @@ import {
 import { MobileTOCAccordion } from "./mobile-toc-sheet";
 import { WriteupReaderClient } from "./writeup-reader-client";
 
-import { buildMetadata, isIndexable, stripMarkdown } from "@/lib/seo";
+import {
+  buildMetadata,
+  isIndexable,
+  isSyntheticPlaceholder,
+  extractCveIds,
+  stripMarkdown,
+  SYNTHETIC_WRITEUP_EXCLUSION_WHERE,
+} from "@/lib/seo";
+import { CveLinkedText } from "@/components/cve/cve-linked-text";
 import { SITE_URL, SITE_NAME } from "@/config/site";
 
 interface WriteupPageProps {
@@ -60,9 +68,9 @@ export const dynamicParams = true;
 export async function generateStaticParams() {
   try {
     const topWriteups = await prisma.writeup.findMany({
-      where: { status: "PUBLIC" },
+      where: { status: "PUBLIC", NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE },
       orderBy: [{ viewCount: "desc" }, { publishedAt: "desc" }],
-      take: 5,
+      take: 10,
       select: {
         id: true,
         slug: true,
@@ -136,12 +144,19 @@ export async function generateMetadata({
     permanentRedirect(`/w/${writeup.author.username}/${writeup.id}`);
   }
 
+  const isSynthetic = isSyntheticPlaceholder(writeup);
   const isUnlisted = writeup.status === "UNLISTED";
-  const indexEligible = isUnlisted
+  const indexEligible = isUnlisted || isSynthetic
     ? false
     : isIndexable({
         status: writeup.status,
+        title: writeup.title,
+        ctfName: writeup.ctfName,
+        slug: writeup.slug,
         contentMd: writeup.contentMd,
+        isFlagged: writeup.isFlagged,
+        moderationStatus: writeup.moderationStatus,
+        indexOverride: writeup.indexOverride,
         authorCreatedAt: writeup.author.createdAt,
       });
 
@@ -154,7 +169,7 @@ export async function generateMetadata({
     description: cleanDesc,
     canonicalPath: `/w/${username}/${writeup.id}`,
     noindex: !indexEligible,
-    nofollow: false,
+    nofollow: isSynthetic,
     ogType: "article",
     ogImage: `/w/${username}/${writeup.id}/opengraph-image`,
     publishedTime: writeup.publishedAt?.toISOString(),
@@ -229,10 +244,24 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
   const ogImageUrl = `${SITE_URL}/w/${username}/${writeup.id}/opengraph-image`;
   const cleanDesc = writeup.excerpt || stripMarkdown(writeup.contentMd).slice(0, 155);
 
-  // Server-rendered structured data (JSON-LD)
+  const mentionedCves = extractCveIds(
+    `${writeup.title} ${writeup.excerpt} ${writeup.contentMd}`
+  );
+  const tagNames = writeup.tags?.map((t) => t.tag.name) || [];
+  const allKeywords = Array.from(
+    new Set([writeup.category, writeup.ctfName, ...tagNames, ...mentionedCves])
+  );
+  const proficiencyLevel =
+    writeup.difficulty === "EASY"
+      ? "Beginner"
+      : writeup.difficulty === "MEDIUM"
+        ? "Intermediate"
+        : "Expert";
+
+  // Server-rendered structured data (JSON-LD TechArticle)
   const articleJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "TechArticle",
     headline: writeup.title,
     description: cleanDesc,
     image: [ogImageUrl],
@@ -240,6 +269,23 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
       ? writeup.publishedAt.toISOString()
       : writeup.createdAt.toISOString(),
     dateModified: writeup.updatedAt.toISOString(),
+    proficiencyLevel,
+    keywords: allKeywords,
+    about: [
+      {
+        "@type": "Event",
+        name: `${writeup.ctfName} ${writeup.ctfYear}`,
+      },
+      {
+        "@type": "Thing",
+        name: writeup.category,
+      },
+      ...mentionedCves.map((cveId) => ({
+        "@type": "Thing",
+        name: cveId,
+        sameAs: `${SITE_URL}/cves/${cveId}`,
+      })),
+    ],
     author: {
       "@type": "Person",
       name: writeup.author.username || "anonymous",
@@ -495,7 +541,7 @@ export default async function WriteupPage({ params }: WriteupPageProps) {
 
               {/* Excerpt */}
               <p className="font-sans text-sm sm:text-base text-[#BACAC1] leading-relaxed mb-6">
-                {writeup.excerpt}
+                <CveLinkedText text={writeup.excerpt} />
               </p>
 
               {/* Meta bar & Actions */}

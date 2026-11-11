@@ -4,10 +4,14 @@ import { requireRole } from "@/server/auth/dal";
 import { getAdminStats, getAdminUsers, getAdminWriteups } from "@/server/admin.service";
 import { getEnabledProviders } from "@/env";
 import { AdminConsoleClient } from "./admin-console-client";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Admin Console // WriteupHub Operations",
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Admin Operations Console",
+  canonicalPath: "/dashboard/admin",
+  noindex: true,
+  nofollow: true,
+});
 
 export default async function AdminDashboardPage() {
   const admin = await requireRole("ADMIN", "/dashboard");

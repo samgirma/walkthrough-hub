@@ -117,7 +117,15 @@ export default async function Image() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <span style={{ color: "#22D3A0" }}>●</span>
+            <span
+              style={{
+                width: "10px",
+                height: "10px",
+                borderRadius: "50%",
+                backgroundColor: "#22D3A0",
+                display: "flex",
+              }}
+            />
             <span>walkthrough-by.samgirma.app</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", color: "#38BDF8" }}>

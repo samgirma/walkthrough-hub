@@ -24,10 +24,14 @@ import {
   getCategoryColor,
   getDifficultyColor,
 } from "@/lib/utils";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Author Overview // WriteupHub Dashboard",
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Author Overview",
+  canonicalPath: "/dashboard",
+  noindex: true,
+  nofollow: true,
+});
 
 export default async function DashboardPage() {
   const user = await requireOnboarded("/dashboard");

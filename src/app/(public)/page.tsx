@@ -6,15 +6,25 @@ import { Hero } from "@/components/home/Hero";
 import { WriteupCard } from "@/components/writeup/writeup-card";
 import { getPublicWriteups } from "@/server/writeup.service";
 import { getPopularTags } from "@/server/tag.service";
+import { buildMetadata } from "@/lib/seo";
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  SOCIAL_HANDLES,
+} from "@/config/site";
 
 // Phase 1: Static ISR with 5-minute background revalidation
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "WriteupHub // Learn from every flag",
-  description:
-    "The open platform where cybersecurity researchers and CTF players dissect challenges, publish cryptographically verified walkthroughs, and level up together.",
-};
+export const metadata: Metadata = buildMetadata({
+  absoluteTitle: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  canonicalPath: "/",
+  ogType: "website",
+  ogImage: "/opengraph-image",
+});
 
 export default async function HomePage() {
   const [trendingResult, popularTags] = await Promise.all([
@@ -39,8 +49,51 @@ export default async function HomePage() {
     { name: "OSINT", param: "OSINT", count: "310", color: "#EAB308" },
   ];
 
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    alternateName: "WriteupHub CTF & Security Research Archive",
+    url: SITE_URL,
+    description: SITE_DESCRIPTION,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_URL}/explore?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}/icon.svg`,
+    },
+    sameAs: [
+      SOCIAL_HANDLES.github,
+      SOCIAL_HANDLES.telegram,
+      `https://twitter.com/${SOCIAL_HANDLES.twitter.replace(/^@/, "")}`,
+    ],
+  };
+
   return (
     <div className="relative w-full min-h-screen">
+      {/* Structured Data: WebSite (SearchAction) & Organization */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([websiteJsonLd, organizationJsonLd]).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       {/* 
         Preload critical AVIF hero images for desktop and mobile
         hoisted directly into document head by React 19 / Next.js

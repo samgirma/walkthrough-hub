@@ -8,6 +8,7 @@ import { NavigationProgress } from "@/components/layout/navigation-progress";
 import {
   SITE_URL,
   SITE_NAME,
+  SITE_TITLE,
   SITE_TAGLINE,
   SITE_DESCRIPTION,
   DEFAULT_OG_IMAGE,
@@ -60,12 +61,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} // ${SITE_TAGLINE}`,
+    default: SITE_TITLE,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
   alternates: {
-    canonical: SITE_URL,
     types: {
       "application/rss+xml": `${SITE_URL}/feed.xml`,
     },
@@ -90,7 +90,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} // ${SITE_TAGLINE}`,
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     images: [
       {
@@ -98,13 +98,13 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         alt: `${SITE_NAME} - ${SITE_TAGLINE}`,
-        type: "image/jpeg",
+        type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} // ${SITE_TAGLINE}`,
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     images: [`${SITE_URL}${DEFAULT_OG_IMAGE}`],
     site: SOCIAL_HANDLES.twitter,

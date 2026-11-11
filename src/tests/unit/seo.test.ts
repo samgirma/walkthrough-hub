@@ -4,6 +4,8 @@ import {
   truncateAtWordBoundary,
   buildMetadata,
   isIndexable,
+  isSyntheticPlaceholder,
+  extractCveIds,
 } from "@/lib/seo";
 
 describe("SEO Utilities", () => {
@@ -147,7 +149,7 @@ ${"We construct the ROP chain to achieve code execution on the target system. ".
       ).toBe(false);
     });
 
-    it("respects admin FORCE_INDEX and FORCE_NOINDEX overrides", () => {
+    it("respects admin FORCE_INDEX and FORCE_NOINDEX overrides while blocking synthetic spam", () => {
       expect(
         isIndexable({
           status: "PUBLIC",
@@ -159,8 +161,45 @@ ${"We construct the ROP chain to achieve code execution on the target system. ".
       expect(
         isIndexable({
           status: "PUBLIC",
+          title: "Synthetic Vulnerability Research #200",
+          ctfName: "SyntheticCTF 2020",
+          contentMd: validContent,
+          indexOverride: "FORCE_INDEX",
+        })
+      ).toBe(false);
+
+      expect(
+        isIndexable({
+          status: "PUBLIC",
           contentMd: validContent,
           indexOverride: "FORCE_NOINDEX",
+        })
+      ).toBe(false);
+    });
+  });
+
+  describe("extractCveIds & isSyntheticPlaceholder", () => {
+    it("extracts unique uppercase CVE IDs including long-digit CVE identifiers", () => {
+      const ids = extractCveIds(
+        "Exploits cve-2024-21626 and CVE-2026-102490 alongside CVE-2024-21626 duplicate."
+      );
+      expect(ids).toEqual(["CVE-2024-21626", "CVE-2026-102490"]);
+    });
+
+    it("detects synthetic placeholder writeups without false-positiving Hyper-V technical titles", () => {
+      expect(
+        isSyntheticPlaceholder({
+          title: "Synthetic Vulnerability Research #200 - WEB Exploit",
+          ctfName: "SyntheticCTF 2021",
+          slug: "perf-test-writeup-123",
+        })
+      ).toBe(true);
+
+      expect(
+        isSyntheticPlaceholder({
+          title: "Hyper-V VM Escape via Synthetic SCSI Device Ring Buffer",
+          ctfName: "Pwn2Own",
+          slug: "hyper-v-vm-escape-synthetic-scsi",
         })
       ).toBe(false);
     });

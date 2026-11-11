@@ -12,6 +12,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { getRecentCves, getKevVulnerabilities } from "@/server/cve.service";
+import { CveLinkedText } from "@/components/cve/cve-linked-text";
 import { buildMetadata } from "@/lib/seo";
 import { SITE_URL } from "@/config/site";
 
@@ -139,12 +140,12 @@ export default async function CvesDirectoryPage() {
                     </div>
                   </div>
 
-                  <h3 className="font-sans font-bold text-base text-white tracking-tight mb-2 line-clamp-2">
+                  <h2 className="font-sans font-bold text-base text-white tracking-tight mb-2 line-clamp-2">
                     {cve.title}
-                  </h3>
+                  </h2>
 
                   <p className="font-sans text-xs text-[#94A3B8] line-clamp-3 leading-relaxed mb-4">
-                    {cve.description}
+                    <CveLinkedText text={cve.description} />
                   </p>
                 </div>
 

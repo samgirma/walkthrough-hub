@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { RegisterInput, UpdateProfileInput } from "@/lib/validations/auth.schema";
 import { revalidateTag, revalidatePath } from "next/cache";
+import { SYNTHETIC_WRITEUP_EXCLUSION_WHERE } from "@/lib/seo";
 
 export async function registerUser(input: RegisterInput) {
   const emailLower = input.email.toLowerCase().trim();
@@ -83,7 +84,9 @@ export async function getUserProfile(
       createdAt: true,
       _count: {
         select: {
-          writeups: { where: { status: "PUBLIC" } },
+          writeups: {
+            where: { status: "PUBLIC", NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE },
+          },
         },
       },
     },
@@ -97,6 +100,7 @@ export async function getUserProfile(
     where: {
       authorId: user.id,
       status: "PUBLIC",
+      NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE,
     },
     orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
     take: limit + 1,

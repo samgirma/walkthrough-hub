@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
+import { SYNTHETIC_WRITEUP_EXCLUSION_WHERE } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -17,7 +18,10 @@ export interface SearchDoc {
 const getCachedSearchIndex = unstable_cache(
   async (): Promise<SearchDoc[]> => {
     const writeups = await prisma.writeup.findMany({
-      where: { status: "PUBLIC" },
+      where: {
+        status: "PUBLIC",
+        NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE,
+      },
       select: {
         id: true,
         title: true,

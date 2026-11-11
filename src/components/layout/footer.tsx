@@ -43,7 +43,7 @@ export function Footer() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-8 pb-6 border-b border-[#242936]/60">
           {/* Brand Info */}
           <div className="col-span-2 sm:col-span-1 flex flex-col gap-2.5">
-            <Logo variant="horizontal" size={26} />
+            <Logo variant="horizontal" size={26} decorative />
             <p className="text-[11px] text-[#BACAC1] font-sans leading-relaxed">
               Open intelligence archive for verified security research and CTF solutions.
             </p>

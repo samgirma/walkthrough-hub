@@ -138,9 +138,9 @@ export function Navbar({ user: initialUser }: NavbarProps) {
               <Logo variant="horizontal" size={32} priority />
             </div>
 
-            {/* Mobile: Icon-only Logo (height 32px) so it never crowds 360px screen */}
+            {/* Mobile: Icon-only Logo (height 32px) so it never crowds 360px screen (decorative inside aria-labeled link) */}
             <div className="flex md:hidden items-center">
-              <Logo variant="icon" size={32} priority />
+              <Logo variant="icon" size={32} priority decorative />
             </div>
 
             <nav className="hidden md:flex items-center gap-1">

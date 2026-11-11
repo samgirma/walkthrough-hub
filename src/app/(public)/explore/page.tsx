@@ -21,6 +21,7 @@ export const revalidate = 60;
 
 interface ExplorePageProps {
   searchParams: Promise<{
+    q?: string;
     search?: string;
     category?: string;
     difficulty?: string;
@@ -36,7 +37,7 @@ export async function generateMetadata({
   searchParams,
 }: ExplorePageProps): Promise<Metadata> {
   const params = await searchParams;
-  const hasSearch = Boolean(params.search?.trim());
+  const hasSearch = Boolean((params.q || params.search)?.trim());
   const hasFilters = Boolean(
     params.difficulty ||
       params.ctfName ||
@@ -86,7 +87,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const currentSort = params.sort || "trending";
   const rawPage = parseInt(params.page || "1", 10);
   const currentPage = isNaN(rawPage) || rawPage < 1 ? 1 : rawPage;
-  const currentSearch = params.search || "";
+  const currentSearch = params.q || params.search || "";
   const currentTag = params.tag || "";
   const currentCtf = params.ctfName || "";
 

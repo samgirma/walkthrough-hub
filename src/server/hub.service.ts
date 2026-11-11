@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { isIndexable } from "@/lib/seo";
+import { isIndexable, SYNTHETIC_WRITEUP_EXCLUSION_WHERE } from "@/lib/seo";
 import { Category } from "@prisma/client";
 
 export interface HubResult {
@@ -12,6 +12,46 @@ export interface HubResult {
   hasPrev: boolean;
 }
 
+const INDEXABLE_EVAL_SELECT = {
+  status: true,
+  title: true,
+  ctfName: true,
+  slug: true,
+  contentMd: true,
+  isFlagged: true,
+  moderationStatus: true,
+  indexOverride: true,
+  author: { select: { createdAt: true } },
+} as const;
+
+function countIndexableWriteups(
+  items: {
+    status: "DRAFT" | "UNLISTED" | "PUBLIC";
+    title: string;
+    ctfName: string;
+    slug: string;
+    contentMd: string;
+    isFlagged: boolean;
+    moderationStatus: "APPROVED" | "FLAGGED" | "SPAM" | "REMOVED";
+    indexOverride: "AUTO" | "FORCE_INDEX" | "FORCE_NOINDEX";
+    author: { createdAt: Date };
+  }[]
+) {
+  return items.filter((w) =>
+    isIndexable({
+      status: w.status,
+      title: w.title,
+      ctfName: w.ctfName,
+      slug: w.slug,
+      contentMd: w.contentMd,
+      isFlagged: w.isFlagged,
+      moderationStatus: w.moderationStatus,
+      indexOverride: w.indexOverride,
+      authorCreatedAt: w.author.createdAt,
+    })
+  ).length;
+}
+
 export async function getCategoryHub(
   categoryRaw: string,
   page: number = 1,
@@ -19,13 +59,15 @@ export async function getCategoryHub(
 ): Promise<HubResult> {
   const upperCategory = categoryRaw.toUpperCase() as Category;
   const skip = (Math.max(1, page) - 1) * limit;
+  const whereClause = {
+    category: upperCategory,
+    status: "PUBLIC" as const,
+    NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE,
+  };
 
   const [writeups, totalCount, allPublic] = await Promise.all([
     prisma.writeup.findMany({
-      where: {
-        category: upperCategory,
-        status: "PUBLIC",
-      },
+      where: whereClause,
       orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
       skip,
       take: limit,
@@ -36,34 +78,15 @@ export async function getCategoryHub(
         tags: { include: { tag: true } },
       },
     }),
-    prisma.writeup.count({
-      where: {
-        category: upperCategory,
-        status: "PUBLIC",
-      },
-    }),
+    prisma.writeup.count({ where: whereClause }),
     prisma.writeup.findMany({
-      where: {
-        category: upperCategory,
-        status: "PUBLIC",
-      },
-      select: {
-        status: true,
-        contentMd: true,
-        author: { select: { createdAt: true } },
-      },
+      where: whereClause,
+      select: INDEXABLE_EVAL_SELECT,
       take: 50,
     }),
   ]);
 
-  const indexableCount = allPublic.filter((w) =>
-    isIndexable({
-      status: w.status,
-      contentMd: w.contentMd,
-      authorCreatedAt: w.author.createdAt,
-    })
-  ).length;
-
+  const indexableCount = countIndexableWriteups(allPublic);
   const totalPages = Math.ceil(totalCount / limit) || 1;
 
   return {
@@ -94,6 +117,7 @@ export async function getCtfHub(
   const whereClause: any = {
     status: "PUBLIC",
     ctfName: { contains: nameQuery, mode: "insensitive" },
+    NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE,
   };
   if (year) {
     whereClause.ctfYear = year;
@@ -115,22 +139,12 @@ export async function getCtfHub(
     prisma.writeup.count({ where: whereClause }),
     prisma.writeup.findMany({
       where: whereClause,
-      select: {
-        status: true,
-        contentMd: true,
-        author: { select: { createdAt: true } },
-      },
+      select: INDEXABLE_EVAL_SELECT,
       take: 50,
     }),
   ]);
 
-  const indexableCount = allPublic.filter((w) =>
-    isIndexable({
-      status: w.status,
-      contentMd: w.contentMd,
-      authorCreatedAt: w.author.createdAt,
-    })
-  ).length;
+  const indexableCount = countIndexableWriteups(allPublic);
 
   const primaryCtfName = writeups[0]?.ctfName || nameQuery.toUpperCase();
   const totalPages = Math.ceil(totalCount / limit) || 1;
@@ -158,6 +172,7 @@ export async function getTagHub(
 
   const whereClause = {
     status: "PUBLIC" as const,
+    NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE,
     tags: {
       some: {
         tag: { name: tagName },
@@ -181,23 +196,12 @@ export async function getTagHub(
     prisma.writeup.count({ where: whereClause }),
     prisma.writeup.findMany({
       where: whereClause,
-      select: {
-        status: true,
-        contentMd: true,
-        author: { select: { createdAt: true } },
-      },
+      select: INDEXABLE_EVAL_SELECT,
       take: 50,
     }),
   ]);
 
-  const indexableCount = allPublic.filter((w) =>
-    isIndexable({
-      status: w.status,
-      contentMd: w.contentMd,
-      authorCreatedAt: w.author.createdAt,
-    })
-  ).length;
-
+  const indexableCount = countIndexableWriteups(allPublic);
   const totalPages = Math.ceil(totalCount / limit) || 1;
 
   return {
@@ -224,6 +228,7 @@ export async function getRelatedWriteups(params: {
       where: {
         id: { not: params.writeupId },
         status: "PUBLIC",
+        NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE,
         OR: [
           { ctfName: { equals: params.ctfName, mode: "insensitive" } },
           { category: params.category },
@@ -248,6 +253,7 @@ export async function getRelatedWriteups(params: {
         id: { not: params.writeupId },
         authorId: params.authorId,
         status: "PUBLIC",
+        NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE,
       },
       orderBy: [{ publishedAt: "desc" }],
       take: 3,
@@ -267,6 +273,7 @@ export async function getRelatedWriteups(params: {
       where: {
         ctfName: { equals: params.ctfName, mode: "insensitive" },
         status: "PUBLIC",
+        NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE,
       },
       orderBy: [{ publishedAt: "asc" }, { id: "asc" }],
       select: {
@@ -299,18 +306,21 @@ export async function getAllHubSummaries() {
     const [categories, topCtfs, topTags] = await Promise.all([
       prisma.writeup.groupBy({
         by: ["category"],
-        where: { status: "PUBLIC" },
+        where: { status: "PUBLIC", NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE },
         _count: { id: true },
       }),
       prisma.writeup.groupBy({
         by: ["ctfName", "ctfYear"],
-        where: { status: "PUBLIC" },
+        where: { status: "PUBLIC", NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE },
         _count: { id: true },
         orderBy: { _count: { id: "desc" } },
         take: 12,
       }),
       prisma.writeupTag.groupBy({
         by: ["tagId"],
+        where: {
+          writeup: { status: "PUBLIC", NOT: SYNTHETIC_WRITEUP_EXCLUSION_WHERE },
+        },
         _count: { writeupId: true },
         orderBy: { _count: { writeupId: "desc" } },
         take: 20,

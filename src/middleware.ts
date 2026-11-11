@@ -57,9 +57,12 @@ export default auth((req: NextRequest & { auth?: any }) => {
 
   // 6. Protected author areas: /dashboard, /write, /settings
   const isProtected =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/write") ||
-    pathname.startsWith("/settings");
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/") ||
+    pathname === "/write" ||
+    pathname.startsWith("/write/") ||
+    pathname === "/settings" ||
+    pathname.startsWith("/settings/");
 
   if (isProtected) {
     if (!isAuthenticated) {

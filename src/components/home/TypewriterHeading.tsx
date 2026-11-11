@@ -12,7 +12,7 @@ const ROTATING_TEXTS = [
 
 export function TypewriterHeading() {
   const [textIndex, setTextIndex] = useState(0);
-  const [displayText, setDisplayText] = useState("");
+  const [displayText, setDisplayText] = useState(ROTATING_TEXTS[0]);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const currentTarget = ROTATING_TEXTS[textIndex];
@@ -59,8 +59,8 @@ export function TypewriterHeading() {
   }, [displayText, isDeleting, currentTarget]);
 
   return (
-    <div className="w-full flex items-center select-none py-2">
-      <h1 className="font-mono text-[clamp(1.35rem,4.5vw,4.75rem)] font-black tracking-tight text-white flex items-center whitespace-nowrap drop-shadow-[0_0_35px_rgba(34,211,160,0.35)]">
+    <div aria-hidden="true" className="w-full flex items-center select-none py-1">
+      <p className="font-mono text-[clamp(1.35rem,4.5vw,4.75rem)] font-black tracking-tight text-white flex items-center whitespace-nowrap drop-shadow-[0_0_35px_rgba(34,211,160,0.35)]">
         <span className="bg-gradient-to-r from-white via-[#E0E2EC] to-[#50F0BB] bg-clip-text text-transparent">
           {displayText}
         </span>
@@ -68,7 +68,7 @@ export function TypewriterHeading() {
           aria-hidden="true"
           className="inline-block w-[0.25em] h-[0.82em] bg-[#22D3A0] ml-2 shrink-0 animate-pulse shadow-[0_0_15px_#22D3A0] align-middle"
         />
-      </h1>
+      </p>
     </div>
   );
 }

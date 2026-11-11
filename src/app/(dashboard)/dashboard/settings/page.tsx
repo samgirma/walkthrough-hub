@@ -7,10 +7,14 @@ import { prisma } from "@/lib/prisma";
 import { SettingsForm } from "./settings-form";
 import { ConnectedAccounts } from "./connected-accounts";
 import { DeleteAccountCard } from "./delete-account-card";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Author Settings // WriteupHub",
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Author Settings",
+  canonicalPath: "/dashboard/settings",
+  noindex: true,
+  nofollow: true,
+});
 
 export default async function SettingsPage() {
   const currentUser = await requireOnboarded("/dashboard/settings");

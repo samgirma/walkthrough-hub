@@ -3,14 +3,18 @@ import { Metadata } from "next";
 import { Calendar, Radio, Trophy, Shield } from "lucide-react";
 import { getActiveEvents } from "@/server/event.service";
 import { EventsFeedClient } from "./events-feed-client";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 60; // Auto-revalidates every 60s for timely expiration
 
-export const metadata: Metadata = {
-  title: "Global CTF Events & Hackathons // Live Worldwide Competitions",
+export const metadata: Metadata = buildMetadata({
+  title: "Global CTF Events & Hackathons — Live Competitions",
   description:
     "Track active and upcoming global Capture The Flag tournaments, cybersecurity hackathons, and security wargames with verified deadlines.",
-};
+  canonicalPath: "/events",
+  noindex: false,
+  nofollow: false,
+});
 
 export default async function EventsPage() {
   const events = await getActiveEvents().catch((err) => {

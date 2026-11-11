@@ -21,11 +21,18 @@ export function Hero({}: HeroProps) {
       {/* Top spacer matching fixed navbar height */}
       <div className="h-16 shrink-0" aria-hidden="true" />
 
-      {/* Main Content: Edge-to-Edge Container with Animated Typewriter Heading */}
+      {/* Main Content: Edge-to-Edge Container with Animated Typewriter & Semantic H1 */}
       <div className="relative z-10 w-full px-4 sm:px-8 lg:px-12 xl:px-16 my-auto py-8">
-        <div className="w-full max-w-7xl flex flex-col items-start">
-          {/* Animated "CTF Walkthrough" Typewriter (writes, pauses, clears, repeats continuously) */}
+        <div className="w-full max-w-7xl flex flex-col items-start gap-3 sm:gap-4">
+          {/* Decorative animated showcase (single-line typewriter) */}
           <TypewriterHeading />
+
+          {/* Semantic primary H1 for search engines & accessibility */}
+          <h1 className="font-sans font-extrabold text-[clamp(1.3rem,2.6vw,2.15rem)] text-[#E0E2EC] tracking-tight max-w-4xl leading-snug drop-shadow-[0_2px_16px_rgba(11,13,18,0.85)]">
+            Open Intelligence Archive for Verified{" "}
+            <span className="text-[#50F0BB]">CTF Writeups</span> &amp;{" "}
+            <span className="text-[#38BDF8]">CVE Research</span>
+          </h1>
         </div>
       </div>
 

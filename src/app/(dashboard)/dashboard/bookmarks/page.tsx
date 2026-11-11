@@ -6,10 +6,14 @@ import { Bookmark, ExternalLink } from "lucide-react";
 import { requireOnboarded } from "@/server/auth/dal";
 import { getUserBookmarks } from "@/server/bookmark.service";
 import { WriteupCard } from "@/components/writeup/writeup-card";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Saved Bookmarks // WriteupHub",
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Saved Bookmarks",
+  canonicalPath: "/dashboard/bookmarks",
+  noindex: true,
+  nofollow: true,
+});
 
 export default async function BookmarksPage() {
   const user = await requireOnboarded("/dashboard/bookmarks");

@@ -1,6 +1,11 @@
 import { prisma } from "../src/lib/prisma";
-import { SITE_URL, SEO_THRESHOLDS } from "../src/config/site";
-import { isIndexable, stripMarkdown, truncateAtWordBoundary } from "../src/lib/seo";
+import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION, SEO_THRESHOLDS } from "../src/config/site";
+import {
+  isIndexable,
+  isSyntheticPlaceholder,
+  stripMarkdown,
+  truncateAtWordBoundary,
+} from "../src/lib/seo";
 import sitemap from "../src/app/sitemap";
 
 async function runSeoCheck() {
@@ -52,9 +57,13 @@ async function runSeoCheck() {
     select: {
       id: true,
       title: true,
+      ctfName: true,
       slug: true,
       contentMd: true,
       status: true,
+      isFlagged: true,
+      moderationStatus: true,
+      indexOverride: true,
       author: { select: { username: true, createdAt: true } },
     },
     take: 10,
@@ -65,7 +74,13 @@ async function runSeoCheck() {
     const url = `${SITE_URL}/w/${w.author.username}/${w.id}`;
     const qualified = isIndexable({
       status: w.status,
+      title: w.title,
+      ctfName: w.ctfName,
+      slug: w.slug,
       contentMd: w.contentMd,
+      isFlagged: w.isFlagged,
+      moderationStatus: w.moderationStatus,
+      indexOverride: w.indexOverride,
       authorCreatedAt: w.author.createdAt,
     });
 
@@ -76,8 +91,29 @@ async function runSeoCheck() {
     }
   }
 
-  // 3. Title & Description Thresholds
-  console.log("\nTEST 3: TITLE & DESCRIPTION THRESHOLDS");
+  assert(
+    isSyntheticPlaceholder({ title: "Synthetic Vulnerability Research #200", ctfName: "SyntheticCTF 2020" }),
+    "Synthetic vulnerability placeholder correctly flagged for noindex"
+  );
+  assert(
+    !isSyntheticPlaceholder({ title: "Hyper-V VM Escape via Synthetic SCSI Device Ring Buffer", ctfName: "Pwn2Own" }),
+    "Genuine Pwn2Own Hyper-V Synthetic SCSI writeup not false-positived"
+  );
+
+  // 3. Title & Description Thresholds & Priorities
+  console.log("\nTEST 3: TITLE, DESCRIPTION & SITEMAP PRIORITIES");
+  assert(
+    SITE_TITLE === "WriteupHub — Verified CTF Writeups, CVE Exploits & Security Research",
+    "Homepage title matches SEO spec without duplicate suffix"
+  );
+  assert(
+    SITE_DESCRIPTION.length >= 150 && SITE_DESCRIPTION.length <= 160,
+    `Site meta description length (${SITE_DESCRIPTION.length} chars) is within 150-160 target`
+  );
+  const homeEntry = sitemapEntries.find((e) => e.url === SITE_URL);
+  assert(homeEntry?.priority === 1.0, `Homepage priority is 1.0 (${homeEntry?.priority})`);
+  const cveEntry = sitemapEntries.find((e) => e.url.includes("/cves/CVE-"));
+  assert(!cveEntry || cveEntry.priority === 0.8, `Enriched CVE priority is 0.8 (${cveEntry?.priority})`);
   const testTitle = "A".repeat(120);
   const truncatedTitle = truncateAtWordBoundary(testTitle, SEO_THRESHOLDS.MAX_TITLE_CHARS);
   assert(

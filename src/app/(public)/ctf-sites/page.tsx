@@ -2,14 +2,18 @@ import React from "react";
 import { Metadata } from "next";
 import { Globe, Terminal, ShieldCheck } from "lucide-react";
 import { CtfSitesClient } from "./ctf-sites-client";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 86400; // Static ISR: updates daily
 
-export const metadata: Metadata = {
-  title: "CTF Platforms & Practice Labs // Global Cybersecurity Directory",
+export const metadata: Metadata = buildMetadata({
+  title: "CTF Platforms & Practice Labs Directory",
   description:
     "Curated directory of the world's leading Capture The Flag platforms, offensive security labs, wargames, and competition calendars.",
-};
+  canonicalPath: "/ctf-sites",
+  noindex: false,
+  nofollow: false,
+});
 
 export default function CtfSitesPage() {
   return (
